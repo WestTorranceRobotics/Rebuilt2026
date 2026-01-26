@@ -11,7 +11,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.units.measure.Units;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -124,7 +123,7 @@ public class RobotContainer {
       // TODO add constant for drive base length
       swerveDriveSimulation = new SwerveDriveSimulation(
           DriveTrainSimulationConfig.Default().withGyro(COTS.ofPigeon2())
-              .withRobotMass(Units.Pound.of(75)).withSwerveModule(
+              .withRobotMass(Pounds.of(75)).withSwerveModule(
                   COTS.ofSwerveX2(DCMotor.getKrakenX60(1), DCMotor.getNEO(1),
                       COTS.WHEELS.SLS_PRINTED_WHEELS.cof, 2, 11))
               .withTrackLengthTrackWidth(Inches.of(20), Inches.of(20))

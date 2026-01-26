@@ -2,10 +2,11 @@ package frc.robot.subsystems.SwerveDrive;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.units.measure.Units;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Mass;
 import edu.wpi.first.wpilibj.DriverStation;
+
+import static edu.wpi.first.units.Units.Meters;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -165,7 +166,7 @@ public class SwerveDriveConfigurator {
     }
 
     private void calculateModulePosition(Distance moduleDistance) {
-      double distance = moduleDistance.div(2).in(Units.Meters);
+      double distance = moduleDistance.div(2).in(Meters);
       this.physicalModulePosition =
           new Translation2d(distance, distance).rotateBy(Rotation2d.kCCW_90deg.times(corner.index));
     }

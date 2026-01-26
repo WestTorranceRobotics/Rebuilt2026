@@ -10,6 +10,8 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
+import com.revrobotics.PersistMode;
+import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig;
@@ -61,7 +63,7 @@ public class ModuleIOReal implements ModuleIO {
     moduleName = moduleConstants.getModuleName();
 
     // Drive motor config
-    driveMotorController = new TalonFX(moduleConstants.driveMotorID, "rio");
+    driveMotorController = new TalonFX(moduleConstants.driveMotorID);
 
     TalonFXConfigurator driveMotorConfigurator = driveMotorController.getConfigurator();
 
@@ -95,8 +97,8 @@ public class ModuleIOReal implements ModuleIO {
     sparkMaxConfig.smartCurrentLimit(40).idleMode(SparkBaseConfig.IdleMode.kBrake)
         .openLoopRampRate(0.2);
 
-    steerMotorController.configure(sparkMaxConfig, SparkBase.ResetMode.kResetSafeParameters,
-        SparkBase.PersistMode.kPersistParameters);
+    steerMotorController.configure(sparkMaxConfig, ResetMode.kResetSafeParameters,
+        PersistMode.kPersistParameters);
 
 
     steerPIDController = new PIDController(moduleConstants.kPAzimuth, moduleConstants.kIAzimuth,
@@ -105,7 +107,7 @@ public class ModuleIOReal implements ModuleIO {
     steerPIDController.setTolerance(0.05);
 
     // CANCoder config
-    CANCoder = new CANcoder(moduleConstants.CANCoderID, "rio");
+    CANCoder = new CANcoder(moduleConstants.CANCoderID);
 
     CANcoderConfiguration configuration = new CANcoderConfiguration();
     configuration.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;

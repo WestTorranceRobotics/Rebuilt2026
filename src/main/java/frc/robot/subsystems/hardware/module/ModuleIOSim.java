@@ -6,7 +6,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.units.measure.Units;
 import edu.wpi.first.units.measure.*;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import frc.robot.Constants;
@@ -46,9 +45,9 @@ public class ModuleIOSim implements ModuleIO {
     this.swerveModulePosition = new SwerveModulePosition();
 
     this.driveMotor = swerveModuleSimulation.useGenericMotorControllerForDrive()
-        .withCurrentLimit(Units.Amps.of(80));
+        .withCurrentLimit(Amps.of(80));
     this.steerMotor =
-        swerveModuleSimulation.useGenericControllerForSteer().withCurrentLimit(Units.Amps.of(20));
+        swerveModuleSimulation.useGenericControllerForSteer().withCurrentLimit(Amps.of(20));
 
     this.driveFeedforward =
         new SimpleMotorFeedforward(moduleConstants.kSDrive, moduleConstants.kVDrive, 0);
