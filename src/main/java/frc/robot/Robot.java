@@ -61,7 +61,7 @@ public class Robot extends TimedRobot {
     m_robotContainer.unbindJoystick();
 
     if (autonomousCommand != null)
-      autonomousCommand.schedule();
+      CommandScheduler.getInstance().schedule(autonomousCommand);
   }
 
   /** This function is called periodically during autonomous. */
