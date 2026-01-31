@@ -1,0 +1,10 @@
+{
+    "postCreateCommand": "chmod 777 ./.devcontainer/downloadWPILib.sh && ./.devcontainer/downloadWPILib.sh",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "/opt/wpilib.vsix"
+            ]
+        }
+    }
+}
