@@ -41,14 +41,18 @@ public class DefaultJoystickCommand extends Command {
     return Math.abs(rawInput) < kDeadbandThreshold ? 0 : rawInput;
   }
 
+  private double curve(double input) {
+    return Math.signum(input) * Math.pow(Math.abs(input), 2);
+  }
+
   /**
    * Send controller data to the drive train.
    */
   @Override
   public void execute() {
     ChassisSpeeds chassisSpeeds =
-        new ChassisSpeeds(-applyDeadband(ly.getAsDouble())*2, -applyDeadband(lx.getAsDouble())*2,
-            -applyDeadband(rx.getAsDouble())*2);
+        new ChassisSpeeds(-curve(applyDeadband(ly.getAsDouble()))*2, -curve(applyDeadband(lx.getAsDouble()))*2,
+            -curve(applyDeadband(rx.getAsDouble()))*1);
 
     drive.drive(chassisSpeeds, true);
 
