@@ -192,10 +192,10 @@ public class RobotContainer {
    * Sets the controller as the default movement command for swerve.
    */
   public void bindJoystickCommand() {
-    // m_swerveDrive.setDefaultCommand(
-    //     new DefaultJoystickCommand(controller::getLeftX, controller::getLeftY,
-    //         controller::getRightX, m_swerveDrive));
-    m_swerveDrive.setDefaultCommand(new SysIDCommand(m_swerveDrive, SysIDCommand.Routine.DRIVE_VELOCITY_DYNAMIC, controller));
+    m_swerveDrive.setDefaultCommand(
+        new DefaultJoystickCommand(controller::getLeftX, controller::getLeftY,
+            controller::getRightX, m_swerveDrive));
+    // m_swerveDrive.setDefaultCommand(new SysIDCommand(m_swerveDrive, SysIDCommand.Routine.DRIVE_VELOCITY_DYNAMIC, controller));
   }
 
   public void zeroHeading() {
