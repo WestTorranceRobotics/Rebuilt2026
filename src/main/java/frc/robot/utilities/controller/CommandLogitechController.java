@@ -49,8 +49,7 @@ public class CommandLogitechController extends CommandGenericHID implements Cont
     }
 
     public double getR1Axis() {
-        // FIXME: this might not be the right button number i just want to fulfill the
-        // implementation
+        // FIXME: this might not be the right button number i just want to fulfill the implementation
         return controller.getRawAxis(4);
     }
 
