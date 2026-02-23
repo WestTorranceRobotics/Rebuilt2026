@@ -51,9 +51,9 @@ public class VisionIOSim implements VisionIO {
 
     try {
       visionSystemSim.addAprilTags(
-          AprilTagFieldLayout.loadFromResource(AprilTagFields.k2025ReefscapeWelded.m_resourceFile));
+          AprilTagFieldLayout.loadFromResource(AprilTagFields.k2026RebuiltWelded.m_resourceFile));
     } catch (IOException ioe) {
-      System.out.println("Failed to load april tags field");
+      System.out.println("Failed to load april tag field");
     }
   }
 
