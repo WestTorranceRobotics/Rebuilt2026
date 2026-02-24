@@ -1,8 +1,17 @@
-package frc.robot.Vision;
+package frc.robot.subsystems.Vision;
 
 import java.util.Optional;
 
+import org.photonvision.PhotonCamera;
+
+import frc.robot.Constants.RealVisionIOConstants;
+
 public class VisionIOReal implements VisionIO {
+  public final PhotonCamera Camera;
+
+  public VisionIOReal() {
+    Camera = new PhotonCamera(RealVisionIOConstants.CameraName);
+  }
 
   @Override
   public Optional<Double> getTX(int targetID) {

@@ -11,19 +11,22 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Vision.VisionIO;
-import frc.robot.Vision.VisionIOSim;
 import frc.robot.commands.SwerveDrive.DefaultJoystickCommand;
 import frc.robot.commands.SwerveDrive.SysIDCommand;
 import frc.robot.subsystems.SwerveDrive.SwerveDrive;
 import frc.robot.subsystems.SwerveDrive.SwerveDriveConfigurator;
+import frc.robot.subsystems.Vision.VisionIO;
+import frc.robot.subsystems.Vision.VisionIOReal;
+import frc.robot.subsystems.Vision.VisionIOSim;
 import frc.robot.subsystems.hardware.gyroscope.GyroIOPigeon2;
 import frc.robot.subsystems.hardware.gyroscope.GyroIOSim;
 import frc.robot.subsystems.hardware.module.ModuleIOReal;
 import frc.robot.subsystems.hardware.module.ModuleIOSim;
+import frc.robot.utilities.controller.CommandLogitechController;
 import frc.robot.utilities.controller.Controller;
 import frc.robot.utilities.controller.DualShock4Controller;
 
@@ -44,14 +47,15 @@ import static edu.wpi.first.units.Units.*;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
-    private final SwerveDrive m_swerveDrive;
-    private final Controller controller;
+    // private final SwerveDrive m_swerveDrive;
+    private final CommandLogitechController controller = new CommandLogitechController(0);
 
-    private final SwerveDriveConfigurator swerveDriveConfigurator;
+    // private final SwerveDriveConfigurator swerveDriveConfigurator;
 
-    public static SwerveDriveSimulation swerveDriveSimulation;
+    // public static SwerveDriveSimulation swerveDriveSimulation;
 
     public static VisionIO visionIO;
+    public VisionIOReal visionIOReal = new VisionIOReal();
 
     private static final double k_driveBaseLengthMeters = Inches.of(20).in(Meters);
 
@@ -67,114 +71,116 @@ public class RobotContainer {
     public RobotContainer() {
         if (Robot.isReal()) {
             // Real drive train
-            SwerveDriveConfigurator.SwerveDriveModuleConstants FLModuleConstants = new SwerveDriveConfigurator.SwerveDriveModuleConstants(
-                    SwerveDriveConfigurator.SwerveModuleCornerPosition.FRONT_LEFT,
-                    Constants.RealRobotConstants.kFLCANCoderID,
-                    Constants.RealRobotConstants.kFLDriveMotorID,
-                    Constants.RealRobotConstants.kFLAzimuthMotorID,
-                    Constants.RealRobotConstants.kFLCANCoderOffset, Constants.RealRobotConstants.kPDrive,
-                    Constants.RealRobotConstants.kIDrive, Constants.RealRobotConstants.kDDrive,
-                    Constants.RealRobotConstants.kSDrive, Constants.RealRobotConstants.kVDrive,
-                    Constants.RealRobotConstants.kPAzimuth, Constants.RealRobotConstants.kIAzimuth,
-                    Constants.RealRobotConstants.kDAzimuth, 0, 3, false, 1 / 6.2);
-            SwerveDriveConfigurator.SwerveDriveModuleConstants FRModuleConstants = new SwerveDriveConfigurator.SwerveDriveModuleConstants(
-                    FLModuleConstants,
-                    SwerveDriveConfigurator.SwerveModuleCornerPosition.FRONT_RIGHT,
-                    Constants.RealRobotConstants.kFRCANCoderID,
-                    Constants.RealRobotConstants.kFRDriveMotorID,
-                    Constants.RealRobotConstants.kFRAzimuthMotorID,
-                    Constants.RealRobotConstants.kFRCANCoderOffset);
-            SwerveDriveConfigurator.SwerveDriveModuleConstants BLModuleConstants = new SwerveDriveConfigurator.SwerveDriveModuleConstants(
-                    FLModuleConstants,
-                    SwerveDriveConfigurator.SwerveModuleCornerPosition.BACK_LEFT,
-                    Constants.RealRobotConstants.kBLCANCoderID,
-                    Constants.RealRobotConstants.kBLDriveMotorID,
-                    Constants.RealRobotConstants.kBLAzimuthMotorID,
-                    Constants.RealRobotConstants.kBLCANCoderOffset);
-            SwerveDriveConfigurator.SwerveDriveModuleConstants BRModuleConstants = new SwerveDriveConfigurator.SwerveDriveModuleConstants(
-                    FLModuleConstants,
-                    SwerveDriveConfigurator.SwerveModuleCornerPosition.BACK_RIGHT,
-                    Constants.RealRobotConstants.kBRCANCoderID,
-                    Constants.RealRobotConstants.kBRDriveMotorID,
-                    Constants.RealRobotConstants.kBRAzimuthMotorID,
-                    Constants.RealRobotConstants.kBRCANCoderOffset);
+        //     SwerveDriveConfigurator.SwerveDriveModuleConstants FLModuleConstants = new SwerveDriveConfigurator.SwerveDriveModuleConstants(
+        //             SwerveDriveConfigurator.SwerveModuleCornerPosition.FRONT_LEFT,
+        //             Constants.RealRobotConstants.kFLCANCoderID,
+        //             Constants.RealRobotConstants.kFLDriveMotorID,
+        //             Constants.RealRobotConstants.kFLAzimuthMotorID,
+        //             Constants.RealRobotConstants.kFLCANCoderOffset, Constants.RealRobotConstants.kPDrive,
+        //             Constants.RealRobotConstants.kIDrive, Constants.RealRobotConstants.kDDrive,
+        //             Constants.RealRobotConstants.kSDrive, Constants.RealRobotConstants.kVDrive,
+        //             Constants.RealRobotConstants.kPAzimuth, Constants.RealRobotConstants.kIAzimuth,
+        //             Constants.RealRobotConstants.kDAzimuth, 0, 3, false, 1 / 6.2);
+        //     SwerveDriveConfigurator.SwerveDriveModuleConstants FRModuleConstants = new SwerveDriveConfigurator.SwerveDriveModuleConstants(
+        //             FLModuleConstants,
+        //             SwerveDriveConfigurator.SwerveModuleCornerPosition.FRONT_RIGHT,
+        //             Constants.RealRobotConstants.kFRCANCoderID,
+        //             Constants.RealRobotConstants.kFRDriveMotorID,
+        //             Constants.RealRobotConstants.kFRAzimuthMotorID,
+        //             Constants.RealRobotConstants.kFRCANCoderOffset);
+        //     SwerveDriveConfigurator.SwerveDriveModuleConstants BLModuleConstants = new SwerveDriveConfigurator.SwerveDriveModuleConstants(
+        //             FLModuleConstants,
+        //             SwerveDriveConfigurator.SwerveModuleCornerPosition.BACK_LEFT,
+        //             Constants.RealRobotConstants.kBLCANCoderID,
+        //             Constants.RealRobotConstants.kBLDriveMotorID,
+        //             Constants.RealRobotConstants.kBLAzimuthMotorID,
+        //             Constants.RealRobotConstants.kBLCANCoderOffset);
+        //     SwerveDriveConfigurator.SwerveDriveModuleConstants BRModuleConstants = new SwerveDriveConfigurator.SwerveDriveModuleConstants(
+        //             FLModuleConstants,
+        //             SwerveDriveConfigurator.SwerveModuleCornerPosition.BACK_RIGHT,
+        //             Constants.RealRobotConstants.kBRCANCoderID,
+        //             Constants.RealRobotConstants.kBRDriveMotorID,
+        //             Constants.RealRobotConstants.kBRAzimuthMotorID,
+        //             Constants.RealRobotConstants.kBRCANCoderOffset);
 
-            SwerveDriveConfigurator.SwerveDriveRobotConstants robotConstants = new SwerveDriveConfigurator.SwerveDriveRobotConstants(
-                    Kilograms.of(35), Inches.of(25),
-                    Inches.of(20), Inches.of(2), Constants.RealRobotConstants.kPigeon2ID);
+        //     SwerveDriveConfigurator.SwerveDriveRobotConstants robotConstants = new SwerveDriveConfigurator.SwerveDriveRobotConstants(
+        //             Kilograms.of(35), Inches.of(25),
+        //             Inches.of(20), Inches.of(2), Constants.RealRobotConstants.kPigeon2ID);
 
-            swerveDriveConfigurator = new SwerveDriveConfigurator(robotConstants,
-                    new SwerveDriveConfigurator.SwerveDriveModuleConstants[] { FLModuleConstants,
-                            FRModuleConstants, BLModuleConstants, BRModuleConstants });
+        //     swerveDriveConfigurator = new SwerveDriveConfigurator(robotConstants,
+        //             new SwerveDriveConfigurator.SwerveDriveModuleConstants[] { FLModuleConstants,
+        //                     FRModuleConstants, BLModuleConstants, BRModuleConstants });
 
-            m_swerveDrive = new SwerveDrive(new GyroIOPigeon2(robotConstants.pigeonID),
-                    new ModuleIOReal(SwerveDriveConfigurator.SwerveModuleCornerPosition.FRONT_LEFT,
-                            swerveDriveConfigurator),
-                    new ModuleIOReal(SwerveDriveConfigurator.SwerveModuleCornerPosition.FRONT_RIGHT,
-                            swerveDriveConfigurator),
-                    new ModuleIOReal(SwerveDriveConfigurator.SwerveModuleCornerPosition.BACK_LEFT,
-                            swerveDriveConfigurator),
-                    new ModuleIOReal(SwerveDriveConfigurator.SwerveModuleCornerPosition.BACK_RIGHT,
-                            swerveDriveConfigurator));
+        //     m_swerveDrive = new SwerveDrive(new GyroIOPigeon2(robotConstants.pigeonID),
+        //             new ModuleIOReal(SwerveDriveConfigurator.SwerveModuleCornerPosition.FRONT_LEFT,
+        //                     swerveDriveConfigurator),
+        //             new ModuleIOReal(SwerveDriveConfigurator.SwerveModuleCornerPosition.FRONT_RIGHT,
+        //                     swerveDriveConfigurator),
+        //             new ModuleIOReal(SwerveDriveConfigurator.SwerveModuleCornerPosition.BACK_LEFT,
+        //                     swerveDriveConfigurator),
+        //             new ModuleIOReal(SwerveDriveConfigurator.SwerveModuleCornerPosition.BACK_RIGHT,
+        //                     swerveDriveConfigurator));
 
-            controller = new DualShock4Controller(Constants.OperatorConstants.kDriverControllerPort);
+        //     controller = new DualShock4Controller(Constants.OperatorConstants.kDriverControllerPort);
         } else {
             visionIO = new VisionIOSim();
 
             // Simulation drive train
 
             // TODO add constant for drive base length
-            swerveDriveSimulation = new SwerveDriveSimulation(
-                    DriveTrainSimulationConfig.Default().withGyro(COTS.ofPigeon2())
-                            .withRobotMass(Pounds.of(75)).withSwerveModule(
-                                    COTS.ofSwerveX2(DCMotor.getKrakenX60(1), DCMotor.getNEO(1),
-                                            COTS.WHEELS.SLS_PRINTED_WHEELS.cof, 2, 11))
-                            .withTrackLengthTrackWidth(Inches.of(20), Inches.of(20))
-                            .withBumperSize(Inches.of(31), Inches.of(31)),
-                    new Pose2d(2, 7, Rotation2d.kZero));
+            // swerveDriveSimulation = new SwerveDriveSimulation(
+            //                 DriveTrainSimulationConfig.Default().withGyro(COTS.ofPigeon2())
+            //                                 .withRobotMass(Pounds.of(75)).withSwerveModule(
+            //                                                 COTS.ofSwerveX2(DCMotor.getKrakenX60(1), DCMotor.getNEO(1),
+            //                                                                 COTS.WHEELS.SLS_PRINTED_WHEELS.cof, 2, 11))
+            //                                 .withTrackLengthTrackWidth(Inches.of(20), Inches.of(20))
+            //                                 .withBumperSize(Inches.of(31), Inches.of(31)),
+            //                 new Pose2d(2, 7, Rotation2d.kZero));
 
-            SwerveDriveConfigurator.SwerveDriveModuleConstants FLModuleConstants = new SwerveDriveConfigurator.SwerveDriveModuleConstants(
-                    SwerveDriveConfigurator.SwerveModuleCornerPosition.FRONT_LEFT, 0, 0, 0, 0,
-                    Constants.SimulatedControlSystemConstants.kPDrive,
-                    Constants.SimulatedControlSystemConstants.kIDrive,
-                    Constants.SimulatedControlSystemConstants.kDDrive, 0,
-                    Constants.SimulatedControlSystemConstants.kVDrive,
-                    Constants.SimulatedControlSystemConstants.kPSteer,
-                    Constants.SimulatedControlSystemConstants.kISteer,
-                    Constants.SimulatedControlSystemConstants.kDSteer, 0, 2, false, 1 / 6.2);
-            SwerveDriveConfigurator.SwerveDriveModuleConstants FRModuleConstants = new SwerveDriveConfigurator.SwerveDriveModuleConstants(
-                    FLModuleConstants,
-                    SwerveDriveConfigurator.SwerveModuleCornerPosition.FRONT_RIGHT, 0, 0, 0, 0);
-            SwerveDriveConfigurator.SwerveDriveModuleConstants BLModuleConstants = new SwerveDriveConfigurator.SwerveDriveModuleConstants(
-                    FLModuleConstants,
-                    SwerveDriveConfigurator.SwerveModuleCornerPosition.BACK_LEFT, 0, 0, 0, 0);
-            SwerveDriveConfigurator.SwerveDriveModuleConstants BRModuleConstants = new SwerveDriveConfigurator.SwerveDriveModuleConstants(
-                    FLModuleConstants,
-                    SwerveDriveConfigurator.SwerveModuleCornerPosition.BACK_RIGHT, 0, 0, 0, 0);
+            // SwerveDriveConfigurator.SwerveDriveModuleConstants FLModuleConstants = new SwerveDriveConfigurator.SwerveDriveModuleConstants(
+            //                 SwerveDriveConfigurator.SwerveModuleCornerPosition.FRONT_LEFT, 0, 0, 0, 0,
+            //                 Constants.SimulatedControlSystemConstants.kPDrive,
+            //                 Constants.SimulatedControlSystemConstants.kIDrive,
+            //                 Constants.SimulatedControlSystemConstants.kDDrive, 0,
+            //                 Constants.SimulatedControlSystemConstants.kVDrive,
+            //                 Constants.SimulatedControlSystemConstants.kPSteer,
+            //                 Constants.SimulatedControlSystemConstants.kISteer,
+            //                 Constants.SimulatedControlSystemConstants.kDSteer, 0, 2, false, 1 / 6.2);
+            // SwerveDriveConfigurator.SwerveDriveModuleConstants FRModuleConstants = new SwerveDriveConfigurator.SwerveDriveModuleConstants(
+            //                 FLModuleConstants,
+            //                 SwerveDriveConfigurator.SwerveModuleCornerPosition.FRONT_RIGHT, 0, 0, 0, 0);
+            // SwerveDriveConfigurator.SwerveDriveModuleConstants BLModuleConstants = new SwerveDriveConfigurator.SwerveDriveModuleConstants(
+            //                 FLModuleConstants,
+            //                 SwerveDriveConfigurator.SwerveModuleCornerPosition.BACK_LEFT, 0, 0, 0, 0);
+            // SwerveDriveConfigurator.SwerveDriveModuleConstants BRModuleConstants = new SwerveDriveConfigurator.SwerveDriveModuleConstants(
+            //                 FLModuleConstants,
+            //                 SwerveDriveConfigurator.SwerveModuleCornerPosition.BACK_RIGHT, 0, 0, 0, 0);
 
-            SwerveDriveConfigurator.SwerveDriveRobotConstants robotConstants = new SwerveDriveConfigurator.SwerveDriveRobotConstants(
-                    Pounds.of(75), Inches.of(25),
-                    Inches.of(20), Inches.of(2), 0);
+            // SwerveDriveConfigurator.SwerveDriveRobotConstants robotConstants = new SwerveDriveConfigurator.SwerveDriveRobotConstants(
+            //                 Pounds.of(75), Inches.of(25),
+            //                 Inches.of(20), Inches.of(2), 0);
 
-            swerveDriveConfigurator = new SwerveDriveConfigurator(robotConstants,
-                    new SwerveDriveConfigurator.SwerveDriveModuleConstants[] { FLModuleConstants,
-                            FRModuleConstants, BLModuleConstants, BRModuleConstants });
+            // swerveDriveConfigurator = new SwerveDriveConfigurator(robotConstants,
+            //                 new SwerveDriveConfigurator.SwerveDriveModuleConstants[] { FLModuleConstants,
+            //                                 FRModuleConstants, BLModuleConstants, BRModuleConstants });
 
-            // TODO change this to not assume square drivebase
-            m_swerveDrive = new SwerveDrive(new GyroIOSim(swerveDriveSimulation.getGyroSimulation()),
-                    new ModuleIOSim(swerveDriveSimulation.getModules()[0],
-                            SwerveDriveConfigurator.SwerveModuleCornerPosition.FRONT_LEFT,
-                            swerveDriveConfigurator),
-                    new ModuleIOSim(swerveDriveSimulation.getModules()[1],
-                            SwerveDriveConfigurator.SwerveModuleCornerPosition.FRONT_RIGHT, swerveDriveConfigurator),
-                    new ModuleIOSim(swerveDriveSimulation.getModules()[2],
-                            SwerveDriveConfigurator.SwerveModuleCornerPosition.BACK_LEFT,
-                            swerveDriveConfigurator),
-                    new ModuleIOSim(swerveDriveSimulation.getModules()[3],
-                            SwerveDriveConfigurator.SwerveModuleCornerPosition.BACK_RIGHT, swerveDriveConfigurator));
+            // // TODO change this to not assume square drivebase
+            // m_swerveDrive = new SwerveDrive(new GyroIOSim(swerveDriveSimulation.getGyroSimulation()),
+            //                 new ModuleIOSim(swerveDriveSimulation.getModules()[0],
+            //                                 SwerveDriveConfigurator.SwerveModuleCornerPosition.FRONT_LEFT,
+            //                                 swerveDriveConfigurator),
+            //                 new ModuleIOSim(swerveDriveSimulation.getModules()[1],
+            //                                 SwerveDriveConfigurator.SwerveModuleCornerPosition.FRONT_RIGHT,
+            //                                 swerveDriveConfigurator),
+            //                 new ModuleIOSim(swerveDriveSimulation.getModules()[2],
+            //                                 SwerveDriveConfigurator.SwerveModuleCornerPosition.BACK_LEFT,
+            //                                 swerveDriveConfigurator),
+            //                 new ModuleIOSim(swerveDriveSimulation.getModules()[3],
+            //                                 SwerveDriveConfigurator.SwerveModuleCornerPosition.BACK_RIGHT,
+            //                                 swerveDriveConfigurator));
 
-            SimulatedArena.getInstance().addDriveTrainSimulation(swerveDriveSimulation);
-            controller = new DualShock4Controller(Constants.OperatorConstants.kDriverControllerPort);
+            // SimulatedArena.getInstance().addDriveTrainSimulation(swerveDriveSimulation);
+            // controller = new DualShock4Controller(Constants.OperatorConstants.kDriverControllerPort);
         }
         configureBindings();
     }
@@ -195,29 +201,31 @@ public class RobotContainer {
      */
 
     private void configureBindings() {
-        controller.zero().onTrue(Commands.runOnce(this::zeroHeading));
+        controller.a().onTrue(Commands.runOnce(() -> {
+                SmartDashboard.putNumber("VisionDebug", visionIOReal.Camera.getFPSLimit());
+        }));
     }
 
     /**
      * Sets the controller as the default movement command for swerve.
      */
     public void bindJoystickCommand() {
-        m_swerveDrive.setDefaultCommand(
-                new DefaultJoystickCommand(controller::getLeftX, controller::getLeftY,
-                        controller::getRightX, m_swerveDrive));
+        //m_swerveDrive.setDefaultCommand(
+        //        new DefaultJoystickCommand(controller::getLeftX, controller::getLeftY,
+        //                controller::getRightX, m_swerveDrive));
         // m_swerveDrive.setDefaultCommand(new SysIDCommand(m_swerveDrive,
         // SysIDCommand.Routine.DRIVE_VELOCITY_DYNAMIC, controller));
     }
 
     public void zeroHeading() {
-        m_swerveDrive.zeroHeading();
+        //m_swerveDrive.zeroHeading();
     }
 
     /**
      * Removes the controller from being used for movement.
      */
     public void unbindJoystick() {
-        m_swerveDrive.removeDefaultCommand();
+        //m_swerveDrive.removeDefaultCommand();
     }
 
     /**
@@ -231,6 +239,6 @@ public class RobotContainer {
      * Stops the robot's movement.
      */
     public void clearModuleStates() {
-        m_swerveDrive.drive(new ChassisSpeeds(), true);
+        // m_swerveDrive.drive(new ChassisSpeeds(), true);
     }
 }

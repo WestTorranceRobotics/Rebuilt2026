@@ -9,6 +9,8 @@ import edu.wpi.first.units.measure.Mass;
 
 import static edu.wpi.first.units.Units.*;
 
+import org.photonvision.PhotonCamera;
+
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
  * constants. This class should not be used for any other purpose. All constants should be declared
@@ -34,7 +36,10 @@ public final class Constants {
     public static final Distance k_wheelRadius = Inches.of(2);
   }
 
-
+  public static class RealVisionIOConstants {
+    public static final String CameraName = "Camera1";
+  }
+  
   public static class RealRobotConstants {
     public static final int kPigeon2ID = 9;
 
@@ -73,7 +78,6 @@ public final class Constants {
     public static final double kIAzimuth = 0;
     public static final double kDAzimuth = 0;
   }
-
 
   public static class SimulatedControlSystemConstants {
     public static final double kSDrive = 0;

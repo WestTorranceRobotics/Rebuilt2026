@@ -177,9 +177,9 @@ public class ModuleIOSim implements ModuleIO {
     sendableBuilder.addDoubleProperty(getModuleName() + "-dReal_speed",
         () -> getDriveWheelVelocity().in(RotationsPerSecond) * simulatedCircumference.in(Meters),
         null);
-    sendableBuilder.addDoubleProperty(getModuleName() + "dacc",
-        () -> RobotContainer.swerveDriveSimulation.getForce()
-            .getMagnitude() / Constants.PhysicalRobotConstants.kMass.in(Kilogram), null);
+    // sendableBuilder.addDoubleProperty(getModuleName() + "dacc",
+    //     () -> RobotContainer.swerveDriveSimulation.getForce()
+    //         .getMagnitude() / Constants.PhysicalRobotConstants.kMass.in(Kilogram), null);
   }
 
   @Override

@@ -4,7 +4,7 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
-public class CommandLogitechController extends CommandGenericHID implements Controller {
+public class CommandLogitechController extends CommandGenericHID  {
     private GenericHID controller;
 
     public CommandLogitechController(int port) {
@@ -12,24 +12,24 @@ public class CommandLogitechController extends CommandGenericHID implements Cont
         controller = super.getHID();
     }
 
-    @Override
     public double getLeftX() {
         return controller.getRawAxis(0);
     }
 
-    @Override
     public double getLeftY() {
         return -controller.getRawAxis(1);
     }
 
-    @Override
     public double getRightX() {
         return controller.getRawAxis(4);
     }
 
-    @Override
     public double getRightY() {
         return -controller.getRawAxis(5);
+    }
+
+    public double getRightAnalogTrigger() {
+        return controller.getRawAxis(3);
     }
 
     public Trigger a() {
@@ -46,19 +46,5 @@ public class CommandLogitechController extends CommandGenericHID implements Cont
 
     public Trigger x() {
         return new Trigger(() -> controller.getRawButton(3));
-    }
-
-    public double getR1Axis() {
-        // FIXME: this might not be the right button number i just want to fulfill the implementation
-        return controller.getRawAxis(4);
-    }
-
-    public Trigger R1() {
-        return new Trigger(() -> this.getR1Axis() > 0.4);
-    }
-
-    @Override
-    public Trigger zero() {
-        return this.R1();
     }
 }

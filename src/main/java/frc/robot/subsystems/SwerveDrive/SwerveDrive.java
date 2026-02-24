@@ -135,9 +135,9 @@ public class SwerveDrive extends SubsystemBase {
             backLeft.getDesiredState(), backRight.getDesiredState()});
 
     // TODO move this into robot container
-    if (realPosePublisher != null && RobotContainer.swerveDriveSimulation != null) {
-      realPosePublisher.set(RobotContainer.swerveDriveSimulation.getSimulatedDriveTrainPose());
-    }
+    // if (realPosePublisher != null && RobotContainer.swerveDriveSimulation != null) {
+    //   realPosePublisher.set(RobotContainer.swerveDriveSimulation.getSimulatedDriveTrainPose());
+    // }
   }
 
   // TODO add skew compensation constant
@@ -215,7 +215,7 @@ public class SwerveDrive extends SubsystemBase {
 
   public void setPose(Pose2d pose) {
     if (Robot.isSimulation()) {
-      RobotContainer.swerveDriveSimulation.setSimulationWorldPose(pose);
+      // RobotContainer.swerveDriveSimulation.setSimulationWorldPose(pose);
     }
     swerveDrivePoseEstimator.resetPosition(gyro.getRotation(), getModulePositions(), pose);
   }

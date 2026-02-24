@@ -1,4 +1,4 @@
-package frc.robot.Vision;
+package frc.robot.subsystems.Vision;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
@@ -58,7 +58,7 @@ public class VisionIOSim implements VisionIO {
   }
 
   public void tick() {
-    visionSystemSim.update(RobotContainer.swerveDriveSimulation.getSimulatedDriveTrainPose());
+    // visionSystemSim.update(RobotContainer.swerveDriveSimulation.getSimulatedDriveTrainPose());
 
     var results = camera.getAllUnreadResults();
 
