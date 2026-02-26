@@ -55,7 +55,6 @@ public class RobotContainer {
     // public static SwerveDriveSimulation swerveDriveSimulation;
 
     public static VisionIO visionIO;
-    public VisionIOReal visionIOReal = new VisionIOReal();
 
     private static final double k_driveBaseLengthMeters = Inches.of(20).in(Meters);
 
@@ -201,9 +200,7 @@ public class RobotContainer {
      */
 
     private void configureBindings() {
-        controller.a().onTrue(Commands.runOnce(() -> {
-                SmartDashboard.putNumber("VisionDebug", visionIOReal.Camera.getFPSLimit());
-        }));
+        
     }
 
     /**
