@@ -24,4 +24,8 @@ public interface Controller {
   double getRightY();
 
   Trigger zero();
+
+  double getLeftTrigger();
+
+  Trigger a();
 }

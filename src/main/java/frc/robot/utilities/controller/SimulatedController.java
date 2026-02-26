@@ -40,4 +40,13 @@ public class SimulatedController implements Controller {
   public Trigger zero() {
     return null;
   }
+
+  @Override
+  public double getLeftTrigger() {
+    return leftJoystick.getRawAxis(2);
+  }
+
+  @Override
+  public Trigger a() {
+    return new Trigger(() -> leftJoystick.getRawButton(1));}
 }

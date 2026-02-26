@@ -61,4 +61,8 @@ public class CommandLogitechController extends CommandGenericHID implements Cont
     public Trigger zero() {
         return this.R1();
     }
+
+    @Override
+    public double getLeftTrigger() {
+        return controller.getRawAxis(2); }
 }

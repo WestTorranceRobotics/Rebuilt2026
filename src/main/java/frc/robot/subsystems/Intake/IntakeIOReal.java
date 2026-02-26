@@ -1,39 +1,42 @@
 package frc.robot.subsystems.Intake;
 
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class IntakeIOReal extends SubsystemBase implements IntakeIO {
+    public SparkMax IntakeMotor = new SparkMax(0, MotorType.kBrushless);
+
+    double speed = 0.4;
 
     @Override
     public boolean isIntakeOn() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'isIntakeOn'");
+        return speed > 0;
     }
 
     @Override
-    public AngularVelocity getIntakeSpeed() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getIntakeSpeed'");
+    public double getIntakeSpeed() {
+        return speed;
+    
     }
 
     @Override
     public void startIntake() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'startIntake'");
+       IntakeMotor.set(0.4);
+
     }
 
     @Override
     public void setIntakeVoltage(Voltage voltage) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setIntakeVoltage'");
+     IntakeMotor.setVoltage(voltage);   
     }
 
     @Override
     public void stopIntake() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'stopIntake'");
+      IntakeMotor.set(0);
     }
 
 }

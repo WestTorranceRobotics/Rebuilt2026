@@ -15,7 +15,9 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.SwerveDrive.DefaultJoystickCommand;
-import frc.robot.commands.SwerveDrive.SysIDCommand;
+import frc.robot.subsystems.Intake.IntakeIO;
+import frc.robot.subsystems.Intake.IntakeIOReal;
+import frc.robot.subsystems.Intake.IntakeIOSim;
 import frc.robot.subsystems.SwerveDrive.SwerveDrive;
 import frc.robot.subsystems.SwerveDrive.SwerveDriveConfigurator;
 import frc.robot.subsystems.hardware.gyroscope.GyroIOPigeon2;
@@ -41,6 +43,8 @@ import static edu.wpi.first.units.Units.*;
  */
 public class RobotContainer {
   private final SwerveDrive m_swerveDrive;
+
+  private final IntakeIO intakeSubsystem;
   private final Controller controller;
 
   private final SwerveDriveConfigurator swerveDriveConfigurator;
@@ -115,6 +119,8 @@ public class RobotContainer {
               swerveDriveConfigurator));
 
       controller = new DualShock4Controller(Constants.OperatorConstants.kDriverControllerPort);
+
+      intakeSubsystem = new IntakeIOReal();
     } else {
       visionIO = new VisionIOSim();
 
@@ -170,6 +176,8 @@ public class RobotContainer {
 
       SimulatedArena.getInstance().addDriveTrainSimulation(swerveDriveSimulation);
       controller = new DualShock4Controller(Constants.OperatorConstants.kDriverControllerPort);
+
+        intakeSubsystem = new IntakeIOSim();
     }
     configureBindings();
   }
@@ -186,6 +194,11 @@ public class RobotContainer {
 
   private void configureBindings() {
     controller.zero().onTrue(Commands.runOnce(this::zeroHeading));
+    controller.a().onTrue(intakeSubsystem.runOnce(
+        () -> {
+           intake.set(start) 
+        }
+    ));
   }
 
   /**

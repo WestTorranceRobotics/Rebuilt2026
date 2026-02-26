@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 public interface IntakeIO extends Subsystem {
     public boolean isIntakeOn();
 
-    public AngularVelocity getIntakeSpeed();
+    public double getIntakeSpeed();
 
     public void startIntake();
 
