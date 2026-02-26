@@ -17,7 +17,9 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Vision.VisionIO;
 import frc.robot.Vision.VisionIOSim;
 import frc.robot.commands.SwerveDrive.DefaultJoystickCommand;
-import frc.robot.commands.SwerveDrive.SysIDCommand;
+import frc.robot.subsystems.Shooter.ShooterIO;
+import frc.robot.subsystems.Shooter.ShooterIOReal;
+import frc.robot.subsystems.Shooter.ShooterIOSim;
 import frc.robot.subsystems.SwerveDrive.SwerveDrive;
 import frc.robot.subsystems.SwerveDrive.SwerveDriveConfigurator;
 import frc.robot.subsystems.hardware.gyroscope.GyroIOPigeon2;
@@ -33,6 +35,7 @@ import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
 
 import static edu.wpi.first.units.Units.*;
+import static frc.robot.utilities.CustomUnits.*;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -45,6 +48,7 @@ import static edu.wpi.first.units.Units.*;
  */
 public class RobotContainer {
     private final SwerveDrive m_swerveDrive;
+    private final ShooterIO shooterSubsystem;
     private final Controller controller;
 
     private final SwerveDriveConfigurator swerveDriveConfigurator;
@@ -118,7 +122,9 @@ public class RobotContainer {
                             swerveDriveConfigurator));
 
             controller = new DualShock4Controller(Constants.OperatorConstants.kDriverControllerPort);
-        } else {
+
+            shooterSubsystem = new ShooterIOReal();
+        } else {        
             visionIO = new VisionIOSim();
 
             // Simulation drive train
@@ -175,6 +181,8 @@ public class RobotContainer {
 
             SimulatedArena.getInstance().addDriveTrainSimulation(swerveDriveSimulation);
             controller = new DualShock4Controller(Constants.OperatorConstants.kDriverControllerPort);
+
+            shooterSubsystem = new ShooterIOSim();
         }
         configureBindings();
     }
@@ -195,7 +203,29 @@ public class RobotContainer {
      */
 
     private void configureBindings() {
+        // reset the heading of the swerve
         controller.zero().onTrue(Commands.runOnce(this::zeroHeading));
+
+        // shooter button mapping
+        shooterSubsystem.setFeederVoltageDirectly(Volts.of(.75));
+
+        controller.y().onTrue(shooterSubsystem.runOnce(() -> {
+                shooterSubsystem.setFlywheelSpeed(RotationsPerMinute.of(3500));
+              })).onFalse(shooterSubsystem.runOnce(() -> {
+                shooterSubsystem.stopFlywheel();
+              }));
+          
+        controller.b().onTrue(shooterSubsystem.runOnce(() -> {
+                shooterSubsystem.setFlywheelSpeed(RotationsPerMinute.of(3000));
+                })).onFalse(shooterSubsystem.runOnce(() -> {
+                shooterSubsystem.stopFlywheel();
+        }));
+        
+        controller.a().onTrue(shooterSubsystem.runOnce(() -> {
+                shooterSubsystem.setFlywheelSpeed(RotationsPerMinute.of(2000));
+                })).onFalse(shooterSubsystem.runOnce(() -> {
+                shooterSubsystem.stopFlywheel();
+        }));
     }
 
     /**
