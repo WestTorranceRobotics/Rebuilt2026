@@ -23,5 +23,28 @@ public interface Controller {
    */
   double getRightY();
 
+  /**
+   * @Trigger Triggers when the bottom button is pressed.
+   */
+  Trigger a();
+
+  /**
+   * @Trigger Triggers when the right button is pressed.
+   */
+  Trigger b();
+
+  /**
+   * @Trigger Triggers when the up button is pressed.
+   */
+  Trigger y();
+
+  /**
+   * @Trigger Triggers when the left button is pressed.
+   */
+  Trigger x();
+
+  /**
+   * @Trigger Triggers a zero of the swerve on the right analog trigger.
+   */
   Trigger zero();
 }

@@ -9,8 +9,6 @@ public interface IntakeIO extends Subsystem {
 
     public AngularVelocity getIntakeSpeed();
 
-    public void startIntake();
-
     public void setIntakeVoltage(Voltage voltage);
 
     public void stopIntake();
