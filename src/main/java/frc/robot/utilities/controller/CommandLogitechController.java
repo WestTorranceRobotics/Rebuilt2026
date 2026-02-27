@@ -31,6 +31,10 @@ public class CommandLogitechController extends CommandGenericHID implements Cont
     public double getRightY() {
         return -controller.getRawAxis(5);
     }
+    
+    public double getRightAnalogTrigger() {
+        return controller.getRawAxis(3);
+    }
 
     public Trigger a() {
         return new Trigger(() -> controller.getRawButton(1));
@@ -48,21 +52,12 @@ public class CommandLogitechController extends CommandGenericHID implements Cont
         return new Trigger(() -> controller.getRawButton(3));
     }
 
-    public double getR1Axis() {
-        // FIXME: this might not be the right button number i just want to fulfill the implementation
-        return controller.getRawAxis(4);
-    }
-
     public Trigger R1() {
-        return new Trigger(() -> this.getR1Axis() > 0.4);
+        return new Trigger(() -> controller.getRawButton(6));
     }
 
     @Override
     public Trigger zero() {
         return this.R1();
     }
-
-    @Override
-    public double getLeftTrigger() {
-        return controller.getRawAxis(2); }
 }

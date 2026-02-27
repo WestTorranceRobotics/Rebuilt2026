@@ -30,17 +30,28 @@ public class DualShock4Controller implements Controller {
     return ps4Controller.getRightY();
   }
 
-  @Override
-  public Trigger zero() {
-    return ps4Controller.R1();
+  public double getRightAnalogTrigger() {
+    return ps4Controller.getR2Axis();
+  }
+  
+  public Trigger a() {
+    return ps4Controller.cross();
+  }
+
+  public Trigger b() {
+    return ps4Controller.circle();
+  }
+
+  public Trigger y() {
+    return ps4Controller.triangle();
+  }
+
+  public Trigger x() {
+    return ps4Controller.square();
   }
 
   @Override
-  public double getLeftTrigger() {
-    return ps4Controller.getL2Axis();}
-
-  @Override
-  public Trigger a() {
-    return ps4Controller.circle();
+  public Trigger zero() {
+    return ps4Controller.R1();
   }
 }
