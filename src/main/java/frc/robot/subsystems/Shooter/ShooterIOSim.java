@@ -94,7 +94,6 @@ public class ShooterIOSim extends SubsystemBase implements ShooterIO {
         launcherMotorLeader.setVoltage(voltage);
         launcherMotorFollower.setVoltage(voltage);
         secondLauncherMotorFollower.setVoltage(voltage);
-        targetRPM = voltage;
     }
 
     public void setFlywheelVoltageDirectly(Voltage voltage) {
@@ -120,13 +119,10 @@ public class ShooterIOSim extends SubsystemBase implements ShooterIO {
 
     @Override
     public void periodic() {
-        // Set input voltage
         flywheelSim.setInput(launcherMotorLeaderSim.getAppliedOutput() * RoboRioSim.getVInVoltage());
-
-        // Update flywheel
         flywheelSim.update(0.02);
 
-        // Update motor
+        // Update motors
         launcherMotorLeaderSim.iterate(
                 flywheelSim.getAngularVelocityRPM(),
                 RoboRioSim.getVInVoltage(), 0.02);
@@ -140,10 +136,10 @@ public class ShooterIOSim extends SubsystemBase implements ShooterIO {
                 RoboRioSim.getVInVoltage(), 0.02);
 
        this.actualRPM = flywheelSim.getAngularVelocityRPM();
-       SmartDashboard.putNumber("Target RPM", targetRPM);
+       SmartDashboard.putNumber("Shooter Target RPM", targetRPM);
        SmartDashboard.putNumber("Shooter RPM", actualRPM);
 
-        // TODO: might have to move to RobotContainer to sim with every motor?
+        // TODO does this carry between sims? seems like it does
         RoboRioSim.setVInVoltage(
                 BatterySim.calculateDefaultBatteryLoadedVoltage(flywheelSim.getCurrentDrawAmps()));
     }

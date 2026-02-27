@@ -96,7 +96,7 @@ public class ShooterIOReal extends SubsystemBase implements ShooterIO {
     @Override
     public void periodic() {
         this.actualRPM = launcherMotorLeader.getEncoder().getVelocity();
-        SmartDashboard.putNumber("Target RPM", targetRPM);
+        SmartDashboard.putNumber("Shooter Target RPM", targetRPM);
         SmartDashboard.putNumber("Shooter RPM", actualRPM);
     }
 }

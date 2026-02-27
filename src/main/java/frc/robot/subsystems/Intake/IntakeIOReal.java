@@ -1,42 +1,51 @@
 package frc.robot.subsystems.Intake;
 
+import com.revrobotics.PersistMode;
+import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
+import frc.robot.utilities.CustomUnits;
 
 public class IntakeIOReal extends SubsystemBase implements IntakeIO {
-    public SparkMax IntakeMotor = new SparkMax(0, MotorType.kBrushless);
+    private final SparkMax intakeMotor = new SparkMax(Constants.RealRobotConstants.intakeMotorID, MotorType.kBrushless);
 
-    double speed = 0.4;
+    private double actualRPM = 0;
 
-    @Override
-    public boolean isIntakeOn() {
-        return speed > 0;
+    public IntakeIOReal() {
+        SparkMaxConfig intakeConfig = new SparkMaxConfig();
+        intakeConfig.smartCurrentLimit(Constants.RealRobotConstants.intakeMotorCurrentLimit);
+        intakeConfig.idleMode(IdleMode.kCoast);
+        intakeMotor.configure(intakeConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }
 
-    @Override
-    public double getIntakeSpeed() {
-        return speed;
+    public boolean isIntakeOn() {
+        return actualRPM > 1;
+    }
+
+    public AngularVelocity getIntakeSpeed() {
+        return CustomUnits.RotationsPerMinute.of(actualRPM);
     
     }
 
-    @Override
-    public void startIntake() {
-       IntakeMotor.set(0.4);
-
-    }
-
-    @Override
     public void setIntakeVoltage(Voltage voltage) {
-     IntakeMotor.setVoltage(voltage);   
+        intakeMotor.setVoltage(voltage);   
+    }
+
+    public void stopIntake() {
+        intakeMotor.set(0);
     }
 
     @Override
-    public void stopIntake() {
-      IntakeMotor.set(0);
+    public void periodic() {
+        this.actualRPM = intakeMotor.getEncoder().getVelocity();
+        SmartDashboard.putNumber("Intake RPM", actualRPM);
     }
-
 }

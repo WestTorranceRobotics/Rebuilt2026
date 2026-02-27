@@ -209,7 +209,7 @@ public class RobotContainer {
             shooterSubsystem.setFlywheelSpeed(RotationsPerMinute.of(3500));
             })).onFalse(shooterSubsystem.runOnce(() -> {
             shooterSubsystem.stopFlywheel();
-            }));
+    }));
         
     controller.b().onTrue(shooterSubsystem.runOnce(() -> {
             shooterSubsystem.setFlywheelSpeed(RotationsPerMinute.of(3000));
@@ -221,6 +221,15 @@ public class RobotContainer {
             shooterSubsystem.setFlywheelSpeed(RotationsPerMinute.of(2000));
             })).onFalse(shooterSubsystem.runOnce(() -> {
             shooterSubsystem.stopFlywheel();
+    }));
+
+    // intake button mapping
+    controller.x().onTrue(intakeSubsystem.runOnce(() -> {
+            if (intakeSubsystem.isIntakeOn()) {
+                intakeSubsystem.stopIntake();
+            } else {
+                intakeSubsystem.setIntakeVoltage(Volts.of(.75));
+            }
     }));
   }
 
