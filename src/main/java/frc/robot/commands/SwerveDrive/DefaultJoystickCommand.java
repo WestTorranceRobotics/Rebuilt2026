@@ -6,7 +6,7 @@ import frc.robot.subsystems.SwerveDrive.SwerveDrive;
 
 import java.util.function.DoubleSupplier;
 
-import static frc.robot.Constants.OperatorConstants.kDeadbandThreshold;
+import static frc.robot.constants.GlobalConstants.OperatorConstants.kDeadbandThreshold;
 
 public class DefaultJoystickCommand extends Command {
   private final DoubleSupplier ly;

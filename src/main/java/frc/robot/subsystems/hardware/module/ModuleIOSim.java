@@ -8,7 +8,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.units.measure.*;
 import edu.wpi.first.util.sendable.SendableBuilder;
-import frc.robot.Constants;
+import frc.robot.constants.GlobalConstants;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.SwerveDrive.SwerveDriveConfigurator;
 import org.ironmaple.simulation.drivesims.SwerveModuleSimulation;
@@ -179,7 +179,7 @@ public class ModuleIOSim implements ModuleIO {
         null);
     sendableBuilder.addDoubleProperty(getModuleName() + "dacc",
         () -> RobotContainer.swerveDriveSimulation.getForce()
-            .getMagnitude() / Constants.PhysicalRobotConstants.kMass.in(Kilogram), null);
+            .getMagnitude() / GlobalConstants.PhysicalRobotConstants.kMass.in(Kilogram), null);
   }
 
   @Override
