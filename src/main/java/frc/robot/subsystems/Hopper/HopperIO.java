@@ -9,8 +9,6 @@ public interface HopperIO extends Subsystem {
 
     public AngularVelocity getRollerSpeed();
 
-    public void startRollers();
-
     public void setRollerVoltage(Voltage voltage);
 
     public void stopRollers();

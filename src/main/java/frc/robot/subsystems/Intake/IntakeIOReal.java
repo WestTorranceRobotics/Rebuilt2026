@@ -18,6 +18,7 @@ public class IntakeIOReal extends SubsystemBase implements IntakeIO {
     private final SparkMax intakeMotor = new SparkMax(Constants.RealRobotConstants.intakeMotorID, MotorType.kBrushless);
 
     private double actualRPM = 0;
+    private boolean isIntakeOn = false;
 
     public IntakeIOReal() {
         SparkMaxConfig intakeConfig = new SparkMaxConfig();
@@ -27,7 +28,7 @@ public class IntakeIOReal extends SubsystemBase implements IntakeIO {
     }
 
     public boolean isIntakeOn() {
-        return actualRPM > 1;
+        return isIntakeOn;
     }
 
     public AngularVelocity getIntakeSpeed() {
@@ -37,10 +38,12 @@ public class IntakeIOReal extends SubsystemBase implements IntakeIO {
 
     public void setIntakeVoltage(Voltage voltage) {
         intakeMotor.setVoltage(voltage);   
+        isIntakeOn = true;
     }
 
     public void stopIntake() {
         intakeMotor.set(0);
+        isIntakeOn = false;
     }
 
     @Override

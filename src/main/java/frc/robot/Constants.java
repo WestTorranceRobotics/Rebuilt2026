@@ -80,11 +80,15 @@ public final class Constants {
     public static final int thirdIntakeMotorID = 4;
 
     public static final int intakeMotorID = 5;
+
+    public static final int hopperMotorIDLeader = 6;
+    public static final int hopperMotorFollowerID = 7;
     // FIXME put in proper IDs for the motors
 
     // current limit values for shooter motors
     public static final int feederMotorCurrentLimit = 60;
     public static final int launcherMotorCurrentLimit = 60;
+    public static final int hopperMotorCurrentLimit = 60;
 
     public static final int intakeMotorCurrentLimit = 60; // FIXME these current limits are all way too high
   }

@@ -29,6 +29,7 @@ public class IntakeIOSim extends SubsystemBase implements IntakeIO {
             LinearSystemId.createFlywheelSystem(DCMotor.getNEO(1), 0.00062156662, 1), DCMotor.getNEO(1)); // TODO update physical constants
 
     private double actualRPM = 0;
+    private boolean isIntakeOn = false;
 
     public IntakeIOSim() {
         SparkMaxConfig intakeConfig = new SparkMaxConfig();
@@ -40,7 +41,7 @@ public class IntakeIOSim extends SubsystemBase implements IntakeIO {
     }
 
     public boolean isIntakeOn() {
-        return actualRPM > 1;
+        return isIntakeOn;
     }
 
     public AngularVelocity getIntakeSpeed() {
@@ -48,11 +49,13 @@ public class IntakeIOSim extends SubsystemBase implements IntakeIO {
     }
 
     public void setIntakeVoltage(Voltage voltage) {
-        intakeMotor.setVoltage(voltage);   
+        intakeMotor.setVoltage(voltage);
+        isIntakeOn = true;
     }
 
     public void stopIntake() {
         intakeMotor.set(0);
+        isIntakeOn = false;
     }
 
     @Override
