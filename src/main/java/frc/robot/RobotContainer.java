@@ -17,8 +17,12 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Vision.VisionIO;
 import frc.robot.Vision.VisionIOSim;
 import frc.robot.commands.SwerveDrive.DefaultJoystickCommand;
+import frc.robot.subsystems.Shooter.ShooterIO;
+import frc.robot.subsystems.Shooter.ShooterIOReal;
+import frc.robot.subsystems.Shooter.ShooterIOSim;
 import frc.robot.constants.GlobalConstants;
 import frc.robot.constants.SwerveDriveConstants;
+import frc.robot.constants.SwerveDriveConstants.RealRobotConstants;
 import frc.robot.subsystems.SwerveDrive.SwerveDrive;
 import frc.robot.subsystems.SwerveDrive.SwerveDriveConfigurator;
 import frc.robot.subsystems.hardware.gyroscope.GyroIOPigeon2;
@@ -34,7 +38,9 @@ import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
 
 import static edu.wpi.first.units.Units.*;
+import static frc.robot.constants.GlobalConstants.OperatorConstants.kDriverControllerPort;
 import static frc.robot.constants.SwerveDriveConstants.*;
+import static frc.robot.utilities.CustomUnits.*;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -47,6 +53,7 @@ import static frc.robot.constants.SwerveDriveConstants.*;
  */
 public class RobotContainer {
         private final SwerveDrive m_swerveDrive;
+        private final ShooterIO shooterSubsystem;
         private final Controller controller;
 
         private final SwerveDriveConfigurator swerveDriveConfigurator;
@@ -119,6 +126,8 @@ public class RobotContainer {
                                         new ModuleIOReal(SwerveDriveConfigurator.SwerveModuleCornerPosition.BACK_RIGHT,
                                                         swerveDriveConfigurator));
 
+                        controller = new DualShock4Controller(kDriverControllerPort);
+                        shooterSubsystem = new ShooterIOReal();
                 } else {
                         visionIO = new VisionIOSim();
 
@@ -180,9 +189,9 @@ public class RobotContainer {
                                                         swerveDriveConfigurator));
 
                         SimulatedArena.getInstance().addDriveTrainSimulation(swerveDriveSimulation);
+                        controller = new DualShock4Controller(kDriverControllerPort);
+                        shooterSubsystem = new ShooterIOSim();
                 }
-
-                controller = new DualShock4Controller(GlobalConstants.OperatorConstants.kDriverControllerPort);
                 configureBindings();
         }
 
@@ -202,7 +211,29 @@ public class RobotContainer {
          */
 
         private void configureBindings() {
+                // reset the heading of the swerve
                 controller.zero().onTrue(Commands.runOnce(this::zeroHeading));
+
+                // shooter button mapping
+                shooterSubsystem.setFeederVoltageDirectly(Volts.of(.75));
+
+                controller.y().onTrue(shooterSubsystem.runOnce(() -> {
+                        shooterSubsystem.setFlywheelSpeed(RotationsPerMinute.of(3500));
+                })).onFalse(shooterSubsystem.runOnce(() -> {
+                        shooterSubsystem.stopFlywheel();
+                }));
+
+                controller.b().onTrue(shooterSubsystem.runOnce(() -> {
+                        shooterSubsystem.setFlywheelSpeed(RotationsPerMinute.of(3000));
+                })).onFalse(shooterSubsystem.runOnce(() -> {
+                        shooterSubsystem.stopFlywheel();
+                }));
+
+                controller.a().onTrue(shooterSubsystem.runOnce(() -> {
+                        shooterSubsystem.setFlywheelSpeed(RotationsPerMinute.of(2000));
+                })).onFalse(shooterSubsystem.runOnce(() -> {
+                        shooterSubsystem.stopFlywheel();
+                }));
         }
 
         /**
