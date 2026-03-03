@@ -9,4 +9,5 @@ public final class ShooterConstants {
     // current limit values for shooter motors
     public static final int feederMotorCurrentLimit = 60;
     public static final int launcherMotorCurrentLimit = 60;
+    // FIXME these current limits are all way too high
 }

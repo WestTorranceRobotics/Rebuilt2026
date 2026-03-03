@@ -22,16 +22,12 @@ import static edu.wpi.first.units.Units.*;
 public class ShooterIOReal extends SubsystemBase implements ShooterIO {
     private final SparkMax feederMotor = new SparkMax(feederMotorID, MotorType.kBrushless);
 
-    private final SparkMax launcherMotorLeader = new SparkMax(firstIntakeMotorID,
-            MotorType.kBrushless);
-    private final SparkMax launcherMotorFollower = new SparkMax(secondIntakeMotorID,
-            MotorType.kBrushless);
-    private final SparkMax secondLauncherMotorFollower = new SparkMax(thirdIntakeMotorID,
-            MotorType.kBrushless);
+    private final SparkMax launcherMotorLeader = new SparkMax(firstIntakeMotorID, MotorType.kBrushless);
+    private final SparkMax launcherMotorFollower = new SparkMax(secondIntakeMotorID, MotorType.kBrushless);
+    private final SparkMax secondLauncherMotorFollower = new SparkMax(thirdIntakeMotorID, MotorType.kBrushless);
 
     private final BangBangController bangbang = new BangBangController();
-    private final SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(0, 0.00255); // TODO: test for further
-                                                                                               // tuning
+    private final SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(0, 0.00255); // TODO: test for further tuning
 
     private double targetRPM = 0;
     private double actualRPM = 0;
@@ -48,33 +44,29 @@ public class ShooterIOReal extends SubsystemBase implements ShooterIO {
         launcherLeaderConfig.idleMode(IdleMode.kCoast);
         launcherLeaderConfig.smartCurrentLimit(launcherMotorCurrentLimit);
         launcherLeaderConfig.inverted(false);
-        launcherMotorLeader.configure(launcherLeaderConfig, ResetMode.kResetSafeParameters,
-                PersistMode.kPersistParameters);
+        launcherMotorLeader.configure(launcherLeaderConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
         SparkMaxConfig launcherFollowerConfig = new SparkMaxConfig();
         launcherFollowerConfig.idleMode(IdleMode.kCoast);
         launcherFollowerConfig.smartCurrentLimit(launcherMotorCurrentLimit);
         launcherFollowerConfig.inverted(true);
-        launcherMotorFollower.configure(launcherFollowerConfig, ResetMode.kResetSafeParameters,
-                PersistMode.kPersistParameters);
+        launcherMotorFollower.configure(launcherFollowerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
         SparkMaxConfig secondLauncherFollowerConfig = new SparkMaxConfig();
         secondLauncherFollowerConfig.idleMode(IdleMode.kCoast);
         secondLauncherFollowerConfig.smartCurrentLimit(launcherMotorCurrentLimit);
         secondLauncherFollowerConfig.inverted(true); // FIXME find correct inversion
-        secondLauncherMotorFollower.configure(secondLauncherFollowerConfig, ResetMode.kResetSafeParameters,
-                PersistMode.kPersistParameters);
-        // if inversion types are same between the follower configs, it may be cleaner
-        // to reuse the config for both of them
-    }
+        secondLauncherMotorFollower.configure(secondLauncherFollowerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        // if inversion types are same between the follower configs, it may be cleaner to reuse the config for both of them
+    }    
 
     public void setFlywheelSpeed(AngularVelocity velocity) {
         this.targetRPM = velocity.in(CustomUnits.RotationsPerMinute);
         bangbang.setSetpoint(targetRPM);
         double voltage = bangbang.calculate(
-                launcherMotorLeader.getEncoder().getVelocity()) * RoboRioDataJNI.getVInVoltage()
-                + 0.9 * feedforward.calculate(targetRPM);
-
+            launcherMotorLeader.getEncoder().getVelocity()) * RoboRioDataJNI.getVInVoltage()
+            + 0.9 * feedforward.calculate(targetRPM);
+        
         launcherMotorLeader.setVoltage(voltage);
         launcherMotorFollower.setVoltage(voltage);
         secondLauncherMotorFollower.setVoltage(voltage);
@@ -104,7 +96,7 @@ public class ShooterIOReal extends SubsystemBase implements ShooterIO {
     @Override
     public void periodic() {
         this.actualRPM = launcherMotorLeader.getEncoder().getVelocity();
-        SmartDashboard.putNumber("Target RPM", targetRPM);
+        SmartDashboard.putNumber("Shooter Target RPM", targetRPM);
         SmartDashboard.putNumber("Shooter RPM", actualRPM);
     }
 }

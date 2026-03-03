@@ -14,9 +14,13 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Vision.VisionIO;
-import frc.robot.Vision.VisionIOSim;
 import frc.robot.commands.SwerveDrive.DefaultJoystickCommand;
+import frc.robot.subsystems.Hopper.HopperIO;
+import frc.robot.subsystems.Hopper.HopperIOReal;
+import frc.robot.subsystems.Hopper.HopperIOSim;
+import frc.robot.subsystems.Intake.IntakeIO;
+import frc.robot.subsystems.Intake.IntakeIOReal;
+import frc.robot.subsystems.Intake.IntakeIOSim;
 import frc.robot.subsystems.Shooter.ShooterIO;
 import frc.robot.subsystems.Shooter.ShooterIOReal;
 import frc.robot.subsystems.Shooter.ShooterIOSim;
@@ -29,6 +33,9 @@ import frc.robot.subsystems.hardware.gyroscope.GyroIOPigeon2;
 import frc.robot.subsystems.hardware.gyroscope.GyroIOSim;
 import frc.robot.subsystems.hardware.module.ModuleIOReal;
 import frc.robot.subsystems.hardware.module.ModuleIOSim;
+import frc.robot.subsystems.hardware.vision.VisionIO;
+import frc.robot.subsystems.hardware.vision.VisionIOReal;
+import frc.robot.subsystems.hardware.vision.VisionIOSim;
 import frc.robot.utilities.controller.Controller;
 import frc.robot.utilities.controller.DualShock4Controller;
 
@@ -54,6 +61,9 @@ import static frc.robot.utilities.CustomUnits.*;
 public class RobotContainer {
         private final SwerveDrive m_swerveDrive;
         private final ShooterIO shooterSubsystem;
+        private final IntakeIO intakeSubsystem;
+        private final HopperIO hopperSubsystem;
+
         private final Controller controller;
 
         private final SwerveDriveConfigurator swerveDriveConfigurator;
@@ -128,9 +138,10 @@ public class RobotContainer {
 
                         controller = new DualShock4Controller(kDriverControllerPort);
                         shooterSubsystem = new ShooterIOReal();
+                        intakeSubsystem = new IntakeIOReal();
+                        hopperSubsystem = new HopperIOReal();
+                        visionIO = new VisionIOReal();
                 } else {
-                        visionIO = new VisionIOSim();
-
                         // Simulation drive train
 
                         // TODO add constant for drive base length
@@ -191,6 +202,9 @@ public class RobotContainer {
                         SimulatedArena.getInstance().addDriveTrainSimulation(swerveDriveSimulation);
                         controller = new DualShock4Controller(kDriverControllerPort);
                         shooterSubsystem = new ShooterIOSim();
+                        intakeSubsystem = new IntakeIOSim();
+                        hopperSubsystem = new HopperIOSim();
+                        visionIO = new VisionIOSim();
                 }
                 configureBindings();
         }
@@ -234,6 +248,15 @@ public class RobotContainer {
                 })).onFalse(shooterSubsystem.runOnce(() -> {
                         shooterSubsystem.stopFlywheel();
                 }));
+                
+                // intake button mapping
+                // controller.x().onTrue(intakeSubsystem.runOnce(() -> {
+                //         if (intakeSubsystem.isIntakeOn()) {
+                //             intakeSubsystem.stopIntake();
+                //         } else {
+                //             intakeSubsystem.setIntakeVoltage(Volts.of(.75));
+                //         }
+                // }));
         }
 
         /**

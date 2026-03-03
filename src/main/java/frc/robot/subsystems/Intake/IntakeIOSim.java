@@ -1,39 +1,78 @@
 package frc.robot.subsystems.Intake;
 
+import com.revrobotics.PersistMode;
+import com.revrobotics.ResetMode;
+import com.revrobotics.sim.SparkMaxSim;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.SparkMaxConfig;
+
+import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.simulation.BatterySim;
+import edu.wpi.first.wpilibj.simulation.FlywheelSim;
+import edu.wpi.first.wpilibj.simulation.RoboRioSim;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import static frc.robot.constants.IntakeConstants.*;
+import frc.robot.utilities.CustomUnits;
 
 public class IntakeIOSim extends SubsystemBase implements IntakeIO {
+    private final SparkMax intakeMotor = new SparkMax(intakeMotorID, MotorType.kBrushless);
+    private final SparkMaxSim intakeMotorSim;
 
-    @Override
+    // flywheel sim is being used because it's the closest to what we have
+    private FlywheelSim flywheelSim = new FlywheelSim(
+            LinearSystemId.createFlywheelSystem(DCMotor.getNEO(1), 0.00062156662, 1), DCMotor.getNEO(1)); // TODO update physical constants
+
+    private double actualRPM = 0;
+    private boolean isIntakeOn = false;
+
+    public IntakeIOSim() {
+        SparkMaxConfig intakeConfig = new SparkMaxConfig();
+        intakeConfig.smartCurrentLimit(intakeMotorCurrentLimit);
+        intakeConfig.idleMode(IdleMode.kCoast);
+        intakeMotor.configure(intakeConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+
+        intakeMotorSim = new SparkMaxSim(intakeMotor, DCMotor.getNEO(1));
+    }
+
     public boolean isIntakeOn() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'isIntakeOn'");
+        return isIntakeOn;
     }
 
-    @Override
     public AngularVelocity getIntakeSpeed() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getIntakeSpeed'");
+        return CustomUnits.RotationsPerMinute.of(actualRPM);
     }
 
-    @Override
-    public void startIntake() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'startIntake'");
-    }
-
-    @Override
     public void setIntakeVoltage(Voltage voltage) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setIntakeVoltage'");
+        intakeMotor.setVoltage(voltage);
+        isIntakeOn = true;
+    }
+
+    public void stopIntake() {
+        intakeMotor.set(0);
+        isIntakeOn = false;
     }
 
     @Override
-    public void stopIntake() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'stopIntake'");
+    public void periodic() {
+        flywheelSim.setInput(intakeMotorSim.getAppliedOutput() * RoboRioSim.getVInVoltage());
+        flywheelSim.update(0.02);
+
+        // Update motor
+        intakeMotorSim.iterate(
+                flywheelSim.getAngularVelocityRPM(),
+                RoboRioSim.getVInVoltage(), 0.02);
+
+       this.actualRPM = flywheelSim.getAngularVelocityRPM();
+       SmartDashboard.putNumber("Intake RPM", actualRPM);
+
+        // TODO does this carry between sims? seems like it does
+        RoboRioSim.setVInVoltage(
+                BatterySim.calculateDefaultBatteryLoadedVoltage(flywheelSim.getCurrentDrawAmps()));
     }
-    
 }
