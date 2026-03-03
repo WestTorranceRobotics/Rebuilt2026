@@ -1,12 +1,14 @@
 package frc.robot.subsystems.Shooter;
 
-import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.config.SparkMaxConfig;
-import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import static edu.wpi.first.units.Units.*;
+import static frc.robot.constants.ShooterConstants.*;
+
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
-
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.hal.simulation.RoboRioDataJNI;
 import edu.wpi.first.math.controller.BangBangController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -14,10 +16,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
-import static frc.robot.constants.ShooterConstants.*;
 import frc.robot.utilities.CustomUnits;
-import static edu.wpi.first.units.Units.*;
 
 public class ShooterIOReal extends SubsystemBase implements ShooterIO {
     private final SparkMax feederMotor = new SparkMax(feederMotorID, MotorType.kBrushless);
@@ -27,7 +26,8 @@ public class ShooterIOReal extends SubsystemBase implements ShooterIO {
     private final SparkMax secondLauncherMotorFollower = new SparkMax(thirdIntakeMotorID, MotorType.kBrushless);
 
     private final BangBangController bangbang = new BangBangController();
-    private final SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(0, 0.00255); // TODO: test for further tuning
+    private final SimpleMotorFeedforward feedforward =
+            new SimpleMotorFeedforward(0, 0.00255); // TODO: test for further tuning
 
     private double targetRPM = 0;
     private double actualRPM = 0;
@@ -44,29 +44,33 @@ public class ShooterIOReal extends SubsystemBase implements ShooterIO {
         launcherLeaderConfig.idleMode(IdleMode.kCoast);
         launcherLeaderConfig.smartCurrentLimit(launcherMotorCurrentLimit);
         launcherLeaderConfig.inverted(false);
-        launcherMotorLeader.configure(launcherLeaderConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        launcherMotorLeader.configure(
+                launcherLeaderConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
         SparkMaxConfig launcherFollowerConfig = new SparkMaxConfig();
         launcherFollowerConfig.idleMode(IdleMode.kCoast);
         launcherFollowerConfig.smartCurrentLimit(launcherMotorCurrentLimit);
         launcherFollowerConfig.inverted(true);
-        launcherMotorFollower.configure(launcherFollowerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        launcherMotorFollower.configure(
+                launcherFollowerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
         SparkMaxConfig secondLauncherFollowerConfig = new SparkMaxConfig();
         secondLauncherFollowerConfig.idleMode(IdleMode.kCoast);
         secondLauncherFollowerConfig.smartCurrentLimit(launcherMotorCurrentLimit);
         secondLauncherFollowerConfig.inverted(true); // FIXME find correct inversion
-        secondLauncherMotorFollower.configure(secondLauncherFollowerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-        // if inversion types are same between the follower configs, it may be cleaner to reuse the config for both of them
-    }    
+        secondLauncherMotorFollower.configure(
+                secondLauncherFollowerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        // if inversion types are same between the follower configs, it may be cleaner to reuse the config for both of
+        // them
+    }
 
     public void setFlywheelSpeed(AngularVelocity velocity) {
         this.targetRPM = velocity.in(CustomUnits.RotationsPerMinute);
         bangbang.setSetpoint(targetRPM);
-        double voltage = bangbang.calculate(
-            launcherMotorLeader.getEncoder().getVelocity()) * RoboRioDataJNI.getVInVoltage()
-            + 0.9 * feedforward.calculate(targetRPM);
-        
+        double voltage =
+                bangbang.calculate(launcherMotorLeader.getEncoder().getVelocity()) * RoboRioDataJNI.getVInVoltage()
+                        + 0.9 * feedforward.calculate(targetRPM);
+
         launcherMotorLeader.setVoltage(voltage);
         launcherMotorFollower.setVoltage(voltage);
         secondLauncherMotorFollower.setVoltage(voltage);

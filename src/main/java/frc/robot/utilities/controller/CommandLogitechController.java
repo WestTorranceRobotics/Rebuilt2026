@@ -31,7 +31,7 @@ public class CommandLogitechController extends CommandGenericHID implements Cont
     public double getRightY() {
         return -controller.getRawAxis(5);
     }
-    
+
     public double getRightAnalogTrigger() {
         return controller.getRawAxis(3);
     }

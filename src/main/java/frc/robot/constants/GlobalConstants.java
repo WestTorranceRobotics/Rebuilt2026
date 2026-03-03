@@ -4,10 +4,10 @@
 
 package frc.robot.constants;
 
+import static edu.wpi.first.units.Units.*;
+
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Mass;
-
-import static edu.wpi.first.units.Units.*;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
@@ -37,5 +37,4 @@ public final class GlobalConstants {
 
         public static final Distance k_wheelRadius = Inches.of(2);
     }
-
 }

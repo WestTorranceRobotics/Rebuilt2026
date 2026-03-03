@@ -36,5 +36,4 @@ public class ClimberIOSim extends SubsystemBase implements ClimberIO {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'stopClimber'");
     }
-    
 }

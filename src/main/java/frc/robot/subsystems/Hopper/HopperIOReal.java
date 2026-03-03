@@ -1,17 +1,17 @@
 package frc.robot.subsystems.Hopper;
 
+import static frc.robot.constants.HopperConstants.*;
+
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
-
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import static frc.robot.constants.HopperConstants.*;
 import frc.robot.utilities.CustomUnits;
 
 public class HopperIOReal extends SubsystemBase implements HopperIO {
@@ -31,7 +31,8 @@ public class HopperIOReal extends SubsystemBase implements HopperIO {
         hopperFollowerConfig.smartCurrentLimit(hopperMotorCurrentLimit);
         hopperFollowerConfig.idleMode(IdleMode.kCoast);
         hopperFollowerConfig.follow(hopperMotorLeader); // TODO check if following works
-        hopperMotorFollower.configure(hopperFollowerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        hopperMotorFollower.configure(
+                hopperFollowerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }
 
     public boolean areHopperRollersOn() {

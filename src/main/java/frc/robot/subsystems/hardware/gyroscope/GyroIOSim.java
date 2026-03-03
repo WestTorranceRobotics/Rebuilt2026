@@ -5,19 +5,19 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import org.ironmaple.simulation.drivesims.GyroSimulation;
 
 public class GyroIOSim implements GyroIO {
-  private final GyroSimulation gyroSimulation;
+    private final GyroSimulation gyroSimulation;
 
-  public GyroIOSim(GyroSimulation gyroSimulation) {
-    this.gyroSimulation = gyroSimulation;
-  }
+    public GyroIOSim(GyroSimulation gyroSimulation) {
+        this.gyroSimulation = gyroSimulation;
+    }
 
-  @Override
-  public Rotation2d getRotation() {
-    return gyroSimulation.getGyroReading();
-  }
+    @Override
+    public Rotation2d getRotation() {
+        return gyroSimulation.getGyroReading();
+    }
 
-  @Override
-  public AngularVelocity getAngularVelocity() {
-    return gyroSimulation.getMeasuredAngularVelocity();
-  }
+    @Override
+    public AngularVelocity getAngularVelocity() {
+        return gyroSimulation.getMeasuredAngularVelocity();
+    }
 }
