@@ -69,6 +69,7 @@ public class RobotContainer {
      */
     public RobotContainer() {
         if (Robot.isReal()) {
+            visionIO = new VisionIOReal();
             // Real drive train
         //     SwerveDriveConfigurator.SwerveDriveModuleConstants FLModuleConstants = new SwerveDriveConfigurator.SwerveDriveModuleConstants(
         //             SwerveDriveConfigurator.SwerveModuleCornerPosition.FRONT_LEFT,

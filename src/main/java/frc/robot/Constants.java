@@ -36,7 +36,7 @@ public final class Constants {
     public static final Distance k_wheelRadius = Inches.of(2);
   }
 
-  public static class RealVisionIOConstants {
+  public static class VisionIOConstants {
     public static final String CameraName = "Camera1";
   }
   
