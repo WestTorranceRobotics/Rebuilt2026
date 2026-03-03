@@ -28,6 +28,7 @@ import frc.robot.subsystems.hardware.module.ModuleIO;
 import java.io.IOException;
 import java.util.Optional;
 import org.json.simple.parser.ParseException;
+import static frc.robot.constants.SwerveDriveConstants.*;
 
 public class SwerveDrive extends SubsystemBase {
     private final GyroIO gyro;
@@ -80,13 +81,12 @@ public class SwerveDrive extends SubsystemBase {
             throw new RuntimeException("Failed to get PathPlanner config from GUI");
         }
 
-        // TODO move pid constants to constants file (pls help i dont wanna do this)
         AutoBuilder.configure(
                 this::getPose,
                 this::setPose,
                 this::getChassisSpeed,
                 (ChassisSpeeds speeds) -> this.drive(speeds, false),
-                new PPHolonomicDriveController(new PIDConstants(8, 3, 0), new PIDConstants(4, 8, 0.3)),
+                new PPHolonomicDriveController(new PIDConstants(RealRobotConstants.kPTranslation, RealRobotConstants.kITranslation, RealRobotConstants.kDTranslation), new PIDConstants(RealRobotConstants.kPRotation, RealRobotConstants.kIRotation, RealRobotConstants.kDRotation)),
                 ppConfig,
                 () -> {
                     Optional<DriverStation.Alliance> allianceOptional = DriverStation.getAlliance();

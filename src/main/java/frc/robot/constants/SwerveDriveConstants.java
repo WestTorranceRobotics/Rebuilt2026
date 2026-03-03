@@ -37,6 +37,14 @@ public final class SwerveDriveConstants {
         public static final double kPAzimuth = 2;
         public static final double kIAzimuth = 0;
         public static final double kDAzimuth = 0;
+
+        public static final double kPTranslation = 8;
+        public static final double kITranslation = 3;
+        public static final double kDTranslation = 0;
+
+        public static final double kPRotation = 4;
+        public static final double kIRotation = 8;
+        public static final double kDRotation = 0.3;
     }
 
     public static class SimulatedControlSystemConstants {
