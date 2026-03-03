@@ -6,8 +6,6 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 import static frc.robot.constants.GlobalConstants.OperatorConstants.kDriverControllerPort;
-import static frc.robot.constants.SwerveDriveConstants.*;
-import static frc.robot.utilities.CustomUnits.*;
 
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -22,15 +20,6 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.SwerveDrive.DefaultJoystickCommand;
 import frc.robot.constants.SwerveDriveConstants;
 import frc.robot.constants.SwerveDriveConstants.RealRobotConstants;
-import frc.robot.subsystems.Hopper.HopperIO;
-import frc.robot.subsystems.Hopper.HopperIOReal;
-import frc.robot.subsystems.Hopper.HopperIOSim;
-import frc.robot.subsystems.Intake.IntakeIO;
-import frc.robot.subsystems.Intake.IntakeIOReal;
-import frc.robot.subsystems.Intake.IntakeIOSim;
-import frc.robot.subsystems.Shooter.ShooterIO;
-import frc.robot.subsystems.Shooter.ShooterIOReal;
-import frc.robot.subsystems.Shooter.ShooterIOSim;
 import frc.robot.subsystems.SwerveDrive.SwerveDrive;
 import frc.robot.subsystems.SwerveDrive.SwerveDriveConfigurator;
 import frc.robot.subsystems.hardware.gyroscope.GyroIOPigeon2;
@@ -38,8 +27,6 @@ import frc.robot.subsystems.hardware.gyroscope.GyroIOSim;
 import frc.robot.subsystems.hardware.module.ModuleIOReal;
 import frc.robot.subsystems.hardware.module.ModuleIOSim;
 import frc.robot.subsystems.hardware.vision.VisionIO;
-import frc.robot.subsystems.hardware.vision.VisionIOReal;
-import frc.robot.subsystems.hardware.vision.VisionIOSim;
 import frc.robot.utilities.controller.Controller;
 import frc.robot.utilities.controller.DualShock4Controller;
 import org.ironmaple.simulation.SimulatedArena;
@@ -58,9 +45,9 @@ import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
  */
 public class RobotContainer {
     private final SwerveDrive m_swerveDrive;
-    private final ShooterIO shooterSubsystem;
-    private final IntakeIO intakeSubsystem;
-    private final HopperIO hopperSubsystem;
+    // private final ShooterIO shooterSubsystem;
+    // private final IntakeIO intakeSubsystem;
+    // private final HopperIO hopperSubsystem;
 
     private final Controller controller;
 
@@ -153,10 +140,10 @@ public class RobotContainer {
                             SwerveDriveConfigurator.SwerveModuleCornerPosition.BACK_RIGHT, swerveDriveConfigurator));
 
             controller = new DualShock4Controller(kDriverControllerPort);
-            shooterSubsystem = new ShooterIOReal();
-            intakeSubsystem = new IntakeIOReal();
-            hopperSubsystem = new HopperIOReal();
-            visionIO = new VisionIOReal();
+            // shooterSubsystem = new ShooterIOReal();
+            // intakeSubsystem = new IntakeIOReal();
+            // hopperSubsystem = new HopperIOReal();
+            // visionIO = new VisionIOReal();
         } else {
             // Simulation drive train
 
@@ -250,10 +237,10 @@ public class RobotContainer {
 
             SimulatedArena.getInstance().addDriveTrainSimulation(swerveDriveSimulation);
             controller = new DualShock4Controller(kDriverControllerPort);
-            shooterSubsystem = new ShooterIOSim();
-            intakeSubsystem = new IntakeIOSim();
-            hopperSubsystem = new HopperIOSim();
-            visionIO = new VisionIOSim();
+            // shooterSubsystem = new ShooterIOSim();
+            // intakeSubsystem = new IntakeIOSim();
+            // hopperSubsystem = new HopperIOSim();
+            // visionIO = new VisionIOSim();
         }
         configureBindings();
     }
@@ -277,34 +264,34 @@ public class RobotContainer {
         controller.zero().onTrue(Commands.runOnce(this::zeroHeading));
 
         // shooter button mapping
-        shooterSubsystem.setFeederVoltageDirectly(Volts.of(.75));
-
-        controller
-                .y()
-                .onTrue(shooterSubsystem.runOnce(() -> {
-                    shooterSubsystem.setFlywheelSpeed(RotationsPerMinute.of(3500));
-                }))
-                .onFalse(shooterSubsystem.runOnce(() -> {
-                    shooterSubsystem.stopFlywheel();
-                }));
-
-        controller
-                .b()
-                .onTrue(shooterSubsystem.runOnce(() -> {
-                    shooterSubsystem.setFlywheelSpeed(RotationsPerMinute.of(3000));
-                }))
-                .onFalse(shooterSubsystem.runOnce(() -> {
-                    shooterSubsystem.stopFlywheel();
-                }));
-
-        controller
-                .a()
-                .onTrue(shooterSubsystem.runOnce(() -> {
-                    shooterSubsystem.setFlywheelSpeed(RotationsPerMinute.of(2000));
-                }))
-                .onFalse(shooterSubsystem.runOnce(() -> {
-                    shooterSubsystem.stopFlywheel();
-                }));
+        // shooterSubsystem.setFeederVoltageDirectly(Volts.of(.75));
+        //
+        // controller
+        //         .y()
+        //         .onTrue(shooterSubsystem.runOnce(() -> {
+        //             shooterSubsystem.setFlywheelSpeed(RotationsPerMinute.of(3500));
+        //         }))
+        //         .onFalse(shooterSubsystem.runOnce(() -> {
+        //             shooterSubsystem.stopFlywheel();
+        //         }));
+        //
+        // controller
+        //         .b()
+        //         .onTrue(shooterSubsystem.runOnce(() -> {
+        //             shooterSubsystem.setFlywheelSpeed(RotationsPerMinute.of(3000));
+        //         }))
+        //         .onFalse(shooterSubsystem.runOnce(() -> {
+        //             shooterSubsystem.stopFlywheel();
+        //         }));
+        //
+        // controller
+        //         .a()
+        //         .onTrue(shooterSubsystem.runOnce(() -> {
+        //             shooterSubsystem.setFlywheelSpeed(RotationsPerMinute.of(2000));
+        //         }))
+        //         .onFalse(shooterSubsystem.runOnce(() -> {
+        //             shooterSubsystem.stopFlywheel();
+        //         }));
 
         // intake button mapping
         // controller.x().onTrue(intakeSubsystem.runOnce(() -> {
