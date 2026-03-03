@@ -57,13 +57,11 @@ public class RobotContainer {
 
     public static VisionIO visionIO;
 
-    private static final double k_driveBaseLengthMeters = Inches.of(20).in(Meters);
-
     public static final SwerveDriveKinematics swerveDriveKinematics = new SwerveDriveKinematics(
-            new Translation2d(-k_driveBaseLengthMeters / 2, -k_driveBaseLengthMeters / 2),
-            new Translation2d(-k_driveBaseLengthMeters / 2, k_driveBaseLengthMeters / 2),
-            new Translation2d(k_driveBaseLengthMeters / 2, -k_driveBaseLengthMeters / 2),
-            new Translation2d(k_driveBaseLengthMeters / 2, k_driveBaseLengthMeters / 2));
+            new Translation2d(-25 / 2, -19.5 / 2),
+            new Translation2d(-25 / 2, 19.5 / 2),
+            new Translation2d(25 / 2, -19.5 / 2),
+            new Translation2d(25 / 2, 19.5 / 2));
 
     /**
      * Registers all important robot code, e.g. swerve, path planner, controls
