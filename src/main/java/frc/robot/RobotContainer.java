@@ -6,7 +6,7 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 import static frc.robot.constants.GlobalConstants.OperatorConstants.kDriverControllerPort;
-import static frc.robot.constants.SwerveDriveConstants.*;
+import static frc.robot.constants.ShooterConstants.*;
 import static frc.robot.utilities.CustomUnits.*;
 
 import com.pathplanner.lib.commands.PathPlannerAuto;
@@ -163,7 +163,6 @@ public class RobotContainer {
             // TODO add constant for drive base length
             swerveDriveSimulation = new SwerveDriveSimulation(
                     DriveTrainSimulationConfig.Default()
-                            .withGyro(COTS.ofPigeon2())
                             .withRobotMass(Pounds.of(75))
                             .withSwerveModule(COTS.ofSwerveX2(
                                     DCMotor.getKrakenX60(1),
@@ -280,31 +279,37 @@ public class RobotContainer {
         shooterSubsystem.setFeederVoltageDirectly(Volts.of(.75));
 
         controller
-                .y()
-                .onTrue(shooterSubsystem.runOnce(() -> {
-                    shooterSubsystem.setFlywheelSpeed(RotationsPerMinute.of(3500));
-                }))
-                .onFalse(shooterSubsystem.runOnce(() -> {
-                    shooterSubsystem.stopFlywheel();
-                }));
-
-        controller
-                .b()
-                .onTrue(shooterSubsystem.runOnce(() -> {
-                    shooterSubsystem.setFlywheelSpeed(RotationsPerMinute.of(3000));
-                }))
-                .onFalse(shooterSubsystem.runOnce(() -> {
-                    shooterSubsystem.stopFlywheel();
-                }));
-
-        controller
                 .a()
                 .onTrue(shooterSubsystem.runOnce(() -> {
-                    shooterSubsystem.setFlywheelSpeed(RotationsPerMinute.of(2000));
+                    Translation2d originalDistanceFromTarget =
+                            new Translation2d(0, 0); // TODO find distance to hub through vision
+                    ChassisSpeeds robotRelativeVelocity = ChassisSpeeds.fromFieldRelativeSpeeds(
+                            m_swerveDrive.getChassisSpeed(), m_swerveDrive.getHeading());
+                    Translation2d robotVelocity = new Translation2d(
+                            robotRelativeVelocity.vxMetersPerSecond, robotRelativeVelocity.vyMetersPerSecond);
+
+                    Translation2d futurePosition =
+                            m_swerveDrive.getPose().getTranslation().plus(robotVelocity.times(latencyCompensation));
+                    Translation2d distanceFromTarget = originalDistanceFromTarget.minus(futurePosition);
+                    double baseHorizontalVelocity =
+                            distanceFromTarget.getNorm() / distanceToTOFMap.get(distanceFromTarget.getNorm());
+
+                    double targetHorizontalVelocity = distanceFromTarget
+                            .div(distanceFromTarget.getNorm())
+                            .times(baseHorizontalVelocity)
+                            .minus(robotVelocity)
+                            .getNorm();
+                    /* we realistically want to prioritize changing our hood angle rather than the flywheel speed
+                    because our flywheel recovery speed is slow */
+                    shooterSubsystem.setFlywheelSpeed(RotationsPerMinute.of(shooterMap.get(targetHorizontalVelocity)));
                 }))
                 .onFalse(shooterSubsystem.runOnce(() -> {
                     shooterSubsystem.stopFlywheel();
                 }));
+
+        controller.b().onTrue(shooterSubsystem.runOnce(() -> {
+            m_swerveDrive.turnToYaw(visionIO.getTX(1).orElse(null)); // align robot to apriltag
+        }));
 
         // intake button mapping
         // controller.x().onTrue(intakeSubsystem.runOnce(() -> {

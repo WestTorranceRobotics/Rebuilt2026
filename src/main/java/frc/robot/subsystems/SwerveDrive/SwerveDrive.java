@@ -23,12 +23,12 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.MathUtils;
 import frc.robot.Robot;
 import frc.robot.RobotContainer;
+import frc.robot.constants.SwerveDriveConstants.RealRobotConstants;
 import frc.robot.subsystems.hardware.gyroscope.GyroIO;
 import frc.robot.subsystems.hardware.module.ModuleIO;
 import java.io.IOException;
 import java.util.Optional;
 import org.json.simple.parser.ParseException;
-import static frc.robot.constants.SwerveDriveConstants.*;
 
 public class SwerveDrive extends SubsystemBase {
     private final GyroIO gyro;
@@ -86,7 +86,15 @@ public class SwerveDrive extends SubsystemBase {
                 this::setPose,
                 this::getChassisSpeed,
                 (ChassisSpeeds speeds) -> this.drive(speeds, false),
-                new PPHolonomicDriveController(new PIDConstants(RealRobotConstants.kPTranslation, RealRobotConstants.kITranslation, RealRobotConstants.kDTranslation), new PIDConstants(RealRobotConstants.kPRotation, RealRobotConstants.kIRotation, RealRobotConstants.kDRotation)),
+                new PPHolonomicDriveController(
+                        new PIDConstants(
+                                RealRobotConstants.kPTranslation,
+                                RealRobotConstants.kITranslation,
+                                RealRobotConstants.kDTranslation),
+                        new PIDConstants(
+                                RealRobotConstants.kPRotation,
+                                RealRobotConstants.kIRotation,
+                                RealRobotConstants.kDRotation)),
                 ppConfig,
                 () -> {
                     Optional<DriverStation.Alliance> allianceOptional = DriverStation.getAlliance();
@@ -114,6 +122,13 @@ public class SwerveDrive extends SubsystemBase {
         calculateState(chassisSpeeds, heading, frontLeft, absolute);
         calculateState(chassisSpeeds, heading, backRight, absolute);
         calculateState(chassisSpeeds, heading, backLeft, absolute);
+    }
+
+    public void turnToYaw(double yaw) {
+        final double rotation =
+                -yaw * RealRobotConstants.kConstantOfProportionality * RealRobotConstants.kMaxAngularSpeed;
+
+        drive(new ChassisSpeeds(0, 0, rotation), false);
     }
 
     @Override

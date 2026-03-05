@@ -45,6 +45,9 @@ public final class SwerveDriveConstants {
         public static final double kPRotation = 4;
         public static final double kIRotation = 8;
         public static final double kDRotation = 0.3;
+
+        public static final double kMaxAngularSpeed = 3.0 * Math.PI;
+        public static final double kConstantOfProportionality = 0.35; // TODO tune this value
     }
 
     public static class SimulatedControlSystemConstants {
