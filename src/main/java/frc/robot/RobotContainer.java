@@ -16,6 +16,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -46,6 +47,7 @@ import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.COTS;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
+import org.photonvision.PhotonUtils;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -281,8 +283,16 @@ public class RobotContainer {
         controller
                 .a()
                 .onTrue(shooterSubsystem.runOnce(() -> {
-                    Translation2d originalDistanceFromTarget =
-                            new Translation2d(0, 0); // TODO find distance to hub through vision
+                    int hubAprilTagID = DriverStation.getAlliance().get().equals(DriverStation.Alliance.Blue) ? 25 : 10;
+                    double originalDistanceFromTarget = PhotonUtils.getDistanceToPose(
+                            m_swerveDrive.getPose(),
+                            visionIO.getTargetPose(hubAprilTagID).orElse(null));
+
+                    Translation2d originalTranslationFromTarget = PhotonUtils.estimateCameraToTargetTranslation(
+                            originalDistanceFromTarget,
+                            Rotation2d.fromDegrees(
+                                    -visionIO.getTX(hubAprilTagID).orElse(null)));
+
                     ChassisSpeeds robotRelativeVelocity = ChassisSpeeds.fromFieldRelativeSpeeds(
                             m_swerveDrive.getChassisSpeed(), m_swerveDrive.getHeading());
                     Translation2d robotVelocity = new Translation2d(
@@ -290,7 +300,8 @@ public class RobotContainer {
 
                     Translation2d futurePosition =
                             m_swerveDrive.getPose().getTranslation().plus(robotVelocity.times(latencyCompensation));
-                    Translation2d distanceFromTarget = originalDistanceFromTarget.minus(futurePosition);
+                    Translation2d distanceFromTarget = originalTranslationFromTarget.minus(futurePosition);
+
                     double baseHorizontalVelocity =
                             distanceFromTarget.getNorm() / distanceToTOFMap.get(distanceFromTarget.getNorm());
 
@@ -308,7 +319,8 @@ public class RobotContainer {
                 }));
 
         controller.b().onTrue(shooterSubsystem.runOnce(() -> {
-            m_swerveDrive.turnToYaw(visionIO.getTX(1).orElse(null)); // align robot to apriltag
+            m_swerveDrive.turnToYaw(
+                    visionIO.getTX(visionIO.getBestTarget().getFiducialId()).orElse(null)); // align robot to apriltag
         }));
 
         // intake button mapping

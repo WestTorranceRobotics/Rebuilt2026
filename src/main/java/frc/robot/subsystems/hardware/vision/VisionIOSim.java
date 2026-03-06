@@ -4,11 +4,13 @@ import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import frc.robot.RobotContainer;
+import frc.robot.constants.VisionConstants;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -22,7 +24,10 @@ public class VisionIOSim implements VisionIO {
     VisionSystemSim visionSystemSim = new VisionSystemSim("main");
     PhotonCamera camera;
     PhotonCameraSim cameraSim;
+
+    AprilTagFieldLayout aprilTagFieldLayout;
     List<PhotonTrackedTarget> trackedTargets;
+    PhotonTrackedTarget bestTarget;
 
     public VisionIOSim() {
         SimCameraProperties cameraProps = new SimCameraProperties();
@@ -35,7 +40,7 @@ public class VisionIOSim implements VisionIO {
         cameraProps.setAvgLatencyMs(16);
         cameraProps.setLatencyStdDevMs(5);
 
-        camera = new PhotonCamera("limelight");
+        camera = new PhotonCamera(VisionConstants.cameraName);
         cameraSim = new PhotonCameraSim(camera, cameraProps);
 
         Rotation3d cameraRotation =
@@ -48,6 +53,8 @@ public class VisionIOSim implements VisionIO {
         cameraSim.enableRawStream(true);
 
         cameraSim.enableDrawWireframe(true);
+
+        aprilTagFieldLayout = AprilTagFields.k2026RebuiltAndymark.loadAprilTagLayoutField();
 
         try {
             visionSystemSim.addAprilTags(
@@ -80,6 +87,17 @@ public class VisionIOSim implements VisionIO {
             }
         }
         return null;
+    }
+
+    public Optional<Pose2d> getTargetPose(int targetID) {
+        Pose2d pose = aprilTagFieldLayout.getTagPose(targetID).get().toPose2d();
+
+        if (pose != null) return Optional.of(pose);
+        return Optional.empty();
+    }
+
+    public PhotonTrackedTarget getBestTarget() {
+        return bestTarget;
     }
 
     @Override
