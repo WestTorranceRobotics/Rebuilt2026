@@ -72,13 +72,11 @@ public class RobotContainer {
 
     public static VisionIO visionIO;
 
-    private static final double k_driveBaseLengthMeters = Inches.of(20).in(Meters);
-
     public static final SwerveDriveKinematics swerveDriveKinematics = new SwerveDriveKinematics(
-            new Translation2d(-k_driveBaseLengthMeters / 2, -k_driveBaseLengthMeters / 2),
-            new Translation2d(-k_driveBaseLengthMeters / 2, k_driveBaseLengthMeters / 2),
-            new Translation2d(k_driveBaseLengthMeters / 2, -k_driveBaseLengthMeters / 2),
-            new Translation2d(k_driveBaseLengthMeters / 2, k_driveBaseLengthMeters / 2));
+            new Translation2d(-25 / 2, -19.5 / 2),
+            new Translation2d(-25 / 2, 19.5 / 2),
+            new Translation2d(25 / 2, -19.5 / 2),
+            new Translation2d(25 / 2, 19.5 / 2));
 
     /**
      * Registers all important robot code, e.g. swerve, path planner, controls
@@ -133,8 +131,9 @@ public class RobotContainer {
             SwerveDriveConfigurator.SwerveDriveRobotConstants robotConstants =
                     new SwerveDriveConfigurator.SwerveDriveRobotConstants(
                             Kilograms.of(35),
-                            Inches.of(25),
-                            Inches.of(20),
+                            Inches.of(30),
+                            Inches.of(24.5),
+                            Inches.of(2.5),
                             Inches.of(2),
                             RealRobotConstants.kPigeon2ID);
 
@@ -172,7 +171,7 @@ public class RobotContainer {
                                     COTS.WHEELS.SLS_PRINTED_WHEELS.cof,
                                     2,
                                     11))
-                            .withTrackLengthTrackWidth(Inches.of(20), Inches.of(20))
+                            .withTrackLengthTrackWidth(Inches.of(30 - 5), Inches.of(24.5 - 5))
                             .withBumperSize(Inches.of(31), Inches.of(31)),
                     new Pose2d(2, 7, Rotation2d.kZero));
 
@@ -222,7 +221,7 @@ public class RobotContainer {
 
             SwerveDriveConfigurator.SwerveDriveRobotConstants robotConstants =
                     new SwerveDriveConfigurator.SwerveDriveRobotConstants(
-                            Pounds.of(75), Inches.of(25), Inches.of(20), Inches.of(2), 0);
+                            Pounds.of(75), Inches.of(30), Inches.of(24.5), Inches.of(2.5), Inches.of(2), 0);
 
             swerveDriveConfigurator = new SwerveDriveConfigurator(
                     robotConstants, new SwerveDriveConfigurator.SwerveDriveModuleConstants[] {
