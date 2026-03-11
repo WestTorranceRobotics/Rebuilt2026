@@ -129,6 +129,7 @@ public class SwerveDrive extends SubsystemBase {
                 -yaw * RealRobotConstants.kConstantOfProportionality * RealRobotConstants.kMaxAngularSpeed;
 
         drive(new ChassisSpeeds(0, 0, rotation), false);
+        tickPid();
     }
 
     @Override

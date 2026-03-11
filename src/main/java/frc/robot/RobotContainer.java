@@ -317,7 +317,7 @@ public class RobotContainer {
                     shooterSubsystem.stopFlywheel();
                 }));
 
-        controller.b().onTrue(shooterSubsystem.runOnce(() -> {
+        controller.b().whileTrue(shooterSubsystem.run(() -> {
             m_swerveDrive.turnToYaw(
                     visionIO.getTX(visionIO.getBestTarget().getFiducialId()).orElse(null)); // align robot to apriltag
         }));

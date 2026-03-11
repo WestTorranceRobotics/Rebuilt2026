@@ -12,4 +12,6 @@ public interface VisionIO {
     PhotonTrackedTarget getBestTarget();
 
     Optional<Pose2d> getTargetPose(int targetID);
+
+    void tick();
 }

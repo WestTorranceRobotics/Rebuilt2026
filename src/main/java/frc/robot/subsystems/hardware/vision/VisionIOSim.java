@@ -9,12 +9,14 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.RobotContainer;
 import frc.robot.constants.VisionConstants;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import org.photonvision.PhotonCamera;
+import org.photonvision.PhotonTargetSortMode;
 import org.photonvision.simulation.PhotonCameraSim;
 import org.photonvision.simulation.SimCameraProperties;
 import org.photonvision.simulation.VisionSystemSim;
@@ -51,6 +53,7 @@ public class VisionIOSim implements VisionIO {
 
         cameraSim.enableProcessedStream(true);
         cameraSim.enableRawStream(true);
+        cameraSim.setTargetSortMode(PhotonTargetSortMode.Centermost);
 
         cameraSim.enableDrawWireframe(true);
 
@@ -74,6 +77,7 @@ public class VisionIOSim implements VisionIO {
 
             if (result.hasTargets()) {
                 trackedTargets = result.getTargets();
+                bestTarget = result.getBestTarget();
             }
         }
     }
