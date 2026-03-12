@@ -236,10 +236,10 @@ public class RobotContainer {
 
             SimulatedArena.getInstance().addDriveTrainSimulation(swerveDriveSimulation);
             controller = new DualShock4Controller(kDriverControllerPort);
-            // shooterSubsystem = new ShooterIOSim();
-            // intakeSubsystem = new IntakeIOSim();
-            // hopperSubsystem = new HopperIOSim();
-            // visionIO = new VisionIOSim();
+            shooterSubsystem = new ShooterIOSim();
+            intakeSubsystem = new IntakeIOSim();
+            hopperSubsystem = new HopperIOSim();
+            visionIO = new VisionIOSim();
         }
         configureBindings();
     }
@@ -263,43 +263,43 @@ public class RobotContainer {
         controller.zero().onTrue(Commands.runOnce(this::zeroHeading));
 
         // shooter button mapping
-        // shooterSubsystem.setFeederVoltageDirectly(Volts.of(.75));
-        //
-        // controller
-        //         .y()
-        //         .onTrue(shooterSubsystem.runOnce(() -> {
-        //             shooterSubsystem.setFlywheelSpeed(RotationsPerMinute.of(3500));
-        //         }))
-        //         .onFalse(shooterSubsystem.runOnce(() -> {
-        //             shooterSubsystem.stopFlywheel();
-        //         }));
-        //
-        // controller
-        //         .b()
-        //         .onTrue(shooterSubsystem.runOnce(() -> {
-        //             shooterSubsystem.setFlywheelSpeed(RotationsPerMinute.of(3000));
-        //         }))
-        //         .onFalse(shooterSubsystem.runOnce(() -> {
-        //             shooterSubsystem.stopFlywheel();
-        //         }));
-        //
-        // controller
-        //         .a()
-        //         .onTrue(shooterSubsystem.runOnce(() -> {
-        //             shooterSubsystem.setFlywheelSpeed(RotationsPerMinute.of(2000));
-        //         }))
-        //         .onFalse(shooterSubsystem.runOnce(() -> {
-        //             shooterSubsystem.stopFlywheel();
-        //         }));
+        shooterSubsystem.setFeederVoltageDirectly(Volts.of(.75));
+        
+        controller
+                .y()
+                .onTrue(shooterSubsystem.runOnce(() -> {
+                    shooterSubsystem.setFlywheelSpeed(RotationsPerMinute.of(3500));
+                }))
+                .onFalse(shooterSubsystem.runOnce(() -> {
+                    shooterSubsystem.stopFlywheel();
+                }));
+        
+        controller
+                .b()
+                .onTrue(shooterSubsystem.runOnce(() -> {
+                    shooterSubsystem.setFlywheelSpeed(RotationsPerMinute.of(3000));
+                }))
+                .onFalse(shooterSubsystem.runOnce(() -> {
+                    shooterSubsystem.stopFlywheel();
+                }));
+        
+        controller
+                .a()
+                .onTrue(shooterSubsystem.runOnce(() -> {
+                    shooterSubsystem.setFlywheelSpeed(RotationsPerMinute.of(2000));
+                }))
+                .onFalse(shooterSubsystem.runOnce(() -> {
+                    shooterSubsystem.stopFlywheel();
+                }));
 
-        // intake button mapping
-        // controller.x().onTrue(intakeSubsystem.runOnce(() -> {
-        //         if (intakeSubsystem.isIntakeOn()) {
-        //             intakeSubsystem.stopIntake();
-        //         } else {
-        //             intakeSubsystem.setIntakeVoltage(Volts.of(.75));
-        //         }
-        // }));
+        intake button mapping
+        controller.x().onTrue(intakeSubsystem.runOnce(() -> {
+                if (intakeSubsystem.isIntakeOn()) {
+                    intakeSubsystem.stopIntake();
+                } else {
+                    intakeSubsystem.setIntakeVoltage(Volts.of(.75));
+                }
+        }));
     }
 
     /**
