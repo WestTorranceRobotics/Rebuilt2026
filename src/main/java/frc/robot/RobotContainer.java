@@ -6,8 +6,6 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 import static frc.robot.constants.GlobalConstants.OperatorConstants.kDriverControllerPort;
-import static frc.robot.constants.SwerveDriveConstants.*;
-import static frc.robot.utilities.CustomUnits.*;
 
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -22,15 +20,6 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.SwerveDrive.DefaultJoystickCommand;
 import frc.robot.constants.SwerveDriveConstants;
 import frc.robot.constants.SwerveDriveConstants.RealRobotConstants;
-import frc.robot.subsystems.Hopper.HopperIO;
-import frc.robot.subsystems.Hopper.HopperIOReal;
-import frc.robot.subsystems.Hopper.HopperIOSim;
-import frc.robot.subsystems.Intake.IntakeIO;
-import frc.robot.subsystems.Intake.IntakeIOReal;
-import frc.robot.subsystems.Intake.IntakeIOSim;
-import frc.robot.subsystems.Shooter.ShooterIO;
-import frc.robot.subsystems.Shooter.ShooterIOReal;
-import frc.robot.subsystems.Shooter.ShooterIOSim;
 import frc.robot.subsystems.SwerveDrive.SwerveDrive;
 import frc.robot.subsystems.SwerveDrive.SwerveDriveConfigurator;
 import frc.robot.subsystems.hardware.gyroscope.GyroIOPigeon2;
@@ -38,8 +27,6 @@ import frc.robot.subsystems.hardware.gyroscope.GyroIOSim;
 import frc.robot.subsystems.hardware.module.ModuleIOReal;
 import frc.robot.subsystems.hardware.module.ModuleIOSim;
 import frc.robot.subsystems.hardware.vision.VisionIO;
-import frc.robot.subsystems.hardware.vision.VisionIOReal;
-import frc.robot.subsystems.hardware.vision.VisionIOSim;
 import frc.robot.utilities.controller.Controller;
 import frc.robot.utilities.controller.DualShock4Controller;
 import org.ironmaple.simulation.SimulatedArena;
@@ -70,13 +57,11 @@ public class RobotContainer {
 
     public static VisionIO visionIO;
 
-    private static final double k_driveBaseLengthMeters = Inches.of(20).in(Meters);
-
     public static final SwerveDriveKinematics swerveDriveKinematics = new SwerveDriveKinematics(
-            new Translation2d(-k_driveBaseLengthMeters / 2, -k_driveBaseLengthMeters / 2),
-            new Translation2d(-k_driveBaseLengthMeters / 2, k_driveBaseLengthMeters / 2),
-            new Translation2d(k_driveBaseLengthMeters / 2, -k_driveBaseLengthMeters / 2),
-            new Translation2d(k_driveBaseLengthMeters / 2, k_driveBaseLengthMeters / 2));
+            new Translation2d(-25 / 2, -19.5 / 2),
+            new Translation2d(-25 / 2, 19.5 / 2),
+            new Translation2d(25 / 2, -19.5 / 2),
+            new Translation2d(25 / 2, 19.5 / 2));
 
     /**
      * Registers all important robot code, e.g. swerve, path planner, controls
@@ -131,8 +116,9 @@ public class RobotContainer {
             SwerveDriveConfigurator.SwerveDriveRobotConstants robotConstants =
                     new SwerveDriveConfigurator.SwerveDriveRobotConstants(
                             Kilograms.of(35),
-                            Inches.of(25),
-                            Inches.of(20),
+                            Inches.of(30),
+                            Inches.of(24.5),
+                            Inches.of(2.5),
                             Inches.of(2),
                             RealRobotConstants.kPigeon2ID);
 
@@ -171,7 +157,7 @@ public class RobotContainer {
                                     COTS.WHEELS.SLS_PRINTED_WHEELS.cof,
                                     2,
                                     11))
-                            .withTrackLengthTrackWidth(Inches.of(20), Inches.of(20))
+                            .withTrackLengthTrackWidth(Inches.of(30 - 5), Inches.of(24.5 - 5))
                             .withBumperSize(Inches.of(31), Inches.of(31)),
                     new Pose2d(2, 7, Rotation2d.kZero));
 
@@ -221,7 +207,7 @@ public class RobotContainer {
 
             SwerveDriveConfigurator.SwerveDriveRobotConstants robotConstants =
                     new SwerveDriveConfigurator.SwerveDriveRobotConstants(
-                            Pounds.of(75), Inches.of(25), Inches.of(20), Inches.of(2), 0);
+                            Pounds.of(75), Inches.of(30), Inches.of(24.5), Inches.of(2.5), Inches.of(2), 0);
 
             swerveDriveConfigurator = new SwerveDriveConfigurator(
                     robotConstants, new SwerveDriveConfigurator.SwerveDriveModuleConstants[] {
@@ -278,7 +264,7 @@ public class RobotContainer {
 
         // shooter button mapping
         shooterSubsystem.setFeederVoltageDirectly(Volts.of(.75));
-
+        
         controller
                 .y()
                 .onTrue(shooterSubsystem.runOnce(() -> {
@@ -287,7 +273,7 @@ public class RobotContainer {
                 .onFalse(shooterSubsystem.runOnce(() -> {
                     shooterSubsystem.stopFlywheel();
                 }));
-
+        
         controller
                 .b()
                 .onTrue(shooterSubsystem.runOnce(() -> {
@@ -296,7 +282,7 @@ public class RobotContainer {
                 .onFalse(shooterSubsystem.runOnce(() -> {
                     shooterSubsystem.stopFlywheel();
                 }));
-
+        
         controller
                 .a()
                 .onTrue(shooterSubsystem.runOnce(() -> {
@@ -306,14 +292,14 @@ public class RobotContainer {
                     shooterSubsystem.stopFlywheel();
                 }));
 
-        // intake button mapping
-        // controller.x().onTrue(intakeSubsystem.runOnce(() -> {
-        //         if (intakeSubsystem.isIntakeOn()) {
-        //             intakeSubsystem.stopIntake();
-        //         } else {
-        //             intakeSubsystem.setIntakeVoltage(Volts.of(.75));
-        //         }
-        // }));
+        intake button mapping
+        controller.x().onTrue(intakeSubsystem.runOnce(() -> {
+                if (intakeSubsystem.isIntakeOn()) {
+                    intakeSubsystem.stopIntake();
+                } else {
+                    intakeSubsystem.setIntakeVoltage(Volts.of(.75));
+                }
+        }));
     }
 
     /**

@@ -1,6 +1,7 @@
 package frc.robot.subsystems.SwerveDrive;
 
 import static edu.wpi.first.units.Units.*;
+import static frc.robot.constants.SwerveDriveConstants.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
@@ -28,7 +29,6 @@ import frc.robot.subsystems.hardware.module.ModuleIO;
 import java.io.IOException;
 import java.util.Optional;
 import org.json.simple.parser.ParseException;
-import static frc.robot.constants.SwerveDriveConstants.*;
 
 public class SwerveDrive extends SubsystemBase {
     private final GyroIO gyro;
@@ -86,7 +86,15 @@ public class SwerveDrive extends SubsystemBase {
                 this::setPose,
                 this::getChassisSpeed,
                 (ChassisSpeeds speeds) -> this.drive(speeds, false),
-                new PPHolonomicDriveController(new PIDConstants(RealRobotConstants.kPTranslation, RealRobotConstants.kITranslation, RealRobotConstants.kDTranslation), new PIDConstants(RealRobotConstants.kPRotation, RealRobotConstants.kIRotation, RealRobotConstants.kDRotation)),
+                new PPHolonomicDriveController(
+                        new PIDConstants(
+                                RealRobotConstants.kPTranslation,
+                                RealRobotConstants.kITranslation,
+                                RealRobotConstants.kDTranslation),
+                        new PIDConstants(
+                                RealRobotConstants.kPRotation,
+                                RealRobotConstants.kIRotation,
+                                RealRobotConstants.kDRotation)),
                 ppConfig,
                 () -> {
                     Optional<DriverStation.Alliance> allianceOptional = DriverStation.getAlliance();

@@ -26,7 +26,10 @@ public class SwerveDriveConfigurator {
 
             swerveModuleCornerPositionSet.add(moduleConstant.corner);
 
-            moduleConstant.calculateModulePosition(swerveDriveRobotConstants.moduleDistance);
+            moduleConstant.calculateModulePosition(
+                    swerveDriveRobotConstants.driveBaseWidth,
+                    swerveDriveRobotConstants.driveBaseLength,
+                    swerveDriveRobotConstants.moduleDistanceFromEdge);
         }
 
         if (moduleConstants.length < 4) {
@@ -55,17 +58,24 @@ public class SwerveDriveConfigurator {
     public static class SwerveDriveRobotConstants {
         public final Mass robotMass;
         public final Distance driveBaseLength;
-        public final Distance moduleDistance;
+        public final Distance driveBaseWidth;
+        public final Distance moduleDistanceFromEdge;
         public final Distance wheelRadius;
         public final Distance wheelCircumference;
 
         public final int pigeonID;
 
         public SwerveDriveRobotConstants(
-                Mass robotMass, Distance driveBaseLength, Distance moduleDistance, Distance wheelRadius, int pigeonID) {
+                Mass robotMass,
+                Distance driveBaseLength,
+                Distance driveBaseWidth,
+                Distance moduleDistanceFromEdge,
+                Distance wheelRadius,
+                int pigeonID) {
             this.robotMass = robotMass;
             this.driveBaseLength = driveBaseLength;
-            this.moduleDistance = moduleDistance;
+            this.driveBaseWidth = driveBaseWidth;
+            this.moduleDistanceFromEdge = moduleDistanceFromEdge;
             this.wheelRadius = wheelRadius;
             this.wheelCircumference = wheelRadius.times(2 * Math.PI);
 
@@ -178,10 +188,15 @@ public class SwerveDriveConfigurator {
             azimuthReversed = reversed;
         }
 
-        private void calculateModulePosition(Distance moduleDistance) {
-            double distance = moduleDistance.div(2).in(Meters);
-            this.physicalModulePosition =
-                    new Translation2d(distance, distance).rotateBy(Rotation2d.kCCW_90deg.times(corner.index));
+        private void calculateModulePosition(Distance baseWidth, Distance baseLength, Distance moduleDistanceFromEdge) {
+            double x = baseWidth.div(2).in(Meters);
+            double y = baseLength.div(2).in(Meters);
+
+            double moduleDist = moduleDistanceFromEdge.in(Meters);
+
+            this.physicalModulePosition = new Translation2d(x, y)
+                    .minus(new Translation2d(moduleDist, moduleDist))
+                    .rotateBy(Rotation2d.kCCW_90deg.times(corner.index));
         }
 
         public String getModuleName() {

@@ -98,7 +98,7 @@ public class ModuleIOReal implements ModuleIO {
         // TODO figure out this open loop ramp rate
         sparkMaxConfig
                 .smartCurrentLimit(40)
-                .idleMode(SparkBaseConfig.IdleMode.kBrake)
+                .idleMode(SparkBaseConfig.IdleMode.kCoast)
                 .openLoopRampRate(0.2);
 
         steerMotorController.configure(sparkMaxConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
