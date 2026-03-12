@@ -100,7 +100,7 @@ public class Robot extends TimedRobot {
     /** This function is called periodically whilst in simulation. */
     @Override
     public void simulationPeriodic() {
-        // ((VisionIOSim) RobotContainer.visionIO).tick();
+        ((VisionIOSim) RobotContainer.visionIO).tick();
 
         SimulatedArena.getInstance().simulationPeriodic();
     }

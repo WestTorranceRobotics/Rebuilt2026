@@ -45,9 +45,9 @@ import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
  */
 public class RobotContainer {
     private final SwerveDrive m_swerveDrive;
-    // private final ShooterIO shooterSubsystem;
-    // private final IntakeIO intakeSubsystem;
-    // private final HopperIO hopperSubsystem;
+    private final ShooterIO shooterSubsystem;
+    private final IntakeIO intakeSubsystem;
+    private final HopperIO hopperSubsystem;
 
     private final Controller controller;
 
@@ -139,10 +139,10 @@ public class RobotContainer {
                             SwerveDriveConfigurator.SwerveModuleCornerPosition.BACK_RIGHT, swerveDriveConfigurator));
 
             controller = new DualShock4Controller(kDriverControllerPort);
-            // shooterSubsystem = new ShooterIOReal();
-            // intakeSubsystem = new IntakeIOReal();
-            // hopperSubsystem = new HopperIOReal();
-            // visionIO = new VisionIOReal();
+            shooterSubsystem = new ShooterIOReal();
+            intakeSubsystem = new IntakeIOReal();
+            hopperSubsystem = new HopperIOReal();
+            visionIO = new VisionIOReal();
         } else {
             // Simulation drive train
 
