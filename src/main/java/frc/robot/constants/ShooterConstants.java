@@ -1,6 +1,6 @@
 package frc.robot.constants;
 
-import edu.wpi.first.math.interpolation.InterpolatingTreeMap;
+import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 
 public final class ShooterConstants {
     public static final int feederMotorID = 1;
@@ -13,25 +13,29 @@ public final class ShooterConstants {
     public static final int launcherMotorCurrentLimit = 60;
     // FIXME these current limits are all way too high
 
-    public static final double latencyCompensation = 0.1; // TODO tune latency comepnsation
+    public static final double latencyCompensation = 0; // TODO tune latency comepnsation
 
-    public static final InterpolatingTreeMap<Double, Double> distanceToTOFMap = new InterpolatingTreeMap<>(null, null);
-    public static final InterpolatingTreeMap<Double, Double> shooterMap = new InterpolatingTreeMap<>(null, null);
+    public static final InterpolatingDoubleTreeMap distanceToTOFMap = new InterpolatingDoubleTreeMap();
+    public static final InterpolatingDoubleTreeMap shooterMap = new InterpolatingDoubleTreeMap();
 
     static {
         // TODO build lookup tables
-        distanceToTOFMap.put(100.0, 3.0);
-        distanceToTOFMap.put(120.0, 3.5);
-        distanceToTOFMap.put(140.0, 4.0);
-        distanceToTOFMap.put(160.0, 4.5);
-        distanceToTOFMap.put(180.0, 5.0);
-        distanceToTOFMap.put(200.0, 5.5);
+        distanceToTOFMap.put(1.5, 0.42);
+        distanceToTOFMap.put(2.0, 0.51);
+        distanceToTOFMap.put(2.5, 0.58);
+        distanceToTOFMap.put(3.0, 0.65);
+        distanceToTOFMap.put(3.5, 0.71);
+        distanceToTOFMap.put(4.0, 0.78);
+        distanceToTOFMap.put(4.5, 0.84);
+        distanceToTOFMap.put(5.0, 0.91);
 
-        shooterMap.put(33.33333333, 3000.0);
-        shooterMap.put(34.28571429, 3200.0);
-        shooterMap.put(35.0, 3400.0);
-        shooterMap.put(35.55555556, 3600.0);
-        shooterMap.put(36.0, 3800.0);
-        shooterMap.put(36.36363636, 4000.0);
+        shooterMap.put(3.57142857, 2800.0);
+        shooterMap.put(3.92156863, 3100.0);
+        shooterMap.put(4.31034483, 3400.0);
+        shooterMap.put(4.61538462, 3650.0);
+        shooterMap.put(4.92957746, 3900.0);
+        shooterMap.put(5.12820513, 4100.0);
+        shooterMap.put(5.35714286, 4350.0);
+        shooterMap.put(5.49450549, 4550.0);
     }
 }

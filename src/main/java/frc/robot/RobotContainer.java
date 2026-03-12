@@ -9,6 +9,7 @@ import static frc.robot.constants.GlobalConstants.OperatorConstants.kDriverContr
 import static frc.robot.constants.ShooterConstants.*;
 import static frc.robot.utilities.CustomUnits.*;
 
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -18,6 +19,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.SwerveDrive.DefaultJoystickCommand;
@@ -47,7 +49,6 @@ import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.COTS;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
-import org.photonvision.PhotonUtils;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -255,6 +256,11 @@ public class RobotContainer {
             hopperSubsystem = new HopperIOSim();
             visionIO = new VisionIOSim();
         }
+        NamedCommands.registerCommand(
+                "alignToHub",
+                new InstantCommand(() -> m_swerveDrive.turnToYaw(
+                        visionIO.getTX(DriverStation.getAlliance().get().equals(DriverStation.Alliance.Blue) ? 25 : 10)
+                                .orElse(null))));
         configureBindings();
     }
 
@@ -283,43 +289,48 @@ public class RobotContainer {
                 .a()
                 .onTrue(shooterSubsystem.runOnce(() -> {
                     int hubAprilTagID = DriverStation.getAlliance().get().equals(DriverStation.Alliance.Blue) ? 25 : 10;
-                    double originalDistanceFromTarget = PhotonUtils.getDistanceToPose(
-                            m_swerveDrive.getPose(),
-                            visionIO.getTargetPose(hubAprilTagID).orElse(null));
+                    if (visionIO.getTX(hubAprilTagID).isPresent()) {
+                        Translation2d hubPosition = visionIO.getTargetPose(hubAprilTagID)
+                                .orElse(null)
+                                .getTranslation();
 
-                    Translation2d originalTranslationFromTarget = PhotonUtils.estimateCameraToTargetTranslation(
-                            originalDistanceFromTarget,
-                            Rotation2d.fromDegrees(
-                                    -visionIO.getTX(hubAprilTagID).orElse(null)));
+                        ChassisSpeeds robotVelocityTranslation = m_swerveDrive.getChassisSpeed();
+                        Translation2d robotVelocity = new Translation2d(
+                                -robotVelocityTranslation.vxMetersPerSecond,
+                                -robotVelocityTranslation.vyMetersPerSecond);
 
-                    ChassisSpeeds robotRelativeVelocity = ChassisSpeeds.fromFieldRelativeSpeeds(
-                            m_swerveDrive.getChassisSpeed(), m_swerveDrive.getHeading());
-                    Translation2d robotVelocity = new Translation2d(
-                            robotRelativeVelocity.vxMetersPerSecond, robotRelativeVelocity.vyMetersPerSecond);
+                        Translation2d futurePosition = swerveDriveSimulation
+                                .getSimulatedDriveTrainPose()
+                                .getTranslation()
+                                .plus(robotVelocity.times(latencyCompensation));
 
-                    Translation2d futurePosition =
-                            m_swerveDrive.getPose().getTranslation().plus(robotVelocity.times(latencyCompensation));
-                    Translation2d distanceFromTarget = originalTranslationFromTarget.minus(futurePosition);
+                        Translation2d distanceFromTarget = hubPosition.minus(futurePosition);
 
-                    double baseHorizontalVelocity =
-                            distanceFromTarget.getNorm() / distanceToTOFMap.get(distanceFromTarget.getNorm());
+                        double baseHorizontalVelocity =
+                                distanceFromTarget.getNorm() / distanceToTOFMap.get(distanceFromTarget.getNorm());
 
-                    double targetHorizontalVelocity = distanceFromTarget
-                            .div(distanceFromTarget.getNorm())
-                            .times(baseHorizontalVelocity)
-                            .minus(robotVelocity)
-                            .getNorm();
-                    /* we realistically want to prioritize changing our hood angle rather than the flywheel speed
-                    because our flywheel recovery speed is slow */
-                    shooterSubsystem.setFlywheelSpeed(RotationsPerMinute.of(shooterMap.get(targetHorizontalVelocity)));
+                        double targetHorizontalVelocity = distanceFromTarget
+                                .div(distanceFromTarget.getNorm())
+                                .times(baseHorizontalVelocity)
+                                .minus(robotVelocity)
+                                .getNorm();
+                        /* we realistically want to prioritize changing our hood angle rather than the flywheel speed
+                        because our flywheel recovery speed is slow */
+                        shooterSubsystem.setFlywheelSpeed(
+                                RotationsPerMinute.of(shooterMap.get(targetHorizontalVelocity)));
+                    }
                 }))
                 .onFalse(shooterSubsystem.runOnce(() -> {
                     shooterSubsystem.stopFlywheel();
                 }));
 
         controller.b().whileTrue(shooterSubsystem.run(() -> {
-            m_swerveDrive.turnToYaw(
-                    visionIO.getTX(visionIO.getBestTarget().getFiducialId()).orElse(null)); // align robot to apriltag
+            // m_swerveDrive.turnToYaw(visionIO.getTX(visionIO.getBestTarget().getFiducialId()).orElse(null)); // align
+            // robot to best apriltag
+            int hubAprilTagID = DriverStation.getAlliance().get().equals(DriverStation.Alliance.Blue) ? 25 : 10;
+            if (visionIO.getTX(hubAprilTagID).isPresent()) {
+                m_swerveDrive.turnToYaw(visionIO.getTX(hubAprilTagID).orElse(null));
+            }
         }));
 
         // intake button mapping
