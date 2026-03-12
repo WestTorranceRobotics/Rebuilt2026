@@ -57,7 +57,7 @@ public class VisionIOSim implements VisionIO {
 
         cameraSim.enableDrawWireframe(true);
 
-        aprilTagFieldLayout = AprilTagFields.k2026RebuiltAndymark.loadAprilTagLayoutField();
+        aprilTagFieldLayout = AprilTagFields.k2026RebuiltWelded.loadAprilTagLayoutField();
 
         try {
             visionSystemSim.addAprilTags(

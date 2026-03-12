@@ -19,7 +19,7 @@ public class VisionIOReal extends SubsystemBase implements VisionIO {
 
     public VisionIOReal() {
         camera = new PhotonCamera(VisionConstants.cameraName);
-        aprilTagFieldLayout = AprilTagFields.k2026RebuiltAndymark.loadAprilTagLayoutField();
+        aprilTagFieldLayout = AprilTagFields.k2026RebuiltWelded.loadAprilTagLayoutField();
     }
 
     public void tick() {
