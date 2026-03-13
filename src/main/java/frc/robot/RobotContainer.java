@@ -334,13 +334,15 @@ public class RobotContainer {
         }));
 
         // intake button mapping
-        // controller.x().onTrue(intakeSubsystem.runOnce(() -> {
-        //         if (intakeSubsystem.isIntakeOn()) {
-        //             intakeSubsystem.stopIntake();
-        //         } else {
-        //             intakeSubsystem.setIntakeVoltage(Volts.of(.75));
-        //         }
-        // }));
+        controller.x().onTrue(intakeSubsystem.runOnce(() -> {
+            if (intakeSubsystem.isIntakeOn()) {
+                intakeSubsystem.stopIntake();
+            } else {
+                intakeSubsystem.setIntakeVoltage(Volts.of(.75));
+            }
+        }));
+
+        hopperSubsystem.setRollerVoltage(Volts.of(.75));
     }
 
     /**
