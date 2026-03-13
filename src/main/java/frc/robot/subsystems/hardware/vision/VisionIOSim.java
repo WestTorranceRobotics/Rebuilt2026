@@ -4,15 +4,19 @@ import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.RobotContainer;
+import frc.robot.constants.VisionConstants;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import org.photonvision.PhotonCamera;
+import org.photonvision.PhotonTargetSortMode;
 import org.photonvision.simulation.PhotonCameraSim;
 import org.photonvision.simulation.SimCameraProperties;
 import org.photonvision.simulation.VisionSystemSim;
@@ -22,7 +26,10 @@ public class VisionIOSim implements VisionIO {
     VisionSystemSim visionSystemSim = new VisionSystemSim("main");
     PhotonCamera camera;
     PhotonCameraSim cameraSim;
+
+    AprilTagFieldLayout aprilTagFieldLayout;
     List<PhotonTrackedTarget> trackedTargets;
+    PhotonTrackedTarget bestTarget;
 
     public VisionIOSim() {
         SimCameraProperties cameraProps = new SimCameraProperties();
@@ -35,7 +42,7 @@ public class VisionIOSim implements VisionIO {
         cameraProps.setAvgLatencyMs(16);
         cameraProps.setLatencyStdDevMs(5);
 
-        camera = new PhotonCamera("limelight");
+        camera = new PhotonCamera(VisionConstants.cameraName);
         cameraSim = new PhotonCameraSim(camera, cameraProps);
 
         Rotation3d cameraRotation =
@@ -46,8 +53,11 @@ public class VisionIOSim implements VisionIO {
 
         cameraSim.enableProcessedStream(true);
         cameraSim.enableRawStream(true);
+        cameraSim.setTargetSortMode(PhotonTargetSortMode.Centermost);
 
         cameraSim.enableDrawWireframe(true);
+
+        aprilTagFieldLayout = AprilTagFields.k2026RebuiltWelded.loadAprilTagLayoutField();
 
         try {
             visionSystemSim.addAprilTags(
@@ -67,6 +77,7 @@ public class VisionIOSim implements VisionIO {
 
             if (result.hasTargets()) {
                 trackedTargets = result.getTargets();
+                bestTarget = result.getBestTarget();
             }
         }
     }
@@ -80,6 +91,17 @@ public class VisionIOSim implements VisionIO {
             }
         }
         return null;
+    }
+
+    public Optional<Pose2d> getTargetPose(int targetID) {
+        Pose2d pose = aprilTagFieldLayout.getTagPose(targetID).get().toPose2d();
+
+        if (pose != null) return Optional.of(pose);
+        return Optional.empty();
+    }
+
+    public PhotonTrackedTarget getBestTarget() {
+        return bestTarget;
     }
 
     @Override

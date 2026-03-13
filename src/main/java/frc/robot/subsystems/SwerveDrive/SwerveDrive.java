@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.MathUtils;
 import frc.robot.Robot;
 import frc.robot.RobotContainer;
+import frc.robot.constants.SwerveDriveConstants.RealRobotConstants;
 import frc.robot.subsystems.hardware.gyroscope.GyroIO;
 import frc.robot.subsystems.hardware.module.ModuleIO;
 import java.io.IOException;
@@ -122,6 +123,14 @@ public class SwerveDrive extends SubsystemBase {
         calculateState(chassisSpeeds, heading, frontLeft, absolute);
         calculateState(chassisSpeeds, heading, backRight, absolute);
         calculateState(chassisSpeeds, heading, backLeft, absolute);
+    }
+
+    public void turnToYaw(double yaw) {
+        final double rotation =
+                -yaw * RealRobotConstants.kConstantOfProportionality * RealRobotConstants.kMaxAngularSpeed;
+
+        drive(new ChassisSpeeds(0, 0, rotation), false);
+        tickPid();
     }
 
     @Override

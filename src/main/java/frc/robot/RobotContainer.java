@@ -6,7 +6,10 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 import static frc.robot.constants.GlobalConstants.OperatorConstants.kDriverControllerPort;
+import static frc.robot.constants.ShooterConstants.*;
+import static frc.robot.utilities.CustomUnits.*;
 
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -14,12 +17,23 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.SwerveDrive.DefaultJoystickCommand;
 import frc.robot.constants.SwerveDriveConstants;
 import frc.robot.constants.SwerveDriveConstants.RealRobotConstants;
+import frc.robot.subsystems.Hopper.HopperIO;
+import frc.robot.subsystems.Hopper.HopperIOReal;
+import frc.robot.subsystems.Hopper.HopperIOSim;
+import frc.robot.subsystems.Intake.IntakeIO;
+import frc.robot.subsystems.Intake.IntakeIOReal;
+import frc.robot.subsystems.Intake.IntakeIOSim;
+import frc.robot.subsystems.Shooter.ShooterIO;
+import frc.robot.subsystems.Shooter.ShooterIOReal;
+import frc.robot.subsystems.Shooter.ShooterIOSim;
 import frc.robot.subsystems.SwerveDrive.SwerveDrive;
 import frc.robot.subsystems.SwerveDrive.SwerveDriveConfigurator;
 import frc.robot.subsystems.hardware.gyroscope.GyroIOPigeon2;
@@ -27,6 +41,8 @@ import frc.robot.subsystems.hardware.gyroscope.GyroIOSim;
 import frc.robot.subsystems.hardware.module.ModuleIOReal;
 import frc.robot.subsystems.hardware.module.ModuleIOSim;
 import frc.robot.subsystems.hardware.vision.VisionIO;
+import frc.robot.subsystems.hardware.vision.VisionIOReal;
+import frc.robot.subsystems.hardware.vision.VisionIOSim;
 import frc.robot.utilities.controller.Controller;
 import frc.robot.utilities.controller.DualShock4Controller;
 import org.ironmaple.simulation.SimulatedArena;
@@ -149,7 +165,6 @@ public class RobotContainer {
             // TODO add constant for drive base length
             swerveDriveSimulation = new SwerveDriveSimulation(
                     DriveTrainSimulationConfig.Default()
-                            .withGyro(COTS.ofPigeon2())
                             .withRobotMass(Pounds.of(75))
                             .withSwerveModule(COTS.ofSwerveX2(
                                     DCMotor.getKrakenX60(1),
@@ -241,6 +256,11 @@ public class RobotContainer {
             hopperSubsystem = new HopperIOSim();
             visionIO = new VisionIOSim();
         }
+        NamedCommands.registerCommand(
+                "alignToHub",
+                new InstantCommand(() -> m_swerveDrive.turnToYaw(
+                        visionIO.getTX(DriverStation.getAlliance().get().equals(DriverStation.Alliance.Blue) ? 25 : 10)
+                                .orElse(null))));
         configureBindings();
     }
 
@@ -264,42 +284,63 @@ public class RobotContainer {
 
         // shooter button mapping
         shooterSubsystem.setFeederVoltageDirectly(Volts.of(.75));
-        
-        controller
-                .y()
-                .onTrue(shooterSubsystem.runOnce(() -> {
-                    shooterSubsystem.setFlywheelSpeed(RotationsPerMinute.of(3500));
-                }))
-                .onFalse(shooterSubsystem.runOnce(() -> {
-                    shooterSubsystem.stopFlywheel();
-                }));
-        
-        controller
-                .b()
-                .onTrue(shooterSubsystem.runOnce(() -> {
-                    shooterSubsystem.setFlywheelSpeed(RotationsPerMinute.of(3000));
-                }))
-                .onFalse(shooterSubsystem.runOnce(() -> {
-                    shooterSubsystem.stopFlywheel();
-                }));
-        
+
         controller
                 .a()
                 .onTrue(shooterSubsystem.runOnce(() -> {
-                    shooterSubsystem.setFlywheelSpeed(RotationsPerMinute.of(2000));
+                    int hubAprilTagID = DriverStation.getAlliance().get().equals(DriverStation.Alliance.Blue) ? 25 : 10;
+                    if (visionIO.getTX(hubAprilTagID).isPresent()) {
+                        Translation2d hubPosition = visionIO.getTargetPose(hubAprilTagID)
+                                .orElse(null)
+                                .getTranslation();
+
+                        ChassisSpeeds robotVelocityTranslation = m_swerveDrive.getChassisSpeed();
+                        Translation2d robotVelocity = new Translation2d(
+                                -robotVelocityTranslation.vxMetersPerSecond,
+                                -robotVelocityTranslation.vyMetersPerSecond);
+
+                        Translation2d futurePosition = swerveDriveSimulation
+                                .getSimulatedDriveTrainPose()
+                                .getTranslation()
+                                .plus(robotVelocity.times(latencyCompensation));
+
+                        Translation2d distanceFromTarget = hubPosition.minus(futurePosition);
+
+                        double baseHorizontalVelocity =
+                                distanceFromTarget.getNorm() / distanceToTOFMap.get(distanceFromTarget.getNorm());
+
+                        double targetHorizontalVelocity = distanceFromTarget
+                                .div(distanceFromTarget.getNorm())
+                                .times(baseHorizontalVelocity)
+                                .minus(robotVelocity)
+                                .getNorm();
+                        /* we realistically want to prioritize changing our hood angle rather than the flywheel speed
+                        because our flywheel recovery speed is slow */
+                        shooterSubsystem.setFlywheelSpeed(
+                                RotationsPerMinute.of(shooterMap.get(targetHorizontalVelocity)));
+                    }
                 }))
                 .onFalse(shooterSubsystem.runOnce(() -> {
                     shooterSubsystem.stopFlywheel();
                 }));
 
-        intake button mapping
-        controller.x().onTrue(intakeSubsystem.runOnce(() -> {
-                if (intakeSubsystem.isIntakeOn()) {
-                    intakeSubsystem.stopIntake();
-                } else {
-                    intakeSubsystem.setIntakeVoltage(Volts.of(.75));
-                }
+        controller.b().whileTrue(shooterSubsystem.run(() -> {
+            // m_swerveDrive.turnToYaw(visionIO.getTX(visionIO.getBestTarget().getFiducialId()).orElse(null)); // align
+            // robot to best apriltag
+            int hubAprilTagID = DriverStation.getAlliance().get().equals(DriverStation.Alliance.Blue) ? 25 : 10;
+            if (visionIO.getTX(hubAprilTagID).isPresent()) {
+                m_swerveDrive.turnToYaw(visionIO.getTX(hubAprilTagID).orElse(null));
+            }
         }));
+
+        // intake button mapping
+        // controller.x().onTrue(intakeSubsystem.runOnce(() -> {
+        //         if (intakeSubsystem.isIntakeOn()) {
+        //             intakeSubsystem.stopIntake();
+        //         } else {
+        //             intakeSubsystem.setIntakeVoltage(Volts.of(.75));
+        //         }
+        // }));
     }
 
     /**
