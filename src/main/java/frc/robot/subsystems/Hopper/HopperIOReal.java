@@ -15,24 +15,16 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.utilities.CustomUnits;
 
 public class HopperIOReal extends SubsystemBase implements HopperIO {
-    private final SparkMax hopperMotorLeader = new SparkMax(hopperMotorLeaderID, MotorType.kBrushless);
-    private final SparkMax hopperMotorFollower = new SparkMax(hopperMotorFollowerID, MotorType.kBrushless);
+    private final SparkMax hopperMotor = new SparkMax(hopperMotorID, MotorType.kBrushless);
 
     private double actualRPM = 0;
     private boolean isHopperOn = false;
 
     public HopperIOReal() {
-        SparkMaxConfig hopperLeaderConfig = new SparkMaxConfig();
-        hopperLeaderConfig.smartCurrentLimit(hopperMotorCurrentLimit);
-        hopperLeaderConfig.idleMode(IdleMode.kCoast);
-        hopperMotorLeader.configure(hopperLeaderConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-
-        SparkMaxConfig hopperFollowerConfig = new SparkMaxConfig();
-        hopperFollowerConfig.smartCurrentLimit(hopperMotorCurrentLimit);
-        hopperFollowerConfig.idleMode(IdleMode.kCoast);
-        hopperFollowerConfig.follow(hopperMotorLeader); // TODO check if following works
-        hopperMotorFollower.configure(
-                hopperFollowerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        SparkMaxConfig hopperConfig = new SparkMaxConfig();
+        hopperConfig.smartCurrentLimit(hopperMotorCurrentLimit);
+        hopperConfig.idleMode(IdleMode.kCoast);
+        hopperMotor.configure(hopperConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }
 
     public boolean areHopperRollersOn() {
@@ -44,18 +36,18 @@ public class HopperIOReal extends SubsystemBase implements HopperIO {
     }
 
     public void setRollerVoltage(Voltage voltage) {
-        hopperMotorLeader.setVoltage(voltage);
+        hopperMotor.setVoltage(voltage);
         isHopperOn = true;
     }
 
     public void stopRollers() {
-        hopperMotorLeader.set(0);
+        hopperMotor.set(0);
         isHopperOn = false;
     }
 
     @Override
     public void periodic() {
-        this.actualRPM = hopperMotorLeader.getEncoder().getVelocity();
-        SmartDashboard.putNumber("Rollers RPM", actualRPM);
+        this.actualRPM = hopperMotor.getEncoder().getVelocity();
+        SmartDashboard.putNumber("Hopper RPM", actualRPM);
     }
 }

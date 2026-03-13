@@ -21,35 +21,25 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.utilities.CustomUnits;
 
 public class HopperIOSim extends SubsystemBase implements HopperIO {
-    private final SparkMax hopperMotorLeader = new SparkMax(hopperMotorLeaderID, MotorType.kBrushless);
-    private final SparkMax hopperMotorFollower = new SparkMax(hopperMotorFollowerID, MotorType.kBrushless);
+    private final SparkMax hopperMotor = new SparkMax(hopperMotorID, MotorType.kBrushless);
 
     // flywheel sim is being used because it's the closest to what we have
     private FlywheelSim flywheelSim = new FlywheelSim(
             LinearSystemId.createFlywheelSystem(DCMotor.getNEO(2), 0.00062156662, 1),
             DCMotor.getNEO(2)); // TODO update physical constants
 
-    private final SparkMaxSim hopperMotorLeaderSim;
-    private final SparkMaxSim hopperMotorFollowerSim;
+    private final SparkMaxSim hopperMotorSim;
 
     private double actualRPM = 0;
     private boolean isHopperOn = false;
 
     public HopperIOSim() {
-        SparkMaxConfig hopperLeaderConfig = new SparkMaxConfig();
-        hopperLeaderConfig.smartCurrentLimit(hopperMotorCurrentLimit);
-        hopperLeaderConfig.idleMode(IdleMode.kCoast);
-        hopperMotorLeader.configure(hopperLeaderConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        SparkMaxConfig hopperConfig = new SparkMaxConfig();
+        hopperConfig.smartCurrentLimit(hopperMotorCurrentLimit);
+        hopperConfig.idleMode(IdleMode.kCoast);
+        hopperMotor.configure(hopperConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-        SparkMaxConfig hopperFollowerConfig = new SparkMaxConfig();
-        hopperFollowerConfig.smartCurrentLimit(hopperMotorCurrentLimit);
-        hopperFollowerConfig.idleMode(IdleMode.kCoast);
-        hopperFollowerConfig.follow(hopperMotorLeader); // TODO check if following works
-        hopperMotorFollower.configure(
-                hopperFollowerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-
-        hopperMotorLeaderSim = new SparkMaxSim(hopperMotorLeader, DCMotor.getNEO(1));
-        hopperMotorFollowerSim = new SparkMaxSim(hopperMotorFollower, DCMotor.getNEO(1));
+        hopperMotorSim = new SparkMaxSim(hopperMotor, DCMotor.getNEO(1));
     }
 
     public boolean areHopperRollersOn() {
@@ -61,27 +51,27 @@ public class HopperIOSim extends SubsystemBase implements HopperIO {
     }
 
     public void setRollerVoltage(Voltage voltage) {
-        hopperMotorLeader.setVoltage(voltage);
+        hopperMotor.setVoltage(voltage);
         isHopperOn = true;
     }
 
     public void stopRollers() {
-        hopperMotorLeader.setVoltage(0);
+        hopperMotor.setVoltage(0);
         isHopperOn = false;
     }
 
     @Override
     public void periodic() {
-        flywheelSim.setInput(hopperMotorLeaderSim.getAppliedOutput() * RoboRioSim.getVInVoltage());
+        flywheelSim.setInput(hopperMotorSim.getAppliedOutput() * RoboRioSim.getVInVoltage());
         flywheelSim.update(0.02);
 
-        // Update motors
-        hopperMotorLeaderSim.iterate(flywheelSim.getAngularVelocityRPM(), RoboRioSim.getVInVoltage(), 0.02);
+        // Update motor
+        hopperMotorSim.iterate(flywheelSim.getAngularVelocityRPM(), RoboRioSim.getVInVoltage(), 0.02);
 
-        hopperMotorFollowerSim.iterate(flywheelSim.getAngularVelocityRPM(), RoboRioSim.getVInVoltage(), 0.02);
+        hopperMotorSim.iterate(flywheelSim.getAngularVelocityRPM(), RoboRioSim.getVInVoltage(), 0.02);
 
         this.actualRPM = flywheelSim.getAngularVelocityRPM();
-        SmartDashboard.putNumber("Rollers RPM", actualRPM);
+        SmartDashboard.putNumber("Hopper RPM", actualRPM);
 
         // TODO does this carry between sims? seems like it does
         RoboRioSim.setVInVoltage(BatterySim.calculateDefaultBatteryLoadedVoltage(flywheelSim.getCurrentDrawAmps()));
