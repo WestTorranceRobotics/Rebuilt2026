@@ -5,5 +5,6 @@ public class IntakeConstants {
     // FIXME put in proper IDs for the motors
 
     public static final int INTAKE_MOTOR_CURRENT_LIMIT = 60;
+    public static final int HOOD_MOTOR_ID = -1;
     // FIXME these current limits are all way too high
 }

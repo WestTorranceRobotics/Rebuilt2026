@@ -39,10 +39,9 @@ public class SwerveDrive extends SubsystemBase {
     private final ModuleIO frontRight;
     private final ModuleIO backLeft;
     private final ModuleIO backRight;
-    private final StructPublisher<Pose2d> estimatedPosePublisher =
-            NetworkTableInstance.getDefault()
-                    .getStructTopic("Estimated Pose", Pose2d.struct)
-                    .publish();
+    private final StructPublisher<Pose2d> estimatedPosePublisher = NetworkTableInstance.getDefault()
+            .getStructTopic("Estimated Pose", Pose2d.struct)
+            .publish();
     private final StructArrayPublisher<SwerveModuleState> currentModuleStatesPublisher =
             NetworkTableInstance.getDefault()
                     .getStructArrayTopic("Current Module States", SwerveModuleState.struct)
