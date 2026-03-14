@@ -23,13 +23,13 @@ import edu.wpi.first.units.measure.Mass;
  */
 public final class GlobalConstants {
     public static class OperatorConstants {
-        public static final int kDriverControllerPort = 0;
+        public static final int DRIVER_CONTROLLER_PORT = 0;
 
-        public static final double kDeadbandThreshold = 0.08;
+        public static final double DEADBAND_THRESHOLD = 0.08;
     }
 
     public static class PhysicalRobotConstants {
-        public static final Mass kMass = Kilograms.of(35);
+        public static final Mass ROBOT_MASS = Kilograms.of(35);
 
         public static final Distance kDriveBaseLength = Inches.of(20);
         // TODO: verify width is correct

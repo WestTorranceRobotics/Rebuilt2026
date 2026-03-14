@@ -9,7 +9,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.RobotContainer;
 import frc.robot.constants.VisionConstants;
 import java.io.IOException;
@@ -42,7 +41,7 @@ public class VisionIOSim implements VisionIO {
         cameraProps.setAvgLatencyMs(16);
         cameraProps.setLatencyStdDevMs(5);
 
-        camera = new PhotonCamera(VisionConstants.cameraName);
+        camera = new PhotonCamera(VisionConstants.CAMERA_NAME);
         cameraSim = new PhotonCameraSim(camera, cameraProps);
 
         Rotation3d cameraRotation =

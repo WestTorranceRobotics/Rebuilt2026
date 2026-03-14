@@ -24,13 +24,13 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.utilities.CustomUnits;
 
 public class ShooterIOSim extends SubsystemBase implements ShooterIO {
-    private SparkMax feederMotor = new SparkMax(feederMotorID, MotorType.kBrushless);
+    private SparkMax feederMotor = new SparkMax(FEEDER_MOTOR_ID, MotorType.kBrushless);
     // TODO: implement feeder sim in periodic
     private SparkMaxSim feederMotorSim;
 
-    private final SparkMax launcherMotorLeader = new SparkMax(firstIntakeMotorID, MotorType.kBrushless);
-    private final SparkMax launcherMotorFollower = new SparkMax(secondIntakeMotorID, MotorType.kBrushless);
-    private final SparkMax secondLauncherMotorFollower = new SparkMax(thirdIntakeMotorID, MotorType.kBrushless);
+    private final SparkMax launcherMotorLeader = new SparkMax(LAUNCHER_MOTOR_1_ID, MotorType.kBrushless);
+    private final SparkMax launcherMotorFollower = new SparkMax(LAUNCHER_MOTOR_2_ID, MotorType.kBrushless);
+    private final SparkMax secondLauncherMotorFollower = new SparkMax(LAUNCHER_MOTOR_3_ID, MotorType.kBrushless);
 
     private SparkMaxSim launcherMotorLeaderSim;
     private SparkMaxSim launcherMotorFollowerSim;
@@ -50,7 +50,7 @@ public class ShooterIOSim extends SubsystemBase implements ShooterIO {
     public ShooterIOSim() {
         // feeder config
         SparkMaxConfig feederConfig = new SparkMaxConfig();
-        feederConfig.smartCurrentLimit(feederMotorCurrentLimit);
+        feederConfig.smartCurrentLimit(FEEDER_MOTOR_CURRENT_LIMIT);
         feederConfig.inverted(true);
         feederMotor.configure(feederConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
@@ -60,21 +60,21 @@ public class ShooterIOSim extends SubsystemBase implements ShooterIO {
         // launcher motor configs
         SparkMaxConfig launcherLeaderConfig = new SparkMaxConfig();
         launcherLeaderConfig.idleMode(IdleMode.kCoast);
-        launcherLeaderConfig.smartCurrentLimit(launcherMotorCurrentLimit);
+        launcherLeaderConfig.smartCurrentLimit(LAUNCHER_MOTOR_CURRENT_LIMIT);
         launcherLeaderConfig.inverted(false);
         launcherMotorLeader.configure(
                 launcherLeaderConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
         SparkMaxConfig launcherFollowerConfig = new SparkMaxConfig();
         launcherFollowerConfig.idleMode(IdleMode.kCoast);
-        launcherFollowerConfig.smartCurrentLimit(launcherMotorCurrentLimit);
+        launcherFollowerConfig.smartCurrentLimit(LAUNCHER_MOTOR_CURRENT_LIMIT);
         launcherFollowerConfig.inverted(true);
         launcherMotorFollower.configure(
                 launcherFollowerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
         SparkMaxConfig secondLauncherFollowerConfig = new SparkMaxConfig();
         secondLauncherFollowerConfig.idleMode(IdleMode.kCoast);
-        secondLauncherFollowerConfig.smartCurrentLimit(launcherMotorCurrentLimit);
+        secondLauncherFollowerConfig.smartCurrentLimit(LAUNCHER_MOTOR_CURRENT_LIMIT);
         secondLauncherFollowerConfig.inverted(true); // FIXME find correct inversion
         secondLauncherMotorFollower.configure(
                 secondLauncherFollowerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);

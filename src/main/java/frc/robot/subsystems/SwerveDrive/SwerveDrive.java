@@ -39,9 +39,10 @@ public class SwerveDrive extends SubsystemBase {
     private final ModuleIO frontRight;
     private final ModuleIO backLeft;
     private final ModuleIO backRight;
-    private final StructPublisher<Pose2d> posePublisher = NetworkTableInstance.getDefault()
-            .getStructTopic("Pose", Pose2d.struct)
-            .publish();
+    private final StructPublisher<Pose2d> estimatedPosePublisher =
+            NetworkTableInstance.getDefault()
+                    .getStructTopic("Estimated Pose", Pose2d.struct)
+                    .publish();
     private final StructArrayPublisher<SwerveModuleState> currentModuleStatesPublisher =
             NetworkTableInstance.getDefault()
                     .getStructArrayTopic("Current Module States", SwerveModuleState.struct)
@@ -127,7 +128,7 @@ public class SwerveDrive extends SubsystemBase {
 
     public void turnToYaw(double yaw) {
         final double rotation =
-                -yaw * RealRobotConstants.kConstantOfProportionality * RealRobotConstants.kMaxAngularSpeed;
+                -yaw * RealRobotConstants.PROPORTIONALITY_CONSTANT * RealRobotConstants.MAX_ANGULAR_SPEED;
 
         drive(new ChassisSpeeds(0, 0, rotation), false);
         tickPid();
@@ -149,7 +150,7 @@ public class SwerveDrive extends SubsystemBase {
     }
 
     private void publishTelemetry() {
-        posePublisher.set(swerveDrivePoseEstimator.getEstimatedPosition());
+        estimatedPosePublisher.set(swerveDrivePoseEstimator.getEstimatedPosition());
         currentModuleStatesPublisher.set(getModuleStates());
         desiredModuleStatesPublisher.set(new SwerveModuleState[] {
             frontLeft.getDesiredState(),

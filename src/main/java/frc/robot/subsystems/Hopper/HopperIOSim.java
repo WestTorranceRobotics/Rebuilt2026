@@ -21,10 +21,10 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.utilities.CustomUnits;
 
 public class HopperIOSim extends SubsystemBase implements HopperIO {
-    private final SparkMax hopperMotor = new SparkMax(hopperMotorID, MotorType.kBrushless);
+    private final SparkMax hopperMotor = new SparkMax(HOPPER_MOTOR_ID, MotorType.kBrushless);
 
     // flywheel sim is being used because it's the closest to what we have
-    private FlywheelSim flywheelSim = new FlywheelSim(
+    private final FlywheelSim flywheelSim = new FlywheelSim(
             LinearSystemId.createFlywheelSystem(DCMotor.getNEO(2), 0.00062156662, 1),
             DCMotor.getNEO(2)); // TODO update physical constants
 
@@ -35,7 +35,7 @@ public class HopperIOSim extends SubsystemBase implements HopperIO {
 
     public HopperIOSim() {
         SparkMaxConfig hopperConfig = new SparkMaxConfig();
-        hopperConfig.smartCurrentLimit(hopperMotorCurrentLimit);
+        hopperConfig.smartCurrentLimit(HOPPER_MOTOR_CURRENT_LIMIT);
         hopperConfig.idleMode(IdleMode.kCoast);
         hopperMotor.configure(hopperConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 

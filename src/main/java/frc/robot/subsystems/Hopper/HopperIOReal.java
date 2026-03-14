@@ -15,14 +15,14 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.utilities.CustomUnits;
 
 public class HopperIOReal extends SubsystemBase implements HopperIO {
-    private final SparkMax hopperMotor = new SparkMax(hopperMotorID, MotorType.kBrushless);
+    private final SparkMax hopperMotor = new SparkMax(HOPPER_MOTOR_ID, MotorType.kBrushless);
 
     private double actualRPM = 0;
     private boolean isHopperOn = false;
 
     public HopperIOReal() {
         SparkMaxConfig hopperConfig = new SparkMaxConfig();
-        hopperConfig.smartCurrentLimit(hopperMotorCurrentLimit);
+        hopperConfig.smartCurrentLimit(HOPPER_MOTOR_CURRENT_LIMIT);
         hopperConfig.idleMode(IdleMode.kCoast);
         hopperMotor.configure(hopperConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }

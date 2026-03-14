@@ -1,6 +1,6 @@
 package frc.robot.commands.SwerveDrive;
 
-import static frc.robot.constants.GlobalConstants.OperatorConstants.kDeadbandThreshold;
+import static frc.robot.constants.GlobalConstants.OperatorConstants.DEADBAND_THRESHOLD;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -35,7 +35,7 @@ public class DefaultJoystickCommand extends Command {
      * zero
      */
     private double applyDeadband(double rawInput) {
-        return Math.abs(rawInput) < kDeadbandThreshold ? 0 : rawInput;
+        return Math.abs(rawInput) < DEADBAND_THRESHOLD ? 0 : rawInput;
     }
 
     private double curve(double input) {
