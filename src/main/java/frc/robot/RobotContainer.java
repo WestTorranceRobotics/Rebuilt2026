@@ -18,6 +18,8 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -73,6 +75,8 @@ public class RobotContainer {
 
     public static VisionIO visionIO;
 
+    private final SendableChooser<Double> m_chooser = new SendableChooser<>(); // prepare to build LUT
+
     public static final SwerveDriveKinematics swerveDriveKinematics = new SwerveDriveKinematics(
             new Translation2d(-25 / 2, -19.5 / 2),
             new Translation2d(-25 / 2, 19.5 / 2),
@@ -83,6 +87,27 @@ public class RobotContainer {
      * Registers all important robot code, e.g. swerve, path planner, controls
      */
     public RobotContainer() {
+        for (double startingRPM = 2500; startingRPM < 4600; startingRPM += 50) {
+            m_chooser.addOption(String.format("%s RPM", startingRPM), startingRPM);
+        }
+        // m_chooser.addOption("2500 RPM", 2500.0);
+        // m_chooser.addOption("2600 RPM", 2600.0);
+        // m_chooser.addOption("2700 RPM", 2700.0);
+        // m_chooser.addOption("2800 RPM", 2800.0);
+        // m_chooser.addOption("2900 RPM", 2900.0);
+        // m_chooser.addOption("3000 RPM", 3000.0);
+        // m_chooser.addOption("3100 RPM", 3100.0);
+        // m_chooser.addOption("3200 RPM", 3200.0);
+        // m_chooser.addOption("3300 RPM", 3300.0);
+        // m_chooser.addOption("3400 RPM", 3400.0);
+        // m_chooser.addOption("3500 RPM", 3500.0);
+        // m_chooser.addOption("3600 RPM", 3600.0);
+        // m_chooser.addOption("3700 RPM", 3700.0);
+        // m_chooser.addOption("3800 RPM", 3800.0);
+        // m_chooser.addOption("3900 RPM", 3900.0);
+        // m_chooser.addOption("4000 RPM", 4000.0);
+        m_chooser.setDefaultOption("Default (3000 RPM)", 3000.0);
+        SmartDashboard.putData("Run Shooter at X RPM:", m_chooser);
         if (Robot.isReal()) {
             // Real drive train
             SwerveDriveConfigurator.SwerveDriveModuleConstants FLModuleConstants =
@@ -290,34 +315,35 @@ public class RobotContainer {
                 .onTrue(shooterSubsystem.runOnce(() -> {
                     int hubAprilTagID = DriverStation.getAlliance().get().equals(DriverStation.Alliance.Blue) ? 25 : 10;
                     if (visionIO.getTX(hubAprilTagID).isPresent()) {
-                        Translation2d hubPosition = visionIO.getTargetPose(hubAprilTagID)
-                                .orElse(null)
-                                .getTranslation();
+                        // Translation2d hubPosition = visionIO.getTargetPose(hubAprilTagID)
+                        //         .orElse(null)
+                        //         .getTranslation();
 
-                        ChassisSpeeds robotVelocityTranslation = m_swerveDrive.getChassisSpeed();
-                        Translation2d robotVelocity = new Translation2d(
-                                -robotVelocityTranslation.vxMetersPerSecond,
-                                -robotVelocityTranslation.vyMetersPerSecond);
+                        // ChassisSpeeds robotVelocityTranslation = m_swerveDrive.getChassisSpeed();
+                        // Translation2d robotVelocity = new Translation2d(
+                        //         -robotVelocityTranslation.vxMetersPerSecond,
+                        //         -robotVelocityTranslation.vyMetersPerSecond);
 
-                        Translation2d futurePosition = swerveDriveSimulation
-                                .getSimulatedDriveTrainPose()
-                                .getTranslation()
-                                .plus(robotVelocity.times(latencyCompensation));
+                        // Translation2d futurePosition = swerveDriveSimulation
+                        //         .getSimulatedDriveTrainPose()
+                        //         .getTranslation()
+                        //         .plus(robotVelocity.times(latencyCompensation));
 
-                        Translation2d distanceFromTarget = hubPosition.minus(futurePosition);
+                        // Translation2d distanceFromTarget = hubPosition.minus(futurePosition);
 
-                        double baseHorizontalVelocity =
-                                distanceFromTarget.getNorm() / distanceToTOFMap.get(distanceFromTarget.getNorm());
+                        // double baseHorizontalVelocity =
+                        //         distanceFromTarget.getNorm() / distanceToTOFMap.get(distanceFromTarget.getNorm());
 
-                        double targetHorizontalVelocity = distanceFromTarget
-                                .div(distanceFromTarget.getNorm())
-                                .times(baseHorizontalVelocity)
-                                .minus(robotVelocity)
-                                .getNorm();
+                        // double targetHorizontalVelocity = distanceFromTarget
+                        //         .div(distanceFromTarget.getNorm())
+                        //         .times(baseHorizontalVelocity)
+                        //         .minus(robotVelocity)
+                        //         .getNorm();
                         /* we realistically want to prioritize changing our hood angle rather than the flywheel speed
                         because our flywheel recovery speed is slow */
-                        shooterSubsystem.setFlywheelSpeed(
-                                RotationsPerMinute.of(shooterMap.get(targetHorizontalVelocity)));
+                        // shooterSubsystem.setFlywheelSpeed(
+                        //         RotationsPerMinute.of(shooterMap.get(targetHorizontalVelocity)));
+                        shooterSubsystem.setFlywheelSpeed(RotationsPerMinute.of(m_chooser.getSelected()));
                     }
                 }))
                 .onFalse(shooterSubsystem.runOnce(() -> {
