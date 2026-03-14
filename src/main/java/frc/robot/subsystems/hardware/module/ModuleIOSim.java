@@ -175,7 +175,7 @@ public class ModuleIOSim implements ModuleIO {
         sendableBuilder.addDoubleProperty(
                 getModuleName() + "dacc",
                 () -> RobotContainer.swerveDriveSimulation.getForce().getMagnitude()
-                        / GlobalConstants.PhysicalRobotConstants.kMass.in(Kilogram),
+                        / GlobalConstants.PhysicalRobotConstants.ROBOT_MASS.in(Kilogram),
                 null);
     }
 

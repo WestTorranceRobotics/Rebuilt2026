@@ -21,8 +21,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.utilities.CustomUnits;
 
 public class HopperIOSim extends SubsystemBase implements HopperIO {
-    private final SparkMax hopperMotorLeader = new SparkMax(hopperMotorLeaderID, MotorType.kBrushless);
-    private final SparkMax hopperMotorFollower = new SparkMax(hopperMotorFollowerID, MotorType.kBrushless);
+    private final SparkMax hopperMotorLeader = new SparkMax(HOPPER_MOTOR_LEADER_ID, MotorType.kBrushless);
+    private final SparkMax hopperMotorFollower = new SparkMax(HOPPER_MOTOR_FOLLOWER_ID, MotorType.kBrushless);
 
     // flywheel sim is being used because it's the closest to what we have
     private FlywheelSim flywheelSim = new FlywheelSim(
@@ -37,12 +37,12 @@ public class HopperIOSim extends SubsystemBase implements HopperIO {
 
     public HopperIOSim() {
         SparkMaxConfig hopperLeaderConfig = new SparkMaxConfig();
-        hopperLeaderConfig.smartCurrentLimit(hopperMotorCurrentLimit);
+        hopperLeaderConfig.smartCurrentLimit(HOPPER_MOTOR_CURRENT_LIMIT);
         hopperLeaderConfig.idleMode(IdleMode.kCoast);
         hopperMotorLeader.configure(hopperLeaderConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
         SparkMaxConfig hopperFollowerConfig = new SparkMaxConfig();
-        hopperFollowerConfig.smartCurrentLimit(hopperMotorCurrentLimit);
+        hopperFollowerConfig.smartCurrentLimit(HOPPER_MOTOR_CURRENT_LIMIT);
         hopperFollowerConfig.idleMode(IdleMode.kCoast);
         hopperFollowerConfig.follow(hopperMotorLeader); // TODO check if following works
         hopperMotorFollower.configure(

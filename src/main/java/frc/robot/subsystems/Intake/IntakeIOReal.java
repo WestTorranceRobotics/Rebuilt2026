@@ -15,14 +15,14 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.utilities.CustomUnits;
 
 public class IntakeIOReal extends SubsystemBase implements IntakeIO {
-    private final SparkMax intakeMotor = new SparkMax(intakeMotorID, MotorType.kBrushless);
+    private final SparkMax intakeMotor = new SparkMax(INTAKE_MOTOR_ID, MotorType.kBrushless);
 
     private double actualRPM = 0;
     private boolean isIntakeOn = false;
 
     public IntakeIOReal() {
         SparkMaxConfig intakeConfig = new SparkMaxConfig();
-        intakeConfig.smartCurrentLimit(intakeMotorCurrentLimit);
+        intakeConfig.smartCurrentLimit(INTAKE_MOTOR_CURRENT_LIMIT);
         intakeConfig.idleMode(IdleMode.kCoast);
         intakeMotor.configure(intakeConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }

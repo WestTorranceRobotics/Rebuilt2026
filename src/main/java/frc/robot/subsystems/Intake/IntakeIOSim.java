@@ -21,7 +21,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.utilities.CustomUnits;
 
 public class IntakeIOSim extends SubsystemBase implements IntakeIO {
-    private final SparkMax intakeMotor = new SparkMax(intakeMotorID, MotorType.kBrushless);
+    private final SparkMax intakeMotor = new SparkMax(INTAKE_MOTOR_ID, MotorType.kBrushless);
     private final SparkMaxSim intakeMotorSim;
 
     // flywheel sim is being used because it's the closest to what we have
@@ -34,7 +34,7 @@ public class IntakeIOSim extends SubsystemBase implements IntakeIO {
 
     public IntakeIOSim() {
         SparkMaxConfig intakeConfig = new SparkMaxConfig();
-        intakeConfig.smartCurrentLimit(intakeMotorCurrentLimit);
+        intakeConfig.smartCurrentLimit(INTAKE_MOTOR_CURRENT_LIMIT);
         intakeConfig.idleMode(IdleMode.kCoast);
         intakeMotor.configure(intakeConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 

@@ -15,15 +15,16 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.utilities.CustomUnits;
 
 public class ShooterIOReal extends SubsystemBase implements ShooterIO {
-    private final SparkMax feederMotor = new SparkMax(feederMotorID, MotorType.kBrushless);
+    private final SparkMax feederMotor = new SparkMax(FEEDER_MOTOR_ID, MotorType.kBrushless);
 
-    private final SparkMax launcherMotorLeader = new SparkMax(firstIntakeMotorID, MotorType.kBrushless);
-    private final SparkMax launcherMotorFollower = new SparkMax(secondIntakeMotorID, MotorType.kBrushless);
-    private final SparkMax secondLauncherMotorFollower = new SparkMax(thirdIntakeMotorID, MotorType.kBrushless);
+    private final SparkMax launcherMotorLeader = new SparkMax(LAUNCHER_MOTOR_1_ID, MotorType.kBrushless);
+    private final SparkMax launcherMotorFollower = new SparkMax(LAUNCHER_MOTOR_2_ID, MotorType.kBrushless);
+    private final SparkMax secondLauncherMotorFollower = new SparkMax(LAUNCHER_MOTOR_3_ID, MotorType.kBrushless);
 
     private final BangBangController bangbang = new BangBangController();
     private final SimpleMotorFeedforward feedforward =
@@ -35,28 +36,28 @@ public class ShooterIOReal extends SubsystemBase implements ShooterIO {
     public ShooterIOReal() {
         // feeder config
         SparkMaxConfig feederConfig = new SparkMaxConfig();
-        feederConfig.smartCurrentLimit(feederMotorCurrentLimit);
+        feederConfig.smartCurrentLimit(FEEDER_MOTOR_CURRENT_LIMIT);
         feederConfig.inverted(true);
         feederMotor.configure(feederConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
         // launcher motor configs
         SparkMaxConfig launcherLeaderConfig = new SparkMaxConfig();
         launcherLeaderConfig.idleMode(IdleMode.kCoast);
-        launcherLeaderConfig.smartCurrentLimit(launcherMotorCurrentLimit);
+        launcherLeaderConfig.smartCurrentLimit(LAUNCHER_MOTOR_CURRENT_LIMIT);
         launcherLeaderConfig.inverted(false);
         launcherMotorLeader.configure(
                 launcherLeaderConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
         SparkMaxConfig launcherFollowerConfig = new SparkMaxConfig();
         launcherFollowerConfig.idleMode(IdleMode.kCoast);
-        launcherFollowerConfig.smartCurrentLimit(launcherMotorCurrentLimit);
+        launcherFollowerConfig.smartCurrentLimit(LAUNCHER_MOTOR_CURRENT_LIMIT);
         launcherFollowerConfig.inverted(true);
         launcherMotorFollower.configure(
                 launcherFollowerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
         SparkMaxConfig secondLauncherFollowerConfig = new SparkMaxConfig();
         secondLauncherFollowerConfig.idleMode(IdleMode.kCoast);
-        secondLauncherFollowerConfig.smartCurrentLimit(launcherMotorCurrentLimit);
+        secondLauncherFollowerConfig.smartCurrentLimit(LAUNCHER_MOTOR_CURRENT_LIMIT);
         secondLauncherFollowerConfig.inverted(true); // FIXME find correct inversion
         secondLauncherMotorFollower.configure(
                 secondLauncherFollowerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -76,10 +77,23 @@ public class ShooterIOReal extends SubsystemBase implements ShooterIO {
         secondLauncherMotorFollower.setVoltage(voltage);
     }
 
+    public Command setFlywheelSpeedCommand(AngularVelocity velocity) {
+        return this.run(
+                () -> { // Commands.run runs repeatedly until interrupted.
+                    setFlywheelSpeed(velocity);
+                });
+    }
+
     public void setFlywheelVoltageDirectly(Voltage voltage) {
         launcherMotorLeader.set(voltage.in(Volts));
         launcherMotorFollower.set(voltage.in(Volts));
         secondLauncherMotorFollower.set(voltage.in(Volts));
+    }
+
+    public Command setFlywheelVoltageDirectlyCommand(Voltage voltage) {
+        return this.run(() -> {
+            setFlywheelVoltageDirectly(voltage);
+        });
     }
 
     public void stopFlywheel() {

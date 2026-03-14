@@ -5,7 +5,7 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
-import static frc.robot.constants.GlobalConstants.OperatorConstants.kDriverControllerPort;
+import static frc.robot.constants.GlobalConstants.OperatorConstants.DRIVER_CONTROLLER_PORT;
 import static frc.robot.constants.ShooterConstants.*;
 import static frc.robot.utilities.CustomUnits.*;
 
@@ -67,31 +67,31 @@ public class RobotContainer {
 
     private final Controller controller;
 
-    private final SwerveDriveConfigurator swerveDriveConfigurator;
-
-    public static SwerveDriveSimulation swerveDriveSimulation;
+	public static SwerveDriveSimulation swerveDriveSimulation;
 
     public static VisionIO visionIO;
 
     public static final SwerveDriveKinematics swerveDriveKinematics = new SwerveDriveKinematics(
-            new Translation2d(-25 / 2, -19.5 / 2),
-            new Translation2d(-25 / 2, 19.5 / 2),
-            new Translation2d(25 / 2, -19.5 / 2),
-            new Translation2d(25 / 2, 19.5 / 2));
+            new Translation2d(-25.0 / 2, -19.5 / 2),
+            new Translation2d(-25.0 / 2, 19.5 / 2),
+            new Translation2d(25.0 / 2, -19.5 / 2),
+            new Translation2d(25.0 / 2, 19.5 / 2));
 
     /**
      * Registers all important robot code, e.g. swerve, path planner, controls
      */
     public RobotContainer() {
-        if (Robot.isReal()) {
+		SwerveDriveConfigurator swerveDriveConfigurator;
+
+		if (Robot.isReal()) {
             // Real drive train
             SwerveDriveConfigurator.SwerveDriveModuleConstants FLModuleConstants =
                     new SwerveDriveConfigurator.SwerveDriveModuleConstants(
                             SwerveDriveConfigurator.SwerveModuleCornerPosition.FRONT_LEFT,
-                            RealRobotConstants.kFLCANCoderID,
-                            RealRobotConstants.kFLDriveMotorID,
-                            RealRobotConstants.kFLAzimuthMotorID,
-                            RealRobotConstants.kFLCANCoderOffset,
+                            RealRobotConstants.FL_CANCODER_ID,
+                            RealRobotConstants.FL_DRIVE_MOTOR_ID,
+                            RealRobotConstants.FL_AZIMUTH_MOTOR_ID,
+                            RealRobotConstants.FL_CANCODER_OFFSET,
                             RealRobotConstants.kPDrive,
                             RealRobotConstants.kIDrive,
                             RealRobotConstants.kDDrive,
@@ -108,26 +108,26 @@ public class RobotContainer {
                     new SwerveDriveConfigurator.SwerveDriveModuleConstants(
                             FLModuleConstants,
                             SwerveDriveConfigurator.SwerveModuleCornerPosition.FRONT_RIGHT,
-                            RealRobotConstants.kFRCANCoderID,
-                            RealRobotConstants.kFRDriveMotorID,
-                            RealRobotConstants.kFRAzimuthMotorID,
-                            RealRobotConstants.kFRCANCoderOffset);
+                            RealRobotConstants.FR_CANCODER_ID,
+                            RealRobotConstants.FR_DRIVE_MOTOR_ID,
+                            RealRobotConstants.FR_AZIMUTH_MOTOR_ID,
+                            RealRobotConstants.FR_CANCODER_OFFSET);
             SwerveDriveConfigurator.SwerveDriveModuleConstants BLModuleConstants =
                     new SwerveDriveConfigurator.SwerveDriveModuleConstants(
                             FLModuleConstants,
                             SwerveDriveConfigurator.SwerveModuleCornerPosition.BACK_LEFT,
-                            RealRobotConstants.kBLCANCoderID,
-                            RealRobotConstants.kBLDriveMotorID,
-                            RealRobotConstants.kBLAzimuthMotorID,
-                            RealRobotConstants.kBLCANCoderOffset);
+                            RealRobotConstants.BL_CANCODER_ID,
+                            RealRobotConstants.BL_DRIVE_MOTOR_ID,
+                            RealRobotConstants.BL_AZIMUTH_MOTOR_ID,
+                            RealRobotConstants.BL_CANCODER_OFFSET);
             SwerveDriveConfigurator.SwerveDriveModuleConstants BRModuleConstants =
                     new SwerveDriveConfigurator.SwerveDriveModuleConstants(
                             FLModuleConstants,
                             SwerveDriveConfigurator.SwerveModuleCornerPosition.BACK_RIGHT,
-                            RealRobotConstants.kBRCANCoderID,
-                            RealRobotConstants.kBRDriveMotorID,
-                            RealRobotConstants.kBRAzimuthMotorID,
-                            RealRobotConstants.kBRCANCoderOffset);
+                            RealRobotConstants.BR_CANCODER_ID,
+                            RealRobotConstants.BR_DRIVE_MOTOR_ID,
+                            RealRobotConstants.BR_AZIMUTH_MOTOR_ID,
+                            RealRobotConstants.BR_CANCODER_OFFSET);
 
             SwerveDriveConfigurator.SwerveDriveRobotConstants robotConstants =
                     new SwerveDriveConfigurator.SwerveDriveRobotConstants(
@@ -136,7 +136,7 @@ public class RobotContainer {
                             Inches.of(24.5),
                             Inches.of(2.5),
                             Inches.of(2),
-                            RealRobotConstants.kPigeon2ID);
+                            RealRobotConstants.PIGEON2_ID);
 
             swerveDriveConfigurator = new SwerveDriveConfigurator(
                     robotConstants, new SwerveDriveConfigurator.SwerveDriveModuleConstants[] {
@@ -154,14 +154,12 @@ public class RobotContainer {
                     new ModuleIOReal(
                             SwerveDriveConfigurator.SwerveModuleCornerPosition.BACK_RIGHT, swerveDriveConfigurator));
 
-            controller = new DualShock4Controller(kDriverControllerPort);
+            controller = new DualShock4Controller(DRIVER_CONTROLLER_PORT);
             shooterSubsystem = new ShooterIOReal();
             intakeSubsystem = new IntakeIOReal();
             hopperSubsystem = new HopperIOReal();
             visionIO = new VisionIOReal();
         } else {
-            // Simulation drive train
-
             // TODO add constant for drive base length
             swerveDriveSimulation = new SwerveDriveSimulation(
                     DriveTrainSimulationConfig.Default()
@@ -235,22 +233,22 @@ public class RobotContainer {
                     new ModuleIOSim(
                             swerveDriveSimulation.getModules()[0],
                             SwerveDriveConfigurator.SwerveModuleCornerPosition.FRONT_LEFT,
-                            swerveDriveConfigurator),
+							swerveDriveConfigurator),
                     new ModuleIOSim(
                             swerveDriveSimulation.getModules()[1],
                             SwerveDriveConfigurator.SwerveModuleCornerPosition.FRONT_RIGHT,
-                            swerveDriveConfigurator),
+							swerveDriveConfigurator),
                     new ModuleIOSim(
                             swerveDriveSimulation.getModules()[2],
                             SwerveDriveConfigurator.SwerveModuleCornerPosition.BACK_LEFT,
-                            swerveDriveConfigurator),
+							swerveDriveConfigurator),
                     new ModuleIOSim(
                             swerveDriveSimulation.getModules()[3],
                             SwerveDriveConfigurator.SwerveModuleCornerPosition.BACK_RIGHT,
-                            swerveDriveConfigurator));
+							swerveDriveConfigurator));
 
             SimulatedArena.getInstance().addDriveTrainSimulation(swerveDriveSimulation);
-            controller = new DualShock4Controller(kDriverControllerPort);
+            controller = new DualShock4Controller(DRIVER_CONTROLLER_PORT);
             shooterSubsystem = new ShooterIOSim();
             intakeSubsystem = new IntakeIOSim();
             hopperSubsystem = new HopperIOSim();
@@ -288,7 +286,11 @@ public class RobotContainer {
         controller
                 .a()
                 .onTrue(shooterSubsystem.runOnce(() -> {
-                    int hubAprilTagID = DriverStation.getAlliance().get().equals(DriverStation.Alliance.Blue) ? 25 : 10;
+                    int hubAprilTagID = DriverStation.getAlliance()
+                                    .orElse(DriverStation.Alliance.Blue)
+                                    .equals(DriverStation.Alliance.Blue)
+                            ? 25
+                            : 10;
                     if (visionIO.getTX(hubAprilTagID).isPresent()) {
                         Translation2d hubPosition = visionIO.getTargetPose(hubAprilTagID)
                                 .orElse(null)
@@ -302,12 +304,12 @@ public class RobotContainer {
                         Translation2d futurePosition = swerveDriveSimulation
                                 .getSimulatedDriveTrainPose()
                                 .getTranslation()
-                                .plus(robotVelocity.times(latencyCompensation));
+                                .plus(robotVelocity.times(LATENCY_COMPENSATION));
 
                         Translation2d distanceFromTarget = hubPosition.minus(futurePosition);
 
                         double baseHorizontalVelocity =
-                                distanceFromTarget.getNorm() / distanceToTOFMap.get(distanceFromTarget.getNorm());
+                                distanceFromTarget.getNorm() / DISTANCE_TO_TOF_MAP.get(distanceFromTarget.getNorm());
 
                         double targetHorizontalVelocity = distanceFromTarget
                                 .div(distanceFromTarget.getNorm())
@@ -317,7 +319,7 @@ public class RobotContainer {
                         /* we realistically want to prioritize changing our hood angle rather than the flywheel speed
                         because our flywheel recovery speed is slow */
                         shooterSubsystem.setFlywheelSpeed(
-                                RotationsPerMinute.of(shooterMap.get(targetHorizontalVelocity)));
+                                RotationsPerMinute.of(SHOOTER_MAP.get(targetHorizontalVelocity)));
                     }
                 }))
                 .onFalse(shooterSubsystem.runOnce(() -> {
