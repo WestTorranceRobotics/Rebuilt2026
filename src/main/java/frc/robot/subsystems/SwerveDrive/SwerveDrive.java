@@ -7,6 +7,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -14,11 +15,11 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.networktables.StructArrayPublisher;
-import edu.wpi.first.networktables.StructPublisher;
+import edu.wpi.first.networktables.*;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.MathUtils;
@@ -31,6 +32,7 @@ import java.io.IOException;
 import java.util.Optional;
 import org.json.simple.parser.ParseException;
 
+@Logged
 public class SwerveDrive extends SubsystemBase {
     private final GyroIO gyro;
     private final SwerveDrivePoseEstimator swerveDrivePoseEstimator;
@@ -168,7 +170,7 @@ public class SwerveDrive extends SubsystemBase {
     private void calculateState(ChassisSpeeds chassisSpeeds, double heading, ModuleIO module, boolean absolute) {
         /*
          Swerve drive kinematics are fairly simple.
-         There are two components to each module's desired state.
+         There are two parts to each module's desired state.
            1. The translation vector - this is simply the desired translation velocity
            2. The rotation vector - this is the desired angular velocity times the rotation unit
            vector (which should be tangent to a line drawn from the module to the center of the
@@ -196,7 +198,7 @@ public class SwerveDrive extends SubsystemBase {
             return;
         }
 
-        // Accounts for heading in absolute movement, this is all the absolute flag does
+        // Accounts for heading in absolute movement. This is all the absolute flag does.
         if (absolute) translationVector = translationVector.rotateBy(Rotation2d.fromRadians(-heading));
 
         // This will be the desired state

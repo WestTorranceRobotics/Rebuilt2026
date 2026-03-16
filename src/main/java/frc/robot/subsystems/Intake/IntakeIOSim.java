@@ -39,6 +39,12 @@ public class IntakeIOSim extends SubsystemBase implements IntakeIO {
 	private final ArmFeedforward hoodFF = new ArmFeedforward(0, 0, 0);
 	private final PIDController hoodPID = new PIDController(0, 0, 0);
 
+	private final SendableChooser<Double> kG = new SendableChooser<Double>();
+	private final SendableChooser<Double> kS = new SendableChooser<Double>();
+
+	private final SendableChooser<Double> kP = new SendableChooser<Double>();
+	private final SendableChooser<Double> kD = new SendableChooser<Double>();
+
 	// flywheel sim is being used because it's the closest to what we have
 	private final FlywheelSim rollerSim = new FlywheelSim(
 			LinearSystemId.createFlywheelSystem(DCMotor.getNEO(1), 0.00062156662, 1),
@@ -80,6 +86,15 @@ public class IntakeIOSim extends SubsystemBase implements IntakeIO {
 
 		hoodPID.setTolerance(0.05);
 		hoodPID.enableContinuousInput(-Math.PI, Math.PI);
+
+		kP.onChange(hoodPID::setP);
+		SmartDashboard.putData("kP", kP);
+		kD.onChange(hoodPID::setD);
+		SmartDashboard.putData("kD", kD);
+		kS.onChange(hoodFF::setKs);
+		SmartDashboard.putData("kS", kS);
+		kG.onChange(hoodFF::setKv);
+		SmartDashboard.putData("kG", kG);
 	}
 
 	@Override

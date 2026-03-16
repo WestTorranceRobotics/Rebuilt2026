@@ -57,14 +57,13 @@ public class ShooterIOReal extends SubsystemBase implements ShooterIO {
         launcherMotorFollower.configure(
                 launcherFollowerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
+        // TODO: Reuse SparkMaxConfigs
         SparkMaxConfig secondLauncherFollowerConfig = new SparkMaxConfig();
         secondLauncherFollowerConfig.idleMode(IdleMode.kCoast);
         secondLauncherFollowerConfig.smartCurrentLimit(LAUNCHER_MOTOR_CURRENT_LIMIT);
         secondLauncherFollowerConfig.inverted(true); // FIXME find correct inversion
         secondLauncherMotorFollower.configure(
                 secondLauncherFollowerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-        // if inversion types are same between the follower configs, it may be cleaner to reuse the config for both of
-        // them
     }
 
     public void setFlywheelSpeed(AngularVelocity velocity) {
@@ -88,21 +87,21 @@ public class ShooterIOReal extends SubsystemBase implements ShooterIO {
 
     public void setFlywheelVoltageDirectly(Voltage voltage) {
         launcherMotorLeader.set(voltage.in(Volts));
-        launcherMotorFollower.set(voltage.in(Volts));
-        secondLauncherMotorFollower.set(voltage.in(Volts));
+        //launcherMotorFollower.set(voltage.in(Volts));
+        //secondLauncherMotorFollower.set(voltage.in(Volts));
     }
 
     public Command setFlywheelVoltageDirectlyCommand(Voltage voltage) {
-        return this.run(() -> {
+        return this.runOnce(() -> {
             setFlywheelVoltageDirectly(voltage);
         });
     }
 
     public void stopFlywheel() {
-        launcherMotorLeader.set(0);
-        launcherMotorFollower.set(0);
-        secondLauncherMotorFollower.set(0);
         targetRPM = 0;
+        launcherMotorLeader.setVoltage(0);
+        //launcherMotorFollower.setVoltage(0);
+        //secondLauncherMotorFollower.setVoltage(0);
     }
 
     public void setFeederVoltageDirectly(Voltage voltage) {

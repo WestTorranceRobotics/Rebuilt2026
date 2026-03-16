@@ -2,6 +2,7 @@ package frc.robot.subsystems.hardware.vision;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.VisionConstants;
@@ -19,7 +20,7 @@ public class VisionIOReal extends SubsystemBase implements VisionIO {
 
     public VisionIOReal() {
         camera = new PhotonCamera(VisionConstants.CAMERA_NAME);
-        aprilTagFieldLayout = AprilTagFields.k2026RebuiltWelded.loadAprilTagLayoutField();
+        aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltWelded);
     }
 
     public void tick() {
@@ -27,7 +28,6 @@ public class VisionIOReal extends SubsystemBase implements VisionIO {
 
         if (!results.isEmpty()) {
             var result = results.get(results.size() - 1);
-
             if (result.hasTargets()) {
                 trackedTargets = result.getTargets();
                 bestTarget = result.getBestTarget();
@@ -65,7 +65,7 @@ public class VisionIOReal extends SubsystemBase implements VisionIO {
     }
 
     @Override
-    public Optional<Double> getTY(int targetID) {
+    public Optional<Double> getTY(int targetID ) {
         PhotonTrackedTarget target = getTrackedTarget(targetID);
         if (target != null) return Optional.of(target.getPitch());
         return Optional.empty();

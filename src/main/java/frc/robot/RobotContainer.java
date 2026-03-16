@@ -271,9 +271,14 @@ public class RobotContainer {
 
             NamedCommands.registerCommand(
                     "alignToHub",
-                    new InstantCommand(() -> swerveDrive.turnToYaw(visionIO.getTX(
-                                    DriverStation.getAlliance().get().equals(DriverStation.Alliance.Blue) ? 25 : 10)
-                            .orElse(null))));
+                    new InstantCommand(() ->
+                            swerveDrive.turnToYaw(
+                                    visionIO.getTX(
+                                        DriverStation.getAlliance().get().equals(DriverStation.Alliance.Blue)
+                                                ? 25
+                                                : 10)
+                                    .orElse(null)
+                            )));
             configureBindings();
         }
 
@@ -297,13 +302,13 @@ public class RobotContainer {
         controller.zero().onTrue(Commands.runOnce(this::zeroHeading));
 
         // shooter button mapping
-        shooterSubsystem.setFeederVoltageDirectly(Volts.of(.75));
 
         controller
                 .a()
                 .onTrue(shooterSubsystem.runOnce(() -> {
+					shooterSubsystem.setFeederVoltageDirectly(Volts.of(.75));
                     int hubAprilTagID = DriverStation.getAlliance().get().equals(DriverStation.Alliance.Blue) ? 25 : 10;
-                    if (visionIO.getTX(hubAprilTagID).isPresent()) {
+                    //if (visionIO.getTX(hubAprilTagID).isPresent()) {
                         //                        Translation2d hubPosition = visionIO.getTargetPose(hubAprilTagID)
                         //                                .orElse(null)
                         //                                .getTranslation();
@@ -335,18 +340,17 @@ public class RobotContainer {
                         // shooterSubsystem.setFlywheelSpeed(
                         //         RotationsPerMinute.of(shooterMap.get(targetHorizontalVelocity)));
                         shooterSubsystem.setFlywheelSpeed(RotationsPerMinute.of(m_chooser.getSelected()));
-                    }
+                   // }
                 }))
-                .onFalse(shooterSubsystem.runOnce(() -> {
-                    shooterSubsystem.stopFlywheel();
-                }));
+                .onFalse(shooterSubsystem.runOnce(shooterSubsystem::stopFlywheel));
 
         controller.b().whileTrue(shooterSubsystem.run(() -> {
-            // m_swerveDrive.turnToYaw(visionIO.getTX(visionIO.getBestTarget().getFiducialId()).orElse(null)); // align
-            // robot to best apriltag
+            // swerveDrive.turnToYaw(visionIO.getTX(visionIO.getBestTarget().getFiducialId()).orElse(null));
+            // align robot to best AprilTag
+
             int hubAprilTagID = DriverStation.getAlliance().get().equals(DriverStation.Alliance.Blue) ? 25 : 10;
             if (visionIO.getTX(hubAprilTagID).isPresent()) {
-                swerveDrive.turnToYaw(visionIO.getTX(hubAprilTagID).orElse(null));
+                swerveDrive.turnToYaw(visionIO.getTX(hubAprilTagID).get());
             }
         }));
 
