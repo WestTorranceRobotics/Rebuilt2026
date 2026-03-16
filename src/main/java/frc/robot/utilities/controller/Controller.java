@@ -24,6 +24,11 @@ public interface Controller {
     double getRightY();
 
     /**
+     * @Trigger The amount of hold on the right analog trigger.
+     */
+    double getRightAnalogTrigger();
+
+    /**
      * @Trigger Triggers when the bottom button is pressed.
      */
     Trigger a();

@@ -1,11 +1,9 @@
 package frc.robot.subsystems.Intake;
 
-import static edu.wpi.first.units.Units.Radians;
 import static frc.robot.constants.IntakeConstants.*;
 
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
-import com.revrobotics.sim.SparkMaxSim;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
@@ -13,8 +11,6 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -68,21 +64,10 @@ public class IntakeIOReal extends SubsystemBase implements IntakeIO {
         isIntakeOn = false;
     }
 
-    @Override
-    public Command setHoodAngleCommand(Angle angle) {
-        hoodPID.setSetpoint(angle.in(Radians));
-        hoodPID.calculate(hoodMotor.getEncoder().getPosition());
-        return this.run(() -> {
-                    hoodMotor.set(
-                            hoodFF.calculate(
-                                    hoodMotor.getEncoder().getPosition(),
-                                    hoodMotor.getEncoder().getVelocity())
-                            // + hoodPID.calculate(hoodMotor.getEncoder().getPosition())
-                    );
-                })
-                .until(hoodPID::atSetpoint)
-                .andThen(this::stopHoodCommand);
+    public void setHoodVoltage(Voltage volts) {
+        hoodMotor.setVoltage(volts);
     }
+
     public Command stopHoodCommand() {
         return this.runOnce(() -> {
             hoodMotor.set(0);

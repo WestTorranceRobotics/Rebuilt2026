@@ -1,7 +1,6 @@
 package frc.robot.subsystems.Intake;
 
 import edu.wpi.first.epilogue.Logged;
-import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -17,7 +16,7 @@ public interface IntakeIO extends Subsystem {
 
     public void stopIntake();
 
-    public Command setHoodAngleCommand(Angle angle);
+    public void setHoodVoltage(Voltage voltage);
 
     public Command stopHoodCommand();
 }
