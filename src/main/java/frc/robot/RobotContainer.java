@@ -298,7 +298,7 @@ public class RobotContainer {
         controller
                 .a()
                 .onTrue(shooterSubsystem.runOnce(() -> {
-                    shooterSubsystem.setFeederVoltageDirectly(Volts.of(.75));
+                    shooterSubsystem.setFeederVoltageDirectly(Volts.of(3));
                     int hubAprilTagID = DriverStation.getAlliance().get().equals(DriverStation.Alliance.Blue) ? 25 : 10;
                     // if (visionIO.getTX(hubAprilTagID).isPresent()) {
                     //                        Translation2d hubPosition = visionIO.getTargetPose(hubAprilTagID)
@@ -351,15 +351,18 @@ public class RobotContainer {
             if (intakeSubsystem.isIntakeOn()) {
                 intakeSubsystem.stopIntake();
             } else {
-                intakeSubsystem.setIntakeVoltage(Volts.of(.75));
+                intakeSubsystem.setIntakeVoltage(Volts.of(3));
             }
         }));
 
-        controller.y().onTrue(intakeSubsystem.runOnce(() -> {
-            intakeSubsystem.setHoodVoltage(Volts.of(3));
-        })).onFalse(intakeSubsystem.run(intakeSubsystem::stopHoodCommand));
+        controller
+                .y()
+                .onTrue(intakeSubsystem.runOnce(() -> {
+                    intakeSubsystem.setHoodVoltage(Volts.of(3));
+                }))
+                .onFalse(intakeSubsystem.run(intakeSubsystem::stopHoodCommand));
 
-        hopperSubsystem.setRollerVoltage(Volts.of(.75));
+        hopperSubsystem.setRollerVoltage(Volts.of(3));
     }
 
     /**
