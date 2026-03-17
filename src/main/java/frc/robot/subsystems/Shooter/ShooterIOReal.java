@@ -100,6 +100,8 @@ public class ShooterIOReal extends SubsystemBase implements ShooterIO {
     public void stopFlywheel() {
         targetRPM = 0;
         launcherMotorLeader.setVoltage(0);
+
+        this.stopFeeder();
         //launcherMotorFollower.setVoltage(0);
         //secondLauncherMotorFollower.setVoltage(0);
     }

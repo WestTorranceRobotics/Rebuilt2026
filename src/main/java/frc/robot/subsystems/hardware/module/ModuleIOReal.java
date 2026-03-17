@@ -115,7 +115,7 @@ public class ModuleIOReal implements ModuleIO {
         configuration.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
         // TODO determine if this is correct
         configuration.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.5;
-//        configuration.MagnetSensor.MagnetOffset = -moduleConstants.CANCoderOffset;
+        configuration.MagnetSensor.MagnetOffset = -moduleConstants.CANCoderOffset;
 
         CANCoder.getConfigurator().apply(configuration);
 

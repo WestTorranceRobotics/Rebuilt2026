@@ -351,18 +351,18 @@ public class RobotContainer {
             if (intakeSubsystem.isIntakeOn()) {
                 intakeSubsystem.stopIntake();
             } else {
-                intakeSubsystem.setIntakeVoltage(Volts.of(3));
+                intakeSubsystem.setIntakeVoltage(Volts.of(-11));
             }
         }));
 
         controller
                 .y()
                 .onTrue(intakeSubsystem.runOnce(() -> {
-                    intakeSubsystem.setHoodVoltage(Volts.of(3));
+                    intakeSubsystem.setHoodVoltage(Volts.of(-3));
                 }))
                 .onFalse(intakeSubsystem.run(intakeSubsystem::stopHoodCommand));
 
-        hopperSubsystem.setRollerVoltage(Volts.of(3));
+        hopperSubsystem.setRollerVoltage(Volts.of(2));
     }
 
     /**

@@ -4,8 +4,8 @@ public final class SwerveDriveConstants {
     public static class RealRobotConstants {
         public static final int PIGEON2_ID = 9;
 
-        public static final int FR_DRIVE_MOTOR_ID = 52;
-        public static final int FL_DRIVE_MOTOR_ID = 33;
+        public static final int FR_DRIVE_MOTOR_ID = 33;
+        public static final int FL_DRIVE_MOTOR_ID = 52;
         public static final int BL_DRIVE_MOTOR_ID = 34;
         public static final int BR_DRIVE_MOTOR_ID = 54;
 
@@ -23,10 +23,10 @@ public final class SwerveDriveConstants {
         public static final boolean AZIMUTH_INVERTED = true;
 
         // TODO zero these encoders
-        public static final double FR_CANCODER_OFFSET = 0.184814453125;
-        public static final double FL_CANCODER_OFFSET = 0.357421875;
-        public static final double BL_CANCODER_OFFSET = 0.099609375;
-        public static final double BR_CANCODER_OFFSET = 0.333251953125;
+        public static final double FR_CANCODER_OFFSET = -0.43896484375;
+        public static final double FL_CANCODER_OFFSET = -0.03564453125;
+        public static final double BL_CANCODER_OFFSET =0.493896484375;
+        public static final double BR_CANCODER_OFFSET =  -0.037353515625;
 
         public static final double kPDrive = 0.098616;
         public static final double kIDrive = 0;
