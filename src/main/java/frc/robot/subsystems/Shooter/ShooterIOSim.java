@@ -24,9 +24,10 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.utilities.CustomUnits;
 
 public class ShooterIOSim extends SubsystemBase implements ShooterIO {
-    private SparkMax feederMotor = new SparkMax(FEEDER_MOTOR_ID, MotorType.kBrushless);
     // TODO: implement feeder sim in periodic
     private SparkMaxSim feederMotorSim;
+
+    private final SparkMax feederMotor = new SparkMax(FEEDER_MOTOR_ID, MotorType.kBrushless);
 
     private final SparkMax launcherMotorLeader = new SparkMax(LAUNCHER_MOTOR_1_ID, MotorType.kBrushless);
     private final SparkMax launcherMotorFollower = new SparkMax(LAUNCHER_MOTOR_2_ID, MotorType.kBrushless);
@@ -41,8 +42,7 @@ public class ShooterIOSim extends SubsystemBase implements ShooterIO {
             DCMotor.getNEO(3)); // TODO update physical constants
 
     private final BangBangController bangbang = new BangBangController();
-    private final SimpleMotorFeedforward feedforward =
-            new SimpleMotorFeedforward(0, 0.00235); // TODO: test for further tuning
+    private final SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(0, 0.00235); // TODO: tune further
 
     private double targetRPM = 0;
     private double actualRPM = 0;
@@ -102,24 +102,18 @@ public class ShooterIOSim extends SubsystemBase implements ShooterIO {
         launcherMotorLeader.set(voltage.in(Volts));
         launcherMotorFollower.set(voltage.in(Volts));
         secondLauncherMotorFollower.set(voltage.in(Volts));
-        launcherMotorLeader.set(voltage.in(Volts));
-        launcherMotorFollower.set(voltage.in(Volts));
-        secondLauncherMotorFollower.set(voltage.in(Volts));
     }
 
-    public void stopFlywheel() {
+    public void stopShooter() {
         launcherMotorLeader.set(0);
         launcherMotorFollower.set(0);
         secondLauncherMotorFollower.set(0);
+        feederMotor.set(0);
         targetRPM = 0;
     }
 
     public void setFeederVoltageDirectly(Voltage voltage) {
         feederMotor.set(voltage.in(Volts));
-    }
-
-    public void stopFeeder() {
-        feederMotor.set(0);
     }
 
     @Override
@@ -129,9 +123,7 @@ public class ShooterIOSim extends SubsystemBase implements ShooterIO {
 
         // Update motors
         launcherMotorLeaderSim.iterate(flywheelSim.getAngularVelocityRPM(), RoboRioSim.getVInVoltage(), 0.02);
-
         launcherMotorFollowerSim.iterate(flywheelSim.getAngularVelocityRPM(), RoboRioSim.getVInVoltage(), 0.02);
-
         secondLauncherMotorFollowerSim.iterate(flywheelSim.getAngularVelocityRPM(), RoboRioSim.getVInVoltage(), 0.02);
 
         this.actualRPM = flywheelSim.getAngularVelocityRPM();

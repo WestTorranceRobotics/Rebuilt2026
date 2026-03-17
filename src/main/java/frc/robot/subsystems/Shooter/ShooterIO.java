@@ -11,7 +11,5 @@ public interface ShooterIO extends Subsystem {
 
     public void setFeederVoltageDirectly(Voltage voltage);
 
-    public void stopFlywheel();
-
-    public void stopFeeder();
+    public void stopShooter();
 }

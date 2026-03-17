@@ -9,7 +9,6 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
-import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.hal.simulation.RoboRioDataJNI;
 import edu.wpi.first.math.controller.BangBangController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -20,7 +19,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.utilities.CustomUnits;
 
-@Logged
 public class ShooterIOReal extends SubsystemBase implements ShooterIO {
     private final SparkMax feederMotor = new SparkMax(FEEDER_MOTOR_ID, MotorType.kBrushless);
 
@@ -29,8 +27,7 @@ public class ShooterIOReal extends SubsystemBase implements ShooterIO {
     private final SparkMax secondLauncherMotorFollower = new SparkMax(LAUNCHER_MOTOR_3_ID, MotorType.kBrushless);
 
     private final BangBangController bangbang = new BangBangController();
-    private final SimpleMotorFeedforward feedforward =
-            new SimpleMotorFeedforward(0, 0.00255); // TODO: test for further tuning
+    private final SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(0, 0.00255); // TODO: tune further
 
     private double targetRPM = 0;
     private double actualRPM = 0;
@@ -87,8 +84,8 @@ public class ShooterIOReal extends SubsystemBase implements ShooterIO {
 
     public void setFlywheelVoltageDirectly(Voltage voltage) {
         launcherMotorLeader.set(voltage.in(Volts));
-        //launcherMotorFollower.set(voltage.in(Volts));
-        //secondLauncherMotorFollower.set(voltage.in(Volts));
+        // launcherMotorFollower.set(voltage.in(Volts));
+        // secondLauncherMotorFollower.set(voltage.in(Volts));
     }
 
     public Command setFlywheelVoltageDirectlyCommand(Voltage voltage) {
@@ -97,21 +94,16 @@ public class ShooterIOReal extends SubsystemBase implements ShooterIO {
         });
     }
 
-    public void stopFlywheel() {
-        targetRPM = 0;
+    public void stopShooter() {
         launcherMotorLeader.setVoltage(0);
-
-        this.stopFeeder();
-        //launcherMotorFollower.setVoltage(0);
-        //secondLauncherMotorFollower.setVoltage(0);
+        // launcherMotorFollower.setVoltage(0);
+        // secondLauncherMotorFollower.setVoltage(0);
+        feederMotor.set(0);
+        targetRPM = 0;
     }
 
     public void setFeederVoltageDirectly(Voltage voltage) {
         feederMotor.set(voltage.in(Volts));
-    }
-
-    public void stopFeeder() {
-        feederMotor.set(0);
     }
 
     @Override

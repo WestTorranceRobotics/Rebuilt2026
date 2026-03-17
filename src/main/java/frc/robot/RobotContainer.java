@@ -334,7 +334,7 @@ public class RobotContainer {
                     shooterSubsystem.setFlywheelSpeed(RotationsPerMinute.of(m_chooser.getSelected()));
                     // }
                 }))
-                .onFalse(shooterSubsystem.runOnce(shooterSubsystem::stopFlywheel));
+                .onFalse(shooterSubsystem.runOnce(shooterSubsystem::stopShooter));
 
         controller.b().whileTrue(shooterSubsystem.run(() -> {
             // swerveDrive.turnToYaw(visionIO.getTX(visionIO.getBestTarget().getFiducialId()).orElse(null));
