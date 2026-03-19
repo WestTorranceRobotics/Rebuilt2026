@@ -24,7 +24,6 @@ public class ShooterIOReal extends SubsystemBase implements ShooterIO {
 
     private final SparkMax launcherMotorLeader = new SparkMax(LAUNCHER_MOTOR_1_ID, MotorType.kBrushless);
     private final SparkMax launcherMotorFollower = new SparkMax(LAUNCHER_MOTOR_2_ID, MotorType.kBrushless);
-    private final SparkMax secondLauncherMotorFollower = new SparkMax(LAUNCHER_MOTOR_3_ID, MotorType.kBrushless);
 
     private final BangBangController bangbang = new BangBangController();
     private final SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(0, 0.00255); // TODO: tune further
@@ -53,14 +52,6 @@ public class ShooterIOReal extends SubsystemBase implements ShooterIO {
         launcherFollowerConfig.inverted(true);
         launcherMotorFollower.configure(
                 launcherFollowerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-
-        // TODO: Reuse SparkMaxConfigs
-        SparkMaxConfig secondLauncherFollowerConfig = new SparkMaxConfig();
-        secondLauncherFollowerConfig.idleMode(IdleMode.kCoast);
-        secondLauncherFollowerConfig.smartCurrentLimit(LAUNCHER_MOTOR_CURRENT_LIMIT);
-        secondLauncherFollowerConfig.inverted(true); // FIXME find correct inversion
-        secondLauncherMotorFollower.configure(
-                secondLauncherFollowerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }
 
     public void setFlywheelSpeed(AngularVelocity velocity) {
@@ -72,7 +63,6 @@ public class ShooterIOReal extends SubsystemBase implements ShooterIO {
 
         launcherMotorLeader.setVoltage(voltage);
         launcherMotorFollower.setVoltage(voltage);
-        secondLauncherMotorFollower.setVoltage(voltage);
     }
 
     public Command setFlywheelSpeedCommand(AngularVelocity velocity) {
@@ -85,7 +75,6 @@ public class ShooterIOReal extends SubsystemBase implements ShooterIO {
     public void setFlywheelVoltageDirectly(Voltage voltage) {
         launcherMotorLeader.set(voltage.in(Volts));
         // launcherMotorFollower.set(voltage.in(Volts));
-        // secondLauncherMotorFollower.set(voltage.in(Volts));
     }
 
     public Command setFlywheelVoltageDirectlyCommand(Voltage voltage) {
@@ -97,7 +86,6 @@ public class ShooterIOReal extends SubsystemBase implements ShooterIO {
     public void stopShooter() {
         launcherMotorLeader.setVoltage(0);
         // launcherMotorFollower.setVoltage(0);
-        // secondLauncherMotorFollower.setVoltage(0);
         feederMotor.set(0);
         targetRPM = 0;
     }

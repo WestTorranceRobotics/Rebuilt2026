@@ -31,11 +31,9 @@ public class ShooterIOSim extends SubsystemBase implements ShooterIO {
 
     private final SparkMax launcherMotorLeader = new SparkMax(LAUNCHER_MOTOR_1_ID, MotorType.kBrushless);
     private final SparkMax launcherMotorFollower = new SparkMax(LAUNCHER_MOTOR_2_ID, MotorType.kBrushless);
-    private final SparkMax secondLauncherMotorFollower = new SparkMax(LAUNCHER_MOTOR_3_ID, MotorType.kBrushless);
 
     private SparkMaxSim launcherMotorLeaderSim;
     private SparkMaxSim launcherMotorFollowerSim;
-    private SparkMaxSim secondLauncherMotorFollowerSim;
 
     private FlywheelSim flywheelSim = new FlywheelSim(
             LinearSystemId.createFlywheelSystem(DCMotor.getNEO(3), 0.00062156662, 1),
@@ -72,19 +70,9 @@ public class ShooterIOSim extends SubsystemBase implements ShooterIO {
         launcherMotorFollower.configure(
                 launcherFollowerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-        SparkMaxConfig secondLauncherFollowerConfig = new SparkMaxConfig();
-        secondLauncherFollowerConfig.idleMode(IdleMode.kCoast);
-        secondLauncherFollowerConfig.smartCurrentLimit(LAUNCHER_MOTOR_CURRENT_LIMIT);
-        secondLauncherFollowerConfig.inverted(true); // FIXME find correct inversion
-        secondLauncherMotorFollower.configure(
-                secondLauncherFollowerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-        // if inversion types are same between the follower configs, it may be cleaner to reuse the config for both of
-        // them
-
         // init launcher sim motors
         launcherMotorLeaderSim = new SparkMaxSim(launcherMotorLeader, DCMotor.getNEO(1));
         launcherMotorFollowerSim = new SparkMaxSim(launcherMotorFollower, DCMotor.getNEO(1));
-        secondLauncherMotorFollowerSim = new SparkMaxSim(secondLauncherMotorFollower, DCMotor.getNEO(1));
     }
 
     public void setFlywheelSpeed(AngularVelocity velocity) {
@@ -95,19 +83,16 @@ public class ShooterIOSim extends SubsystemBase implements ShooterIO {
 
         launcherMotorLeader.setVoltage(voltage);
         launcherMotorFollower.setVoltage(voltage);
-        secondLauncherMotorFollower.setVoltage(voltage);
     }
 
     public void setFlywheelVoltageDirectly(Voltage voltage) {
         launcherMotorLeader.set(voltage.in(Volts));
         launcherMotorFollower.set(voltage.in(Volts));
-        secondLauncherMotorFollower.set(voltage.in(Volts));
     }
 
     public void stopShooter() {
         launcherMotorLeader.set(0);
         launcherMotorFollower.set(0);
-        secondLauncherMotorFollower.set(0);
         feederMotor.set(0);
         targetRPM = 0;
     }
@@ -124,7 +109,6 @@ public class ShooterIOSim extends SubsystemBase implements ShooterIO {
         // Update motors
         launcherMotorLeaderSim.iterate(flywheelSim.getAngularVelocityRPM(), RoboRioSim.getVInVoltage(), 0.02);
         launcherMotorFollowerSim.iterate(flywheelSim.getAngularVelocityRPM(), RoboRioSim.getVInVoltage(), 0.02);
-        secondLauncherMotorFollowerSim.iterate(flywheelSim.getAngularVelocityRPM(), RoboRioSim.getVInVoltage(), 0.02);
 
         this.actualRPM = flywheelSim.getAngularVelocityRPM();
         SmartDashboard.putNumber("Shooter Target RPM", targetRPM);

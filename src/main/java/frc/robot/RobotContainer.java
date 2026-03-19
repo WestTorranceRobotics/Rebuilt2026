@@ -355,7 +355,7 @@ public class RobotContainer {
                     // visionIO.getTX(visionIO.getBestTarget().getFiducialId()).orElse(null));
 
                     int hubAprilTagID = DriverStation.getAlliance().get().equals(DriverStation.Alliance.Blue) ? 25 : 10;
-                    if (visionIO.getTX(hubAprilTagID).isPresent()) {
+                    if (visionIO.getTX(hubAprilTagID).orElse(null) != null) {
                         swerveDrive.setAlignStatus(
                                 true, visionIO.getTX(hubAprilTagID).get());
                     }
