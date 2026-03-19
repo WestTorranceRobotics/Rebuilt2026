@@ -18,8 +18,6 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.*;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.MathUtils;
@@ -56,6 +54,10 @@ public class SwerveDrive extends SubsystemBase {
     // This is used to calculate what the heading is relative to the driver station, changes based
     // on alliance
     private double headingOffset;
+
+    // These are used to override driver rotation if aligning
+    private boolean isAligning;
+    private double targetRotationYaw;
 
     // Real pose in simulation (if not real)
     private StructPublisher<Pose2d> realPosePublisher;
@@ -120,6 +122,14 @@ public class SwerveDrive extends SubsystemBase {
 
     public void drive(ChassisSpeeds chassisSpeeds, boolean absolute) {
         // TODO make use swerve kinematics class
+        if (isAligning)
+            chassisSpeeds = new ChassisSpeeds(
+                    chassisSpeeds.vxMetersPerSecond,
+                    chassisSpeeds.vyMetersPerSecond,
+                    -targetRotationYaw
+                            * RealRobotConstants.PROPORTIONALITY_CONSTANT
+                            * RealRobotConstants.MAX_ANGULAR_SPEED);
+
         double heading = getHeading().getRadians() + headingOffset;
         calculateState(chassisSpeeds, heading, frontRight, absolute);
         calculateState(chassisSpeeds, heading, frontLeft, absolute);
@@ -127,12 +137,9 @@ public class SwerveDrive extends SubsystemBase {
         calculateState(chassisSpeeds, heading, backLeft, absolute);
     }
 
-    public void turnToYaw(double yaw) {
-        final double rotation =
-                -yaw * RealRobotConstants.PROPORTIONALITY_CONSTANT * RealRobotConstants.MAX_ANGULAR_SPEED;
-
-        drive(new ChassisSpeeds(0, 0, rotation), false);
-        tickPid();
+    public void setAlignStatus(boolean isAligning, double targetRotationYaw) {
+        this.isAligning = isAligning;
+        this.targetRotationYaw = targetRotationYaw;
     }
 
     @Override

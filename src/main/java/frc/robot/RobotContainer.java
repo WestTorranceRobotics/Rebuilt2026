@@ -51,6 +51,7 @@ import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.COTS;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
+import org.photonvision.PhotonUtils;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -269,9 +270,12 @@ public class RobotContainer {
 
         NamedCommands.registerCommand(
                 "alignToHub",
-                new InstantCommand(() -> swerveDrive.turnToYaw(
+                new InstantCommand(() -> swerveDrive.setAlignStatus(
+                        true,
                         visionIO.getTX(DriverStation.getAlliance().get().equals(DriverStation.Alliance.Blue) ? 25 : 10)
                                 .orElse(null))));
+
+        NamedCommands.registerCommand("stopAligning", new InstantCommand(() -> swerveDrive.setAlignStatus(false, 0)));
         configureBindings();
     }
 
@@ -300,6 +304,13 @@ public class RobotContainer {
                 .onTrue(shooterSubsystem.runOnce(() -> {
                     shooterSubsystem.setFeederVoltageDirectly(Volts.of(3));
                     int hubAprilTagID = DriverStation.getAlliance().get().equals(DriverStation.Alliance.Blue) ? 25 : 10;
+                    if (visionIO.getTX(hubAprilTagID).isPresent()) {
+                        SmartDashboard.putNumber(
+                                "DISTANCE TO HUB (METERS)",
+                                PhotonUtils.getDistanceToPose(
+                                        swerveDriveSimulation.getSimulatedDriveTrainPose(),
+                                        visionIO.getTargetPose(hubAprilTagID).get()));
+                    }
                     // if (visionIO.getTX(hubAprilTagID).isPresent()) {
                     //                        Translation2d hubPosition = visionIO.getTargetPose(hubAprilTagID)
                     //                                .orElse(null)
@@ -336,15 +347,22 @@ public class RobotContainer {
                 }))
                 .onFalse(shooterSubsystem.runOnce(shooterSubsystem::stopShooter));
 
-        controller.b().whileTrue(shooterSubsystem.run(() -> {
-            // swerveDrive.turnToYaw(visionIO.getTX(visionIO.getBestTarget().getFiducialId()).orElse(null));
-            // align robot to best AprilTag
+        controller
+                .b()
+                .whileTrue(Commands.run(() -> {
+                    // align robot to best AprilTag
+                    // swerveDrive.setAlignStatus(true,
+                    // visionIO.getTX(visionIO.getBestTarget().getFiducialId()).orElse(null));
 
-            int hubAprilTagID = DriverStation.getAlliance().get().equals(DriverStation.Alliance.Blue) ? 25 : 10;
-            if (visionIO.getTX(hubAprilTagID).isPresent()) {
-                swerveDrive.turnToYaw(visionIO.getTX(hubAprilTagID).get());
-            }
-        }));
+                    int hubAprilTagID = DriverStation.getAlliance().get().equals(DriverStation.Alliance.Blue) ? 25 : 10;
+                    if (visionIO.getTX(hubAprilTagID).isPresent()) {
+                        swerveDrive.setAlignStatus(
+                                true, visionIO.getTX(hubAprilTagID).get());
+                    }
+                }))
+                .onFalse(Commands.run(() -> {
+                    swerveDrive.setAlignStatus(false, 0);
+                }));
 
         // intake button mapping
         controller.x().onTrue(intakeSubsystem.runOnce(() -> {
