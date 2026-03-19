@@ -26,7 +26,7 @@ public class ShooterIOReal extends SubsystemBase implements ShooterIO {
     private final SparkMax launcherMotorFollower = new SparkMax(LAUNCHER_MOTOR_2_ID, MotorType.kBrushless);
 
     private final BangBangController bangbang = new BangBangController();
-    private final SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(0, 0.00255); // TODO: tune further
+    private final SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(0, 0.00242); // TODO: tune further
 
     private double targetRPM = 0;
     private double actualRPM = 0;
@@ -74,7 +74,7 @@ public class ShooterIOReal extends SubsystemBase implements ShooterIO {
 
     public void setFlywheelVoltageDirectly(Voltage voltage) {
         launcherMotorLeader.set(voltage.in(Volts));
-        // launcherMotorFollower.set(voltage.in(Volts));
+        launcherMotorFollower.set(voltage.in(Volts));
     }
 
     public Command setFlywheelVoltageDirectlyCommand(Voltage voltage) {
@@ -85,13 +85,13 @@ public class ShooterIOReal extends SubsystemBase implements ShooterIO {
 
     public void stopShooter() {
         launcherMotorLeader.setVoltage(0);
-        // launcherMotorFollower.setVoltage(0);
+        launcherMotorFollower.setVoltage(0);
         feederMotor.set(0);
         targetRPM = 0;
     }
 
     public void setFeederVoltageDirectly(Voltage voltage) {
-        feederMotor.set(voltage.in(Volts));
+        if (Math.abs(actualRPM - targetRPM) < 100) feederMotor.set(voltage.in(Volts));
     }
 
     @Override

@@ -5,7 +5,7 @@ import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 public final class ShooterConstants {
     public static final int FEEDER_MOTOR_ID = 49;
     public static final int LAUNCHER_MOTOR_1_ID = 22;
-    public static final int LAUNCHER_MOTOR_2_ID = 4;
+    public static final int LAUNCHER_MOTOR_2_ID = 3;
 
     // current limit values for shooter motors
     public static final int FEEDER_MOTOR_CURRENT_LIMIT = 60;

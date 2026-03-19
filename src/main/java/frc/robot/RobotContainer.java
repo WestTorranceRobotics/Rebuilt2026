@@ -303,12 +303,13 @@ public class RobotContainer {
                 .a()
                 .onTrue(shooterSubsystem.runOnce(() -> {
                     shooterSubsystem.setFeederVoltageDirectly(Volts.of(3));
+                    hopperSubsystem.setRollerVoltage(Volts.of(2));
                     int hubAprilTagID = DriverStation.getAlliance().get().equals(DriverStation.Alliance.Blue) ? 25 : 10;
                     if (visionIO.getTX(hubAprilTagID).isPresent()) {
                         SmartDashboard.putNumber(
                                 "DISTANCE TO HUB (METERS)",
                                 PhotonUtils.getDistanceToPose(
-                                        swerveDriveSimulation.getSimulatedDriveTrainPose(),
+                                        swerveDrive.getPose(),
                                         visionIO.getTargetPose(hubAprilTagID).get()));
                     }
                     // if (visionIO.getTX(hubAprilTagID).isPresent()) {
@@ -345,7 +346,10 @@ public class RobotContainer {
                     shooterSubsystem.setFlywheelSpeed(RotationsPerMinute.of(m_chooser.getSelected()));
                     // }
                 }))
-                .onFalse(shooterSubsystem.runOnce(shooterSubsystem::stopShooter));
+                .onFalse(shooterSubsystem.runOnce(() -> {
+                        shooterSubsystem.stopShooter();
+                        hopperSubsystem.stopRollers();
+                }));
 
         controller
                 .b()
@@ -373,14 +377,12 @@ public class RobotContainer {
             }
         }));
 
-        controller
-                .y()
-                .onTrue(intakeSubsystem.runOnce(() -> {
-                    intakeSubsystem.setHoodVoltage(Volts.of(-3));
-                }))
-                .onFalse(intakeSubsystem.run(intakeSubsystem::stopHoodCommand));
-
-        hopperSubsystem.setRollerVoltage(Volts.of(2));
+        // controller
+        //         .y()
+        //         .onTrue(intakeSubsystem.runOnce(() -> {
+        //             intakeSubsystem.setHoodVoltage(Volts.of(-11));
+        //         }))
+        //         .onFalse(intakeSubsystem.run(intakeSubsystem::stopHoodCommand));
     }
 
     /**
