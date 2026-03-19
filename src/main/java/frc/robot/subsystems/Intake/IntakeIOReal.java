@@ -36,6 +36,7 @@ public class IntakeIOReal extends SubsystemBase implements IntakeIO {
         intakeMotor.configure(intakeConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
         SparkMaxConfig hoodConfig = new SparkMaxConfig();
+        hoodConfig.smartCurrentLimit(HOOD_MOTOR_CURRENT_LIMIT);
         hoodConfig.idleMode(IdleMode.kBrake);
         hoodConfig.encoder.positionConversionFactor(2 * Math.PI); // Converts from rotations to radians
         hoodMotor.configure(hoodConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);

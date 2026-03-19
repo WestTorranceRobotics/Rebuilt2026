@@ -8,9 +8,8 @@ public final class ShooterConstants {
     public static final int LAUNCHER_MOTOR_2_ID = 3;
 
     // current limit values for shooter motors
-    public static final int FEEDER_MOTOR_CURRENT_LIMIT = 60;
-    public static final int LAUNCHER_MOTOR_CURRENT_LIMIT = 60;
-    // FIXME these current limits are all way too high
+    public static final int FEEDER_MOTOR_CURRENT_LIMIT = 40;
+    public static final int LAUNCHER_MOTOR_CURRENT_LIMIT = 50;
 
     public static final double LATENCY_COMPENSATION = 0; // TODO tune latency compensation
 
