@@ -51,7 +51,6 @@ import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.COTS;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
-import org.photonvision.PhotonUtils;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -306,11 +305,7 @@ public class RobotContainer {
                     hopperSubsystem.setRollerVoltage(Volts.of(2));
                     int hubAprilTagID = DriverStation.getAlliance().get().equals(DriverStation.Alliance.Blue) ? 25 : 10;
                     if (visionIO.getTX(hubAprilTagID).isPresent()) {
-                        SmartDashboard.putNumber(
-                                "DISTANCE TO HUB (METERS)",
-                                PhotonUtils.getDistanceToPose(
-                                        swerveDrive.getPose(),
-                                        visionIO.getTargetPose(hubAprilTagID).get()));
+                        SmartDashboard.putNumber("DISTANCE TO HUB (METERS)", visionIO.getDistance(hubAprilTagID));
                     }
                     // if (visionIO.getTX(hubAprilTagID).isPresent()) {
                     //                        Translation2d hubPosition = visionIO.getTargetPose(hubAprilTagID)
@@ -347,8 +342,8 @@ public class RobotContainer {
                     // }
                 }))
                 .onFalse(shooterSubsystem.runOnce(() -> {
-                        shooterSubsystem.stopShooter();
-                        hopperSubsystem.stopRollers();
+                    shooterSubsystem.stopShooter();
+                    hopperSubsystem.stopRollers();
                 }));
 
         controller

@@ -13,5 +13,7 @@ public interface VisionIO {
 
     Optional<Pose2d> getTargetPose(int targetID);
 
+    Double getDistance(int targetID);
+
     void tick();
 }

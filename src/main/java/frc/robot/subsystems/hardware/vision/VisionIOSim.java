@@ -99,6 +99,13 @@ public class VisionIOSim implements VisionIO {
         return Optional.empty();
     }
 
+    public Double getDistance(int targetID) {
+        return getTrackedTarget(targetID)
+                .getBestCameraToTarget()
+                .getTranslation()
+                .getNorm();
+    }
+
     public PhotonTrackedTarget getBestTarget() {
         return bestTarget;
     }
