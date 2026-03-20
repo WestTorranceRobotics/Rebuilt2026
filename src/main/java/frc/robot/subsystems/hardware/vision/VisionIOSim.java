@@ -31,6 +31,7 @@ public class VisionIOSim implements VisionIO {
     PhotonTrackedTarget bestTarget;
 
     public VisionIOSim() {
+
         SimCameraProperties cameraProps = new SimCameraProperties();
 
         // Diagonal FOV was calculated from horizontal and vertical FOV given from

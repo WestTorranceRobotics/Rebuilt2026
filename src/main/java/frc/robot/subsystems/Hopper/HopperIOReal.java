@@ -24,6 +24,7 @@ public class HopperIOReal extends SubsystemBase implements HopperIO {
         SparkMaxConfig hopperConfig = new SparkMaxConfig();
         hopperConfig.smartCurrentLimit(HOPPER_MOTOR_CURRENT_LIMIT);
         hopperConfig.idleMode(IdleMode.kCoast);
+        hopperConfig.inverted(true);
         hopperMotor.configure(hopperConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }
 

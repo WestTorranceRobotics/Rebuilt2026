@@ -17,6 +17,8 @@ public class VisionIOReal extends SubsystemBase implements VisionIO {
 
     AprilTagFieldLayout aprilTagFieldLayout;
 
+    int targetID;
+
     public VisionIOReal() {
         camera = new PhotonCamera(VisionConstants.CAMERA_NAME);
         aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltWelded);
@@ -65,6 +67,7 @@ public class VisionIOReal extends SubsystemBase implements VisionIO {
 
     @Override
     public Optional<Double> getTX(int targetID) {
+        this.targetID = targetID;
         PhotonTrackedTarget target = getTrackedTarget(targetID);
         if (target != null) return Optional.of(target.getYaw());
         return Optional.empty();
@@ -72,6 +75,7 @@ public class VisionIOReal extends SubsystemBase implements VisionIO {
 
     @Override
     public Optional<Double> getTY(int targetID) {
+        this.targetID = targetID;
         PhotonTrackedTarget target = getTrackedTarget(targetID);
         if (target != null) return Optional.of(target.getPitch());
         return Optional.empty();

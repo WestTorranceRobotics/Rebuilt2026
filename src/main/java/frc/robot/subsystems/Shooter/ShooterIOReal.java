@@ -9,6 +9,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.hal.simulation.RoboRioDataJNI;
 import edu.wpi.first.math.controller.BangBangController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -19,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.utilities.CustomUnits;
 
+@Logged
 public class ShooterIOReal extends SubsystemBase implements ShooterIO {
     private final SparkMax feederMotor = new SparkMax(FEEDER_MOTOR_ID, MotorType.kBrushless);
 
@@ -52,6 +54,8 @@ public class ShooterIOReal extends SubsystemBase implements ShooterIO {
         launcherFollowerConfig.inverted(true);
         launcherMotorFollower.configure(
                 launcherFollowerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+
+        bangbang.setTolerance(0.1);
     }
 
     public void setFlywheelSpeed(AngularVelocity velocity) {
@@ -87,11 +91,20 @@ public class ShooterIOReal extends SubsystemBase implements ShooterIO {
         launcherMotorLeader.setVoltage(0);
         launcherMotorFollower.setVoltage(0);
         feederMotor.set(0);
+        bangbang.setSetpoint(0);
         targetRPM = 0;
     }
 
+    public double getError() {
+        return Math.abs(this.actualRPM - this.targetRPM);
+    }
+
     public void setFeederVoltageDirectly(Voltage voltage) {
-        if (Math.abs(actualRPM - targetRPM) < 100) feederMotor.set(voltage.in(Volts));
+        if (Math.abs(this.actualRPM - this.targetRPM) < 200) feederMotor.set(voltage.in(Volts));
+    }
+
+    public double getFeederRPM() {
+        return feederMotor.getEncoder().getVelocity();
     }
 
     @Override

@@ -6,6 +6,7 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 import static frc.robot.constants.GlobalConstants.OperatorConstants.DRIVER_CONTROLLER_PORT;
+import static frc.robot.constants.ShooterConstants.DISTANCE_VS_RPM_MAP;
 import static frc.robot.utilities.CustomUnits.*;
 
 import com.pathplanner.lib.auto.NamedCommands;
@@ -75,6 +76,7 @@ public class RobotContainer {
     public static VisionIO visionIO;
 
     private final SendableChooser<Double> m_chooser = new SendableChooser<>(); // prepare to build LUT
+
 
     public static final SwerveDriveKinematics swerveDriveKinematics = new SwerveDriveKinematics(
             new Translation2d(-25.0 / 2, -19.5 / 2),
@@ -299,13 +301,17 @@ public class RobotContainer {
         // shooter button mapping
         controller
                 .aOrCross()
-                .onTrue(shooterSubsystem.runOnce(() -> {
-                    shooterSubsystem.setFeederVoltageDirectly(Volts.of(3));
-                    hopperSubsystem.setRollerVoltage(Volts.of(2));
+                .whileTrue(shooterSubsystem.run(() -> {
+                    hopperSubsystem.setRollerVoltage(Volts.of(7));
                     int hubAprilTagID = DriverStation.getAlliance().get().equals(DriverStation.Alliance.Blue) ? 25 : 10;
+
+                    double rpm = 2950.0;
                     if (visionIO.getTX(hubAprilTagID).isPresent()) {
                         SmartDashboard.putNumber("DISTANCE TO HUB (METERS)", visionIO.getDistance(hubAprilTagID));
+                        rpm = DISTANCE_VS_RPM_MAP.get(visionIO.getDistance(hubAprilTagID));
                     }
+                    shooterSubsystem.setFlywheelSpeed(RotationsPerMinute.of(rpm));
+                    shooterSubsystem.setFeederVoltageDirectly(Volts.of(3));
                     // if (visionIO.getTX(hubAprilTagID).isPresent()) {
                     //                        Translation2d hubPosition = visionIO.getTargetPose(hubAprilTagID)
                     //                                .orElse(null)
@@ -337,7 +343,7 @@ public class RobotContainer {
                     because our flywheel recovery speed is slow */
                     // shooterSubsystem.setFlywheelSpeed(
                     //         RotationsPerMinute.of(shooterMap.get(targetHorizontalVelocity)));
-                    shooterSubsystem.setFlywheelSpeed(RotationsPerMinute.of(m_chooser.getSelected()));
+
                     // }
                 }))
                 .onFalse(shooterSubsystem.runOnce(() -> {
@@ -357,6 +363,8 @@ public class RobotContainer {
                     if (visionIO.getTX(hubAprilTagID).orElse(null) != null) {
                         swerveDrive.setAlignStatus(
                                 true, visionIO.getTX(hubAprilTagID).get());
+                    } else {
+                        swerveDrive.setAlignStatus(false, 0);
                     }
                 }))
                 .onFalse(Commands.run(() -> {
@@ -372,6 +380,14 @@ public class RobotContainer {
             }
         }));
 
+        controller.yOrTriangle().onTrue(intakeSubsystem.runOnce(() -> {
+            if (intakeSubsystem.isIntakeOn()) {
+                intakeSubsystem.stopIntake();
+            } else {
+                intakeSubsystem.setIntakeVoltage(Volts.of(11));
+            }
+        }));
+
         controller
                 .dPadUp()
                 .onTrue(intakeSubsystem.runOnce(() -> {
@@ -382,7 +398,7 @@ public class RobotContainer {
         controller
                 .dPadDown()
                 .onTrue(intakeSubsystem.runOnce(() -> {
-                    intakeSubsystem.setHoodVoltage(Volts.of(-11));
+                    intakeSubsystem.setHoodVoltage(Volts.of(-4));
                 }))
                 .onFalse(intakeSubsystem.run(intakeSubsystem::stopHoodCommand));
     }

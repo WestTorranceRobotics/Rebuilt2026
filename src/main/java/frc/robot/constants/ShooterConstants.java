@@ -16,6 +16,8 @@ public final class ShooterConstants {
     public static final InterpolatingDoubleTreeMap DISTANCE_TO_TOF_MAP = new InterpolatingDoubleTreeMap();
     public static final InterpolatingDoubleTreeMap SHOOTER_MAP = new InterpolatingDoubleTreeMap();
 
+    public static final InterpolatingDoubleTreeMap DISTANCE_VS_RPM_MAP = new InterpolatingDoubleTreeMap();
+
     static {
         // TODO build lookup tables
         DISTANCE_TO_TOF_MAP.put(1.5, 0.42);
@@ -35,5 +37,9 @@ public final class ShooterConstants {
         SHOOTER_MAP.put(5.12820513, 4100.0);
         SHOOTER_MAP.put(5.35714286, 4350.0);
         SHOOTER_MAP.put(5.49450549, 4550.0);
+
+        DISTANCE_VS_RPM_MAP.put(1.5, 2950.0);
+        DISTANCE_VS_RPM_MAP.put(2.5, 3450.0);
+        DISTANCE_VS_RPM_MAP.put(3.5, 3850.0);
     }
 }

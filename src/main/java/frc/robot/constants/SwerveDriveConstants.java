@@ -25,8 +25,8 @@ public final class SwerveDriveConstants {
         // TODO zero these encoders
         public static final double FR_CANCODER_OFFSET = -0.43896484375;
         public static final double FL_CANCODER_OFFSET = -0.03564453125;
-        public static final double BL_CANCODER_OFFSET =0.493896484375;
-        public static final double BR_CANCODER_OFFSET =  -0.037353515625;
+        public static final double BL_CANCODER_OFFSET = 0.493896484375;
+        public static final double BR_CANCODER_OFFSET = -0.037353515625;
 
         public static final double kPDrive = 0.098616;
         public static final double kIDrive = 0;
@@ -46,8 +46,8 @@ public final class SwerveDriveConstants {
         public static final double kIRotation = 8;
         public static final double kDRotation = 0.3;
 
-        public static final double MAX_ANGULAR_SPEED = 0.05 * Math.PI;
-        public static final double PROPORTIONALITY_CONSTANT = 0.35; // TODO tune this value
+        public static final double MAX_ANGULAR_SPEED = Math.PI;
+        public static final double PROPORTIONALITY_CONSTANT = 0.0075; // TODO tune this value
     }
 
     public static class SimulatedControlSystemConstants {
