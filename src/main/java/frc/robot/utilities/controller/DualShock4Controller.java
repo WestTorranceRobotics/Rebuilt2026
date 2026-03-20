@@ -34,20 +34,36 @@ public class DualShock4Controller implements Controller {
         return ps4Controller.getR2Axis();
     }
 
-    public Trigger a() {
+    public Trigger aOrCross() {
         return ps4Controller.cross();
     }
 
-    public Trigger b() {
+    public Trigger bOrCircle() {
         return ps4Controller.circle();
     }
 
-    public Trigger y() {
+    public Trigger yOrTriangle() {
         return ps4Controller.triangle();
     }
 
-    public Trigger x() {
+    public Trigger xOrSquare() {
         return ps4Controller.square();
+    }
+
+    public Trigger dPadLeft() {
+        return ps4Controller.povLeft();
+    }
+
+    public Trigger dPadUp() {
+        return ps4Controller.povUp();
+    }
+
+    public Trigger dPadRight() {
+        return ps4Controller.povRight();
+    }
+
+    public Trigger dPadDown() {
+        return ps4Controller.povDown();
     }
 
     @Override

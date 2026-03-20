@@ -36,20 +36,36 @@ public class CommandLogitechController extends CommandGenericHID implements Cont
         return controller.getRawAxis(3);
     }
 
-    public Trigger a() {
+    public Trigger aOrCross() {
         return new Trigger(() -> controller.getRawButton(1));
     }
 
-    public Trigger b() {
+    public Trigger bOrCircle() {
         return new Trigger(() -> controller.getRawButton(2));
     }
 
-    public Trigger y() {
+    public Trigger yOrTriangle() {
         return new Trigger(() -> controller.getRawButton(4));
     }
 
-    public Trigger x() {
+    public Trigger xOrSquare() {
         return new Trigger(() -> controller.getRawButton(3));
+    }
+
+    public Trigger dPadLeft() {
+        return new Trigger(() -> (controller.getPOV() == 270));
+    }
+
+    public Trigger dPadUp() {
+        return new Trigger(() -> (controller.getPOV() == 0));
+    }
+
+    public Trigger dPadRight() {
+        return new Trigger(() -> (controller.getPOV() == 90));
+    }
+
+    public Trigger dPadDown() {
+        return new Trigger(() -> (controller.getPOV() == 180));
     }
 
     public Trigger R1() {

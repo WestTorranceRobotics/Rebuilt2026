@@ -297,9 +297,8 @@ public class RobotContainer {
         controller.zero().onTrue(Commands.runOnce(this::zeroHeading));
 
         // shooter button mapping
-
         controller
-                .a()
+                .aOrCross()
                 .onTrue(shooterSubsystem.runOnce(() -> {
                     shooterSubsystem.setFeederVoltageDirectly(Volts.of(3));
                     hopperSubsystem.setRollerVoltage(Volts.of(2));
@@ -346,8 +345,9 @@ public class RobotContainer {
                     hopperSubsystem.stopRollers();
                 }));
 
+        // align button mapping
         controller
-                .b()
+                .bOrCircle()
                 .whileTrue(Commands.run(() -> {
                     // align robot to best AprilTag
                     // swerveDrive.setAlignStatus(true,
@@ -364,7 +364,7 @@ public class RobotContainer {
                 }));
 
         // intake button mapping
-        controller.x().onTrue(intakeSubsystem.runOnce(() -> {
+        controller.xOrSquare().onTrue(intakeSubsystem.runOnce(() -> {
             if (intakeSubsystem.isIntakeOn()) {
                 intakeSubsystem.stopIntake();
             } else {
@@ -372,12 +372,19 @@ public class RobotContainer {
             }
         }));
 
-        // controller
-        //         .y()
-        //         .onTrue(intakeSubsystem.runOnce(() -> {
-        //             intakeSubsystem.setHoodVoltage(Volts.of(-11));
-        //         }))
-        //         .onFalse(intakeSubsystem.run(intakeSubsystem::stopHoodCommand));
+        controller
+                .dPadUp()
+                .onTrue(intakeSubsystem.runOnce(() -> {
+                    intakeSubsystem.setHoodVoltage(Volts.of(11));
+                }))
+                .onFalse(intakeSubsystem.run(intakeSubsystem::stopHoodCommand));
+
+        controller
+                .dPadDown()
+                .onTrue(intakeSubsystem.runOnce(() -> {
+                    intakeSubsystem.setHoodVoltage(Volts.of(-11));
+                }))
+                .onFalse(intakeSubsystem.run(intakeSubsystem::stopHoodCommand));
     }
 
     /**

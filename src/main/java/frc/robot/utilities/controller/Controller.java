@@ -31,22 +31,42 @@ public interface Controller {
     /**
      * @Trigger Triggers when the bottom button is pressed.
      */
-    Trigger a();
+    Trigger aOrCross();
 
     /**
      * @Trigger Triggers when the right button is pressed.
      */
-    Trigger b();
+    Trigger bOrCircle();
 
     /**
      * @Trigger Triggers when the up button is pressed.
      */
-    Trigger y();
+    Trigger yOrTriangle();
 
     /**
      * @Trigger Triggers when the left button is pressed.
      */
-    Trigger x();
+    Trigger xOrSquare();
+
+    /**
+     * @Trigger Triggers when the left d-pad button is pressed.
+     */
+    Trigger dPadLeft();
+
+    /**
+     * @Trigger Triggers when the up d-pad button is pressed.
+     */
+    Trigger dPadUp();
+
+    /**
+     * @Trigger Triggers when the right d-pad button is pressed.
+     */
+    Trigger dPadRight();
+
+    /**
+     * @Trigger Triggers when the down d-pad button is pressed.
+     */
+    Trigger dPadDown();
 
     /**
      * @Trigger Triggers a zero of the swerve on the right analog trigger.
