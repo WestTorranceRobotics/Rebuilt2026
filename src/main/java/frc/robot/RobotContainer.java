@@ -77,6 +77,10 @@ public class RobotContainer {
 
     private final SendableChooser<Double> m_chooser = new SendableChooser<>(); // prepare to build LUT
 
+	private double lastRPM = 2950; // 2950 is the RPM value for shooting directly next to the Hub.
+	// 							      We fall back to it so we can still shoot from a known position 
+	//                                   if vision breaks or is disabled.
+
 
     public static final SwerveDriveKinematics swerveDriveKinematics = new SwerveDriveKinematics(
             new Translation2d(-25.0 / 2, -19.5 / 2),
@@ -305,12 +309,11 @@ public class RobotContainer {
                     hopperSubsystem.setRollerVoltage(Volts.of(7));
                     int hubAprilTagID = DriverStation.getAlliance().get().equals(DriverStation.Alliance.Blue) ? 25 : 10;
 
-                    double rpm = 2950.0;
                     if (visionIO.getTX(hubAprilTagID).isPresent()) {
                         SmartDashboard.putNumber("DISTANCE TO HUB (METERS)", visionIO.getDistance(hubAprilTagID));
-                        rpm = DISTANCE_VS_RPM_MAP.get(visionIO.getDistance(hubAprilTagID));
+                        lastRPM = DISTANCE_VS_RPM_MAP.get(visionIO.getDistance(hubAprilTagID));
                     }
-                    shooterSubsystem.setFlywheelSpeed(RotationsPerMinute.of(rpm));
+                    shooterSubsystem.setFlywheelSpeed(RotationsPerMinute.of(lastRPM));
                     shooterSubsystem.setFeederVoltageDirectly(Volts.of(3));
                     // if (visionIO.getTX(hubAprilTagID).isPresent()) {
                     //                        Translation2d hubPosition = visionIO.getTargetPose(hubAprilTagID)
