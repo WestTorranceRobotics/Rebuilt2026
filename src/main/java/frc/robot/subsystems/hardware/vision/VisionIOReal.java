@@ -3,14 +3,13 @@ package frc.robot.subsystems.hardware.vision;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.VisionConstants;
 import java.util.List;
 import java.util.Optional;
 import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
-public class VisionIOReal extends SubsystemBase implements VisionIO {
+public class VisionIOReal implements VisionIO {
     PhotonCamera camera;
     List<PhotonTrackedTarget> trackedTargets;
     PhotonTrackedTarget bestTarget;
