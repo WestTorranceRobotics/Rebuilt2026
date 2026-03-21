@@ -19,13 +19,13 @@
         {
           "type": "named",
           "data": {
-            "name": "intakeStop"
+            "name": "intakeDown"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "New Path"
+            "pathName": "right side"
           }
         }
       ]

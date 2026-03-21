@@ -38,29 +38,29 @@ public final class SwerveDriveConstants {
         public static final double kIAzimuth = 0;
         public static final double kDAzimuth = 0;
 
-        public static final double kPTranslation = 8;
-        public static final double kITranslation = 3;
-        public static final double kDTranslation = 0;
+        public static final double kPTranslation = .1;
+        public static final double kITranslation = 0;
+        public static final double kDTranslation = 0.02;
 
-        public static final double kPRotation = 4;
-        public static final double kIRotation = 8;
-        public static final double kDRotation = 0.3;
+        public static final double kPRotation = 0;
+        public static final double kIRotation = 0;
+        public static final double kDRotation = 0;
 
         public static final double MAX_ANGULAR_SPEED = Math.PI;
         public static final double PROPORTIONALITY_CONSTANT = 0.0075; // TODO tune this value
     }
 
     public static class SimulatedControlSystemConstants {
-        public static final double kSDrive = 0;
-        public static final double kVDrive = 2.435;
+        public static final double kSDrive = 0.0058039;
+        public static final double kVDrive = 0.11504;
         public static final double kADrive = 0;
 
-        public static final double kPDrive = 8;
+        public static final double kPDrive = 0.098616;
         public static final double kIDrive = 0;
         public static final double kDDrive = 0;
 
-        public static final double kPSteer = 13.26;
-        public static final double kISteer = 0;
-        public static final double kDSteer = 0.59364;
+        public static final double kPSteer = 4;
+        public static final double kISteer = 8;
+        public static final double kDSteer = 0.3;
     }
 }

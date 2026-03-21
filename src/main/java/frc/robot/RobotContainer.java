@@ -9,8 +9,8 @@ import static frc.robot.constants.GlobalConstants.OperatorConstants.DRIVER_CONTR
 import static frc.robot.constants.ShooterConstants.DISTANCE_VS_RPM_MAP;
 import static frc.robot.utilities.CustomUnits.*;
 
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import com.pathplanner.lib.commands.PathPlannerAuto;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -21,6 +21,7 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -76,6 +77,7 @@ public class RobotContainer {
     public static VisionIO visionIO;
 
     private final SendableChooser<Double> m_chooser = new SendableChooser<>(); // prepare to build LUT
+    private SendableChooser<Command> m_auto = new SendableChooser<>();
 
     private double lastRPM = 2950; // 2950 is the RPM value for shooting directly next to the Hub.
     // 							      We fall back to it so we can still shoot from a known position
@@ -282,13 +284,18 @@ public class RobotContainer {
         NamedCommands.registerCommand("stopAligning", new InstantCommand(() -> swerveDrive.setAlignStatus(false, 0)));
 
         NamedCommands.registerCommand(
-                "intakeDown", Commands.runOnce(() -> intakeSubsystem.setHoodVoltage(Volts.of(-4))));
+                "intakeDown",
+                Commands.runOnce(() -> intakeSubsystem.setHoodVoltage(Volts.of(-4)))
+                        .repeatedly());
 
         NamedCommands.registerCommand(
                 "intakeStop", Commands.runOnce(() -> intakeSubsystem.setHoodVoltage(Volts.of(0))));
+
+        m_auto = AutoBuilder.buildAutoChooser();
+        SmartDashboard.putData("Current Auto:", m_auto);
+
         configureBindings();
     }
-
     /**
      * Use this method to define your trigger->command mappings. Triggers can be
      * created via the
@@ -435,8 +442,8 @@ public class RobotContainer {
     /**
      * Gets path planner auto to be run during autonomous.
      */
-    public PathPlannerAuto getAutonomousCommand() {
-        return new PathPlannerAuto("New Auto");
+    public Command getAutonomousCommand() {
+        return m_auto.getSelected();
     }
 
     /**

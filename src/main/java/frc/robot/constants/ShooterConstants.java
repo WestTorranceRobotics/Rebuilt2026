@@ -41,5 +41,7 @@ public final class ShooterConstants {
         DISTANCE_VS_RPM_MAP.put(1.5, 2950.0);
         DISTANCE_VS_RPM_MAP.put(2.5, 3450.0);
         DISTANCE_VS_RPM_MAP.put(3.5, 3850.0);
+        DISTANCE_VS_RPM_MAP.put(4.5, 4316.6667); // INTERPOLATED
+        DISTANCE_VS_RPM_MAP.put(5.5, 4767.0); // INTERPOLATED
     }
 }
