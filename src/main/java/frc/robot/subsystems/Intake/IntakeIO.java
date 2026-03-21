@@ -19,4 +19,6 @@ public interface IntakeIO extends Subsystem {
     public void setHoodVoltage(Voltage voltage);
 
     public Command stopHoodCommand();
+
+    public double getHoodRPM();
 }

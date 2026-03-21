@@ -77,10 +77,9 @@ public class RobotContainer {
 
     private final SendableChooser<Double> m_chooser = new SendableChooser<>(); // prepare to build LUT
 
-	private double lastRPM = 2950; // 2950 is the RPM value for shooting directly next to the Hub.
-	// 							      We fall back to it so we can still shoot from a known position 
-	//                                   if vision breaks or is disabled.
-
+    private double lastRPM = 2950; // 2950 is the RPM value for shooting directly next to the Hub.
+    // 							      We fall back to it so we can still shoot from a known position
+    //                                   if vision breaks or is disabled.
 
     public static final SwerveDriveKinematics swerveDriveKinematics = new SwerveDriveKinematics(
             new Translation2d(-25.0 / 2, -19.5 / 2),
@@ -281,6 +280,12 @@ public class RobotContainer {
                                 .orElse(null))));
 
         NamedCommands.registerCommand("stopAligning", new InstantCommand(() -> swerveDrive.setAlignStatus(false, 0)));
+
+        NamedCommands.registerCommand(
+                "intakeDown", Commands.runOnce(() -> intakeSubsystem.setHoodVoltage(Volts.of(-4))));
+
+        NamedCommands.registerCommand(
+                "intakeStop", Commands.runOnce(() -> intakeSubsystem.setHoodVoltage(Volts.of(0))));
         configureBindings();
     }
 
@@ -391,12 +396,12 @@ public class RobotContainer {
             }
         }));
 
-        controller
-                .dPadUp()
-                .onTrue(intakeSubsystem.runOnce(() -> {
-                    intakeSubsystem.setHoodVoltage(Volts.of(11));
-                }))
-                .onFalse(intakeSubsystem.run(intakeSubsystem::stopHoodCommand));
+        // controller
+        //         .dPadUp()
+        //         .onTrue(intakeSubsystem.runOnce(() -> {
+        //             intakeSubsystem.setHoodVoltage(Volts.of(11));
+        //         }))
+        //         .onFalse(intakeSubsystem.run(intakeSubsystem::stopHoodCommand));
 
         controller
                 .dPadDown()
@@ -431,7 +436,7 @@ public class RobotContainer {
      * Gets path planner auto to be run during autonomous.
      */
     public PathPlannerAuto getAutonomousCommand() {
-        return new PathPlannerAuto("New New Auto");
+        return new PathPlannerAuto("New Auto");
     }
 
     /**

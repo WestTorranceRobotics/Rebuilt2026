@@ -69,6 +69,10 @@ public class IntakeIOReal extends SubsystemBase implements IntakeIO {
         hoodMotor.setVoltage(volts);
     }
 
+    public double getHoodRPM() {
+        return hoodMotor.getEncoder().getVelocity();
+    }
+
     public Command stopHoodCommand() {
         return this.runOnce(() -> {
             hoodMotor.set(0);

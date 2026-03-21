@@ -117,6 +117,10 @@ public class IntakeIOSim extends SubsystemBase implements IntakeIO {
         hoodMotor.setVoltage(voltage);
     }
 
+    public double getHoodRPM() {
+        return hoodMotor.getEncoder().getVelocity();
+    }
+
     public Command zeroHoodAngleCommand() {
         return this.runOnce(() -> {
             hoodMotor.getEncoder().setPosition(0);
