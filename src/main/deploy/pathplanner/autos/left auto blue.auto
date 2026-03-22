@@ -5,6 +5,12 @@
     "data": {
       "commands": [
         {
+          "type": "path",
+          "data": {
+            "pathName": "left side blue"
+          }
+        },
+        {
           "type": "named",
           "data": {
             "name": "intakeDown"
@@ -20,12 +26,6 @@
           "type": "named",
           "data": {
             "name": "intakeStop"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "left side"
           }
         }
       ]

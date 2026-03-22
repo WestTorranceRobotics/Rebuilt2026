@@ -111,9 +111,7 @@ public class SwerveDrive extends SubsystemBase {
                         headingOffset = Math.PI;
                         return true;
                     }
-
                     headingOffset = 0;
-
                     return false;
                 });
 
