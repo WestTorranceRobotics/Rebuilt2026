@@ -443,7 +443,35 @@ public class RobotContainer {
      * Gets path planner auto to be run during autonomous.
      */
     public Command getAutonomousCommand() {
-        return m_auto.getSelected();
+        // return m_auto.getSelected();
+
+        return Commands.run(() -> {
+                    intakeSubsystem.setHoodVoltage(Volts.of(-4));
+                })
+                .andThen(Commands.waitSeconds(0.7))
+                .andThen(intakeSubsystem.stopHoodCommand())
+                .andThen(Commands.runOnce(() -> {
+                    swerveDrive.drive(new ChassisSpeeds(0, -1, 0), false);
+                }))
+                .andThen(Commands.waitSeconds(0.5))
+                .andThen(Commands.runOnce(() -> {
+                    swerveDrive.drive(new ChassisSpeeds(0, 0, 0), false);
+                }))
+                .andThen(Commands.runOnce(() -> {
+                            hopperSubsystem.setRollerVoltage(Volts.of(7));
+                            shooterSubsystem.setFlywheelSpeed(RotationsPerMinute.of(lastRPM));
+                            ;
+                        })
+                        .andThen(Commands.waitSeconds(0.2))
+                        .andThen(Commands.runOnce(() -> {
+                            shooterSubsystem.setFeederVoltageDirectly(Volts.of(3));
+                        }))
+                        .andThen(Commands.waitSeconds(5))
+                        .andThen(Commands.runOnce(() -> {
+                            hopperSubsystem.stopRollers();
+                            shooterSubsystem.stopShooter();
+                            shooterSubsystem.setFeederVoltageDirectly(Volts.of(0));
+                        })));
     }
 
     /**
