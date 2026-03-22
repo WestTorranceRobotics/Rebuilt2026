@@ -78,7 +78,7 @@ public class RobotContainer {
     public static VisionIO visionIO;
 
     private final SendableChooser<Double> m_chooser = new SendableChooser<>(); // prepare to build LUT
-    private SendableChooser<Command> m_auto = new SendableChooser<>();
+    private SendableChooser<Command> autoChooser = new SendableChooser<>();
 
     private double lastRPM = 2950; // 2950 is the RPM value for shooting directly next to the Hub.
     // 							      We fall back to it so we can still shoot from a known position
@@ -191,6 +191,14 @@ public class RobotContainer {
             visionIO = new VisionIOSim();
         }
 
+        registerNamedCommands();
+        autoChooser = AutoBuilder.buildAutoChooser();
+        SmartDashboard.putData("Current Auto:", autoChooser);
+
+        configureBindings();
+    }
+
+    private void registerNamedCommands() {
         NamedCommands.registerCommand(
                 "alignToHub",
                 new InstantCommand(() -> swerveDrive.setAlignStatus(
@@ -207,26 +215,8 @@ public class RobotContainer {
 
         NamedCommands.registerCommand(
                 "intakeStop", Commands.runOnce(() -> intakeSubsystem.setHoodVoltage(Volts.of(0))));
-
-        m_auto = AutoBuilder.buildAutoChooser();
-        SmartDashboard.putData("Current Auto:", m_auto);
-
-        configureBindings();
     }
-    /**
-     * Use this method to define your trigger->command mappings. Triggers can be
-     * created via the
-     * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with
-     * an arbitrary
-     * predicate, or via the named factories in
-     * {@link edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses
-     * for
-     * {@link CommandXboxController Xbox}/{@link
-     * edu.wpi.first.wpilibj2.command.button.CommandPS4Controller PS4} controllers
-     * or
-     * {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
-     * joysticks}.
-     */
+
     private void configureBindings() {
         // reset the heading of the swerve
         controller.zero().onTrue(Commands.runOnce(this::zeroHeading));
