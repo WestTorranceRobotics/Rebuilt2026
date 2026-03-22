@@ -24,11 +24,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.SwerveDrive.DefaultJoystickCommand;
-import frc.robot.constants.SwerveDriveConstants;
 import frc.robot.constants.SwerveDriveConstants.RealRobotConstants;
+import frc.robot.constants.SwerveDriveConstants.RealRobotConstants.RealModuleConstants;
+import frc.robot.constants.SwerveDriveConstants.SimulatedControlSystemConstants.SimulatedModuleConstants;
 import frc.robot.subsystems.Hopper.HopperIO;
 import frc.robot.subsystems.Hopper.HopperIOReal;
 import frc.robot.subsystems.Hopper.HopperIOSim;
@@ -77,7 +76,7 @@ public class RobotContainer {
     public static VisionIO visionIO;
 
     private final SendableChooser<Double> m_chooser = new SendableChooser<>(); // prepare to build LUT
-    private SendableChooser<Command> m_auto = new SendableChooser<>();
+    private SendableChooser<Command> autoChooser = new SendableChooser<>();
 
     private double lastRPM = 2950; // 2950 is the RPM value for shooting directly next to the Hub.
     // 							      We fall back to it so we can still shoot from a known position
@@ -103,62 +102,20 @@ public class RobotContainer {
 
         if (Robot.isReal()) {
             // Real drive train
-            SwerveDriveConfigurator.SwerveDriveModuleConstants FLModuleConstants =
-                    new SwerveDriveConfigurator.SwerveDriveModuleConstants(
-                            SwerveDriveConfigurator.SwerveModuleCornerPosition.FRONT_LEFT,
-                            RealRobotConstants.FL_CANCODER_ID,
-                            RealRobotConstants.FL_DRIVE_MOTOR_ID,
-                            RealRobotConstants.FL_AZIMUTH_MOTOR_ID,
-                            RealRobotConstants.FL_CANCODER_OFFSET,
-                            RealRobotConstants.kPDrive,
-                            RealRobotConstants.kIDrive,
-                            RealRobotConstants.kDDrive,
-                            RealRobotConstants.kSDrive,
-                            RealRobotConstants.kVDrive,
-                            RealRobotConstants.kPAzimuth,
-                            RealRobotConstants.kIAzimuth,
-                            RealRobotConstants.kDAzimuth,
-                            0,
-                            3,
-                            false,
-                            1 / 6.2);
-            SwerveDriveConfigurator.SwerveDriveModuleConstants FRModuleConstants =
-                    new SwerveDriveConfigurator.SwerveDriveModuleConstants(
-                            FLModuleConstants,
-                            SwerveDriveConfigurator.SwerveModuleCornerPosition.FRONT_RIGHT,
-                            RealRobotConstants.FR_CANCODER_ID,
-                            RealRobotConstants.FR_DRIVE_MOTOR_ID,
-                            RealRobotConstants.FR_AZIMUTH_MOTOR_ID,
-                            RealRobotConstants.FR_CANCODER_OFFSET);
-            SwerveDriveConfigurator.SwerveDriveModuleConstants BLModuleConstants =
-                    new SwerveDriveConfigurator.SwerveDriveModuleConstants(
-                            FLModuleConstants,
-                            SwerveDriveConfigurator.SwerveModuleCornerPosition.BACK_LEFT,
-                            RealRobotConstants.BL_CANCODER_ID,
-                            RealRobotConstants.BL_DRIVE_MOTOR_ID,
-                            RealRobotConstants.BL_AZIMUTH_MOTOR_ID,
-                            RealRobotConstants.BL_CANCODER_OFFSET);
-            SwerveDriveConfigurator.SwerveDriveModuleConstants BRModuleConstants =
-                    new SwerveDriveConfigurator.SwerveDriveModuleConstants(
-                            FLModuleConstants,
-                            SwerveDriveConfigurator.SwerveModuleCornerPosition.BACK_RIGHT,
-                            RealRobotConstants.BR_CANCODER_ID,
-                            RealRobotConstants.BR_DRIVE_MOTOR_ID,
-                            RealRobotConstants.BR_AZIMUTH_MOTOR_ID,
-                            RealRobotConstants.BR_CANCODER_OFFSET);
-
-            SwerveDriveConfigurator.SwerveDriveRobotConstants robotConstants =
-                    new SwerveDriveConfigurator.SwerveDriveRobotConstants(
-                            Kilograms.of(35),
-                            Inches.of(30),
-                            Inches.of(24.5),
-                            Inches.of(2.5),
-                            Inches.of(2),
-                            RealRobotConstants.PIGEON2_ID);
+            var robotConstants = new SwerveDriveConfigurator.SwerveDriveRobotConstants(
+                    Kilograms.of(35),
+                    Inches.of(30),
+                    Inches.of(24.5),
+                    Inches.of(2.5),
+                    Inches.of(2),
+                    RealRobotConstants.PIGEON2_ID);
 
             swerveDriveConfigurator = new SwerveDriveConfigurator(
                     robotConstants, new SwerveDriveConfigurator.SwerveDriveModuleConstants[] {
-                        FLModuleConstants, FRModuleConstants, BLModuleConstants, BRModuleConstants
+                        RealModuleConstants.FLModuleConstants,
+                        RealModuleConstants.FRModuleConstants,
+                        RealModuleConstants.BLModuleConstants,
+                        RealModuleConstants.BRModuleConstants
                     });
 
             swerveDrive = new SwerveDrive(
@@ -178,7 +135,6 @@ public class RobotContainer {
             hopperSubsystem = new HopperIOReal();
             visionIO = new VisionIOReal();
         } else {
-
             // TODO add constant for drive base length
             swerveDriveSimulation = new SwerveDriveSimulation(
                     DriveTrainSimulationConfig.Default()
@@ -193,57 +149,16 @@ public class RobotContainer {
                             .withBumperSize(Inches.of(31), Inches.of(31)),
                     new Pose2d(2, 7, Rotation2d.kZero));
 
-            SwerveDriveConfigurator.SwerveDriveModuleConstants FLModuleConstants =
-                    new SwerveDriveConfigurator.SwerveDriveModuleConstants(
-                            SwerveDriveConfigurator.SwerveModuleCornerPosition.FRONT_LEFT,
-                            0,
-                            0,
-                            0,
-                            0,
-                            SwerveDriveConstants.SimulatedControlSystemConstants.kPDrive,
-                            SwerveDriveConstants.SimulatedControlSystemConstants.kIDrive,
-                            SwerveDriveConstants.SimulatedControlSystemConstants.kDDrive,
-                            0,
-                            SwerveDriveConstants.SimulatedControlSystemConstants.kVDrive,
-                            SwerveDriveConstants.SimulatedControlSystemConstants.kPSteer,
-                            SwerveDriveConstants.SimulatedControlSystemConstants.kISteer,
-                            SwerveDriveConstants.SimulatedControlSystemConstants.kDSteer,
-                            0,
-                            2,
-                            false,
-                            1 / 6.2);
-            SwerveDriveConfigurator.SwerveDriveModuleConstants FRModuleConstants =
-                    new SwerveDriveConfigurator.SwerveDriveModuleConstants(
-                            FLModuleConstants,
-                            SwerveDriveConfigurator.SwerveModuleCornerPosition.FRONT_RIGHT,
-                            0,
-                            0,
-                            0,
-                            0);
-            SwerveDriveConfigurator.SwerveDriveModuleConstants BLModuleConstants =
-                    new SwerveDriveConfigurator.SwerveDriveModuleConstants(
-                            FLModuleConstants,
-                            SwerveDriveConfigurator.SwerveModuleCornerPosition.BACK_LEFT,
-                            0,
-                            0,
-                            0,
-                            0);
-            SwerveDriveConfigurator.SwerveDriveModuleConstants BRModuleConstants =
-                    new SwerveDriveConfigurator.SwerveDriveModuleConstants(
-                            FLModuleConstants,
-                            SwerveDriveConfigurator.SwerveModuleCornerPosition.BACK_RIGHT,
-                            0,
-                            0,
-                            0,
-                            0);
-
             SwerveDriveConfigurator.SwerveDriveRobotConstants robotConstants =
                     new SwerveDriveConfigurator.SwerveDriveRobotConstants(
                             Pounds.of(75), Inches.of(30), Inches.of(24.5), Inches.of(2.5), Inches.of(2), 0);
 
             swerveDriveConfigurator = new SwerveDriveConfigurator(
                     robotConstants, new SwerveDriveConfigurator.SwerveDriveModuleConstants[] {
-                        FLModuleConstants, FRModuleConstants, BLModuleConstants, BRModuleConstants
+                        SimulatedModuleConstants.FLModuleConstants,
+                        SimulatedModuleConstants.FRModuleConstants,
+                        SimulatedModuleConstants.BLModuleConstants,
+                        SimulatedModuleConstants.BRModuleConstants
                     });
 
             // TODO change this to not assume square drivebase
@@ -274,6 +189,14 @@ public class RobotContainer {
             visionIO = new VisionIOSim();
         }
 
+        registerNamedCommands();
+        autoChooser = AutoBuilder.buildAutoChooser();
+        SmartDashboard.putData("Current Auto:", autoChooser);
+
+        configureBindings();
+    }
+
+    private void registerNamedCommands() {
         NamedCommands.registerCommand(
                 "alignToHub",
                 new InstantCommand(() -> swerveDrive.setAlignStatus(
@@ -284,32 +207,11 @@ public class RobotContainer {
         NamedCommands.registerCommand("stopAligning", new InstantCommand(() -> swerveDrive.setAlignStatus(false, 0)));
 
         NamedCommands.registerCommand(
-                "intakeDown",
-                Commands.runOnce(() -> intakeSubsystem.setHoodVoltage(Volts.of(-4)))
-                        .repeatedly());
-
+                "intakeDown", intakeSubsystem.sendHoodDownCommand());
         NamedCommands.registerCommand(
-                "intakeStop", Commands.runOnce(() -> intakeSubsystem.setHoodVoltage(Volts.of(0))));
-
-        m_auto = AutoBuilder.buildAutoChooser();
-        SmartDashboard.putData("Current Auto:", m_auto);
-
-        configureBindings();
+                "intakeStop", intakeSubsystem.stopHoodCommand());
     }
-    /**
-     * Use this method to define your trigger->command mappings. Triggers can be
-     * created via the
-     * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with
-     * an arbitrary
-     * predicate, or via the named factories in
-     * {@link edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses
-     * for
-     * {@link CommandXboxController Xbox}/{@link
-     * edu.wpi.first.wpilibj2.command.button.CommandPS4Controller PS4} controllers
-     * or
-     * {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
-     * joysticks}.
-     */
+
     private void configureBindings() {
         // reset the heading of the swerve
         controller.zero().onTrue(Commands.runOnce(this::zeroHeading));
@@ -386,36 +288,15 @@ public class RobotContainer {
                     swerveDrive.setAlignStatus(false, 0);
                 }));
 
-        // intake button mapping
-        controller.xOrSquare().onTrue(intakeSubsystem.runOnce(() -> {
-            if (intakeSubsystem.isIntakeOn()) {
-                intakeSubsystem.stopIntake();
-            } else {
-                intakeSubsystem.setIntakeVoltage(Volts.of(-11));
-            }
-        }));
-
-        controller.yOrTriangle().onTrue(intakeSubsystem.runOnce(() -> {
-            if (intakeSubsystem.isIntakeOn()) {
-                intakeSubsystem.stopIntake();
-            } else {
-                intakeSubsystem.setIntakeVoltage(Volts.of(11));
-            }
-        }));
-
-        // controller
-        //         .dPadUp()
-        //         .onTrue(intakeSubsystem.runOnce(() -> {
-        //             intakeSubsystem.setHoodVoltage(Volts.of(11));
-        //         }))
-        //         .onFalse(intakeSubsystem.run(intakeSubsystem::stopHoodCommand));
+        controller.xOrSquare().whileTrue(intakeSubsystem.intakeCommand());
+        controller.yOrTriangle().whileTrue(intakeSubsystem.outtakeCommand());
 
         controller
-                .dPadDown()
-                .onTrue(intakeSubsystem.runOnce(() -> {
-                    intakeSubsystem.setHoodVoltage(Volts.of(-4));
-                }))
-                .onFalse(intakeSubsystem.run(intakeSubsystem::stopHoodCommand));
+                .dPadUp()
+                .whileTrue(intakeSubsystem.sendHoodUpCommand());
+
+        controller
+                .dPadDown().whileTrue(intakeSubsystem.sendHoodDownCommand());
     }
 
     /**
@@ -445,18 +326,17 @@ public class RobotContainer {
     public Command getAutonomousCommand() {
         // return m_auto.getSelected();
 
-        return Commands.run(() -> {
-                    intakeSubsystem.setHoodVoltage(Volts.of(-4));
-                })
-                .andThen(Commands.waitSeconds(0.7))
-                .andThen(intakeSubsystem.stopHoodCommand())
-                .andThen(Commands.runOnce(() -> {
-                    swerveDrive.drive(new ChassisSpeeds(0, -1, 0), false);
+        return (Commands.runOnce(() -> {
+                    swerveDrive.drive(new ChassisSpeeds(1.5, 0, 0), false);
                 }))
                 .andThen(Commands.waitSeconds(0.5))
                 .andThen(Commands.runOnce(() -> {
                     swerveDrive.drive(new ChassisSpeeds(0, 0, 0), false);
                 }))
+
+                .andThen(intakeSubsystem.sendHoodDownCommand())
+                .andThen(Commands.waitSeconds(0.7))
+                .andThen(intakeSubsystem.stopHoodCommand())
                 .andThen(Commands.runOnce(() -> {
                             hopperSubsystem.setRollerVoltage(Volts.of(7));
                             shooterSubsystem.setFlywheelSpeed(RotationsPerMinute.of(lastRPM));
@@ -464,9 +344,9 @@ public class RobotContainer {
                         })
                         .andThen(Commands.waitSeconds(0.2))
                         .andThen(Commands.runOnce(() -> {
-                            shooterSubsystem.setFeederVoltageDirectly(Volts.of(3));
+                            shooterSubsystem.setFeederVoltageDirectly(Volts.of(-3));
                         }))
-                        .andThen(Commands.waitSeconds(5))
+                        .andThen(Commands.waitSeconds(3))
                         .andThen(Commands.runOnce(() -> {
                             hopperSubsystem.stopRollers();
                             shooterSubsystem.stopShooter();

@@ -19,6 +19,8 @@ import edu.wpi.first.networktables.*;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.MathUtils;
 import frc.robot.Robot;
@@ -283,5 +285,15 @@ public class SwerveDrive extends SubsystemBase {
 
     public ModuleIO[] getModules() {
         return new ModuleIO[] {frontLeft, frontRight, backLeft, backRight};
+    }
+
+    public Command lockWheelsInX() {
+        return Commands.run(() -> {
+            this.setAlignStatus(false, 0);
+            var modules = this.getModules();
+            for (int i = 0; i < 4; i++) {
+                modules[i].setDesiredState(MetersPerSecond.zero(), Rotation2d.fromDegrees((i * 90) - 45));
+            }
+        });
     }
 }
