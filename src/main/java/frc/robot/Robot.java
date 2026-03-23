@@ -63,6 +63,7 @@ public class Robot extends TimedRobot {
 
         // Ensures that operator cannot move robot during autonomous
         // WARN do not remove, will break path planner
+        m_robotContainer.unbindJoystick();
         m_robotContainer.bindAutoCommand();
 
         if (autonomousCommand != null) CommandScheduler.getInstance().schedule(autonomousCommand);
@@ -76,6 +77,7 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopInit() {
         // Make sure that our movement command is registered
+        m_robotContainer.unbindJoystick();
         m_robotContainer.bindJoystickCommand();
 
         if (autonomousCommand != null) {
