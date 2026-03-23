@@ -1,41 +1,25 @@
 package frc.robot.subsystems.Shooter;
 
-import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.constants.ShooterConstants.*;
 
-import com.revrobotics.PersistMode;
-import com.revrobotics.ResetMode;
 import com.revrobotics.sim.SparkMaxSim;
-import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.controller.BangBangController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
-import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.simulation.BatterySim;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.utilities.CustomUnits;
 
-public class ShooterIOSim extends SubsystemBase implements ShooterIO {
+public class ShooterIOSim extends ShooterIOReal implements ShooterIO {
     // TODO: implement feeder sim in periodic
     private SparkMaxSim feederMotorSim;
 
-    private final SparkMax feederMotor = new SparkMax(FEEDER_MOTOR_ID, MotorType.kBrushless);
+    private final SparkMaxSim launcherMotorLeaderSim;
+    private final SparkMaxSim launcherMotorFollowerSim;
 
-    private final SparkMax launcherMotorLeader = new SparkMax(LAUNCHER_MOTOR_1_ID, MotorType.kBrushless);
-    private final SparkMax launcherMotorFollower = new SparkMax(LAUNCHER_MOTOR_2_ID, MotorType.kBrushless);
-
-    private SparkMaxSim launcherMotorLeaderSim;
-    private SparkMaxSim launcherMotorFollowerSim;
-
-    private FlywheelSim flywheelSim = new FlywheelSim(
+    private final FlywheelSim flywheelSim = new FlywheelSim(
             LinearSystemId.createFlywheelSystem(DCMotor.getNEO(3), 0.00062156662, 1),
             DCMotor.getNEO(3)); // TODO update physical constants
 
@@ -46,59 +30,8 @@ public class ShooterIOSim extends SubsystemBase implements ShooterIO {
     private double actualRPM = 0;
 
     public ShooterIOSim() {
-        // feeder config
-        SparkMaxConfig feederConfig = new SparkMaxConfig();
-        feederConfig.smartCurrentLimit(FEEDER_MOTOR_CURRENT_LIMIT);
-        feederConfig.inverted(true);
-        feederMotor.configure(feederConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-
-        // init feeder sim motor
-        feederMotorSim = new SparkMaxSim(feederMotor, DCMotor.getNEO(1));
-
-        // launcher motor configs
-        SparkMaxConfig launcherLeaderConfig = new SparkMaxConfig();
-        launcherLeaderConfig.idleMode(IdleMode.kCoast);
-        launcherLeaderConfig.smartCurrentLimit(LAUNCHER_MOTOR_CURRENT_LIMIT);
-        launcherLeaderConfig.inverted(false);
-        launcherMotorLeader.configure(
-                launcherLeaderConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-
-        SparkMaxConfig launcherFollowerConfig = new SparkMaxConfig();
-        launcherFollowerConfig.idleMode(IdleMode.kCoast);
-        launcherFollowerConfig.smartCurrentLimit(LAUNCHER_MOTOR_CURRENT_LIMIT);
-        launcherFollowerConfig.inverted(true);
-        launcherMotorFollower.configure(
-                launcherFollowerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-
-        // init launcher sim motors
-        launcherMotorLeaderSim = new SparkMaxSim(launcherMotorLeader, DCMotor.getNEO(1));
-        launcherMotorFollowerSim = new SparkMaxSim(launcherMotorFollower, DCMotor.getNEO(1));
-    }
-
-    public void setFlywheelSpeed(AngularVelocity velocity) {
-        this.targetRPM = velocity.in(CustomUnits.RotationsPerMinute);
-        bangbang.setSetpoint(targetRPM);
-        double voltage = bangbang.calculate(launcherMotorLeader.getEncoder().getVelocity()) * RoboRioSim.getVInVoltage()
-                + 0.9 * feedforward.calculate(targetRPM);
-
-        launcherMotorLeader.setVoltage(voltage);
-        launcherMotorFollower.setVoltage(voltage);
-    }
-
-    public void setFlywheelVoltageDirectly(Voltage voltage) {
-        launcherMotorLeader.set(voltage.in(Volts));
-        launcherMotorFollower.set(voltage.in(Volts));
-    }
-
-    public void stopShooter() {
-        launcherMotorLeader.set(0);
-        launcherMotorFollower.set(0);
-        feederMotor.set(0);
-        targetRPM = 0;
-    }
-
-    public void setFeederVoltageDirectly(Voltage voltage) {
-        feederMotor.set(voltage.in(Volts));
+        launcherMotorLeaderSim = new SparkMaxSim(flywheelMotor, DCMotor.getNEO(1));
+        launcherMotorFollowerSim = new SparkMaxSim(flywheelMotorInverted, DCMotor.getNEO(1));
     }
 
     @Override

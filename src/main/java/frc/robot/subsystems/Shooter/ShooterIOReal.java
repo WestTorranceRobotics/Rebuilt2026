@@ -2,6 +2,7 @@ package frc.robot.subsystems.Shooter;
 
 import static edu.wpi.first.units.Units.*;
 import static frc.robot.constants.ShooterConstants.*;
+import static frc.robot.utilities.CustomUnits.RotationsPerMinute;
 
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
@@ -18,20 +19,21 @@ import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.utilities.CustomUnits;
 
 @Logged
 public class ShooterIOReal extends SubsystemBase implements ShooterIO {
-    private final SparkMax feederMotor = new SparkMax(FEEDER_MOTOR_ID, MotorType.kBrushless);
+    protected final SparkMax feederMotor = new SparkMax(FEEDER_MOTOR_ID, MotorType.kBrushless);
 
-    private final SparkMax launcherMotorLeader = new SparkMax(LAUNCHER_MOTOR_1_ID, MotorType.kBrushless);
-    private final SparkMax launcherMotorFollower = new SparkMax(LAUNCHER_MOTOR_2_ID, MotorType.kBrushless);
+    protected final SparkMax flywheelMotor = new SparkMax(LAUNCHER_MOTOR_1_ID, MotorType.kBrushless);
+    protected final SparkMax flywheelMotorInverted = new SparkMax(LAUNCHER_MOTOR_2_ID, MotorType.kBrushless);
 
-    private final BangBangController bangbang = new BangBangController();
-    private final SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(0, 0.00242); // TODO: tune further
+    protected final BangBangController bangbang = new BangBangController();
+    protected final SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(0, 0.00242); // TODO: tune further
 
-    private double targetRPM = 0;
-    private double actualRPM = 0;
+    protected double targetRPM = 0;
+    protected double actualRPM = 0;
+
+    protected final double FEEDER_VOLTAGE = 12;
 
     public ShooterIOReal() {
         // feeder config
@@ -41,75 +43,84 @@ public class ShooterIOReal extends SubsystemBase implements ShooterIO {
         feederMotor.configure(feederConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
         // launcher motor configs
-        SparkMaxConfig launcherLeaderConfig = new SparkMaxConfig();
-        launcherLeaderConfig.idleMode(IdleMode.kCoast);
-        launcherLeaderConfig.smartCurrentLimit(LAUNCHER_MOTOR_CURRENT_LIMIT);
-        launcherLeaderConfig.inverted(false);
-        launcherMotorLeader.configure(
-                launcherLeaderConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        SparkMaxConfig flywheelConfig = new SparkMaxConfig();
+        flywheelConfig.idleMode(IdleMode.kCoast);
+        flywheelConfig.smartCurrentLimit(LAUNCHER_MOTOR_CURRENT_LIMIT);
+        flywheelConfig.inverted(false);
+        flywheelMotor.configure(flywheelConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-        SparkMaxConfig launcherFollowerConfig = new SparkMaxConfig();
-        launcherFollowerConfig.idleMode(IdleMode.kCoast);
-        launcherFollowerConfig.smartCurrentLimit(LAUNCHER_MOTOR_CURRENT_LIMIT);
-        launcherFollowerConfig.inverted(true);
-        launcherMotorFollower.configure(
-                launcherFollowerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        flywheelConfig.inverted(true);
+        flywheelMotorInverted.configure(flywheelConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
         bangbang.setTolerance(0.1);
-    }
-
-    public void setFlywheelSpeed(AngularVelocity velocity) {
-        this.targetRPM = velocity.in(CustomUnits.RotationsPerMinute);
-        bangbang.setSetpoint(targetRPM);
-        double voltage =
-                bangbang.calculate(launcherMotorLeader.getEncoder().getVelocity()) * RoboRioDataJNI.getVInVoltage()
-                        + 0.9 * feedforward.calculate(targetRPM);
-
-        launcherMotorLeader.setVoltage(voltage);
-        launcherMotorFollower.setVoltage(voltage);
-    }
-
-    public Command setFlywheelSpeedCommand(AngularVelocity velocity) {
-        return this.run(
-                () -> { // Commands.run runs repeatedly until interrupted.
-                    setFlywheelSpeed(velocity);
-                });
-    }
-
-    public void setFlywheelVoltageDirectly(Voltage voltage) {
-        launcherMotorLeader.set(voltage.in(Volts));
-        launcherMotorFollower.set(voltage.in(Volts));
-    }
-
-    public Command setFlywheelVoltageDirectlyCommand(Voltage voltage) {
-        return this.runOnce(() -> {
-            setFlywheelVoltageDirectly(voltage);
-        });
-    }
-
-    public void stopShooter() {
-        launcherMotorLeader.setVoltage(0);
-        launcherMotorFollower.setVoltage(0);
-        feederMotor.set(0);
-        bangbang.setSetpoint(0);
-        targetRPM = 0;
-    }
-
-    public double getError() {
-        return Math.abs(this.actualRPM - this.targetRPM);
-    }
-
-    public void setFeederVoltageDirectly(Voltage voltage) {
-        if (Math.abs(this.actualRPM - this.targetRPM) < 200) feederMotor.set(voltage.in(Volts));
     }
 
     public double getFeederRPM() {
         return feederMotor.getEncoder().getVelocity();
     }
 
+    public double getShooterRPM() {
+        return flywheelMotor.getEncoder().getVelocity();
+    }
+
+    public Command setFlywheelSpeedCommand(AngularVelocity velocity) {
+        return this.runEnd(
+                () -> {
+                    setFlywheelSpeed(velocity);
+                },
+                this::stopShooterCommand);
+    }
+
+    public void setFlywheelSpeed(AngularVelocity velocity) {
+        this.targetRPM = velocity.in(RotationsPerMinute);
+        bangbang.setSetpoint(targetRPM);
+        double voltage = (bangbang.calculate(flywheelMotor.getEncoder().getVelocity()) * RoboRioDataJNI.getVInVoltage())
+                + 0.9 * feedforward.calculate(targetRPM);
+
+        flywheelMotor.setVoltage(voltage);
+        flywheelMotorInverted.setVoltage(voltage);
+    }
+
+    public void setFlywheelVoltageDirectly(Voltage voltage) {
+        flywheelMotor.setVoltage(voltage);
+        flywheelMotorInverted.setVoltage(voltage);
+    }
+
+    public Command stopShooterCommand() {
+        return this.runOnce(this::stopShooter);
+    }
+
+    public void stopShooter() {
+        this.targetRPM = 0;
+        bangbang.setSetpoint(0);
+        flywheelMotor.stopMotor();
+        flywheelMotorInverted.stopMotor();
+        feederMotor.stopMotor();
+    }
+
+    public Command runFeederCommand() {
+        return this.startEnd(
+                () -> {
+                    setFeederVoltageDirectly(Volts.of(FEEDER_VOLTAGE));
+                },
+                this::stopFeederCommand);
+    }
+
+    public void setFeederVoltageDirectly(Voltage voltage) {
+        feederMotor.setVoltage(voltage.in(Volts));
+    }
+
+    public Command stopFeederCommand() {
+        return this.runOnce(this::stopFeeder);
+    }
+
+    public void stopFeeder() {
+        feederMotor.setVoltage(0);
+    }
+
     @Override
     public void periodic() {
-        this.actualRPM = launcherMotorLeader.getEncoder().getVelocity();
+        this.actualRPM = flywheelMotor.getEncoder().getVelocity();
         SmartDashboard.putNumber("Shooter Target RPM", targetRPM);
         SmartDashboard.putNumber("Shooter RPM", actualRPM);
     }

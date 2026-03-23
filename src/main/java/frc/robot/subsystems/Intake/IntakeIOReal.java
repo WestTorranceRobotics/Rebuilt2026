@@ -72,8 +72,7 @@ public class IntakeIOReal extends SubsystemBase implements IntakeIO {
                     intakeMotor.setVoltage(voltage);
                     isIntakeOn = true;
                 },
-               this::stopIntakeCommand
-               );
+                this::stopIntakeCommand);
     }
 
     public Command stopIntakeCommand() {

@@ -206,10 +206,8 @@ public class RobotContainer {
 
         NamedCommands.registerCommand("stopAligning", new InstantCommand(() -> swerveDrive.setAlignStatus(false, 0)));
 
-        NamedCommands.registerCommand(
-                "intakeDown", intakeSubsystem.sendHoodDownCommand());
-        NamedCommands.registerCommand(
-                "intakeStop", intakeSubsystem.stopHoodCommand());
+        NamedCommands.registerCommand("intakeDown", intakeSubsystem.sendHoodDownCommand());
+        NamedCommands.registerCommand("intakeStop", intakeSubsystem.stopHoodCommand());
     }
 
     private void configureBindings() {
@@ -291,12 +289,9 @@ public class RobotContainer {
         controller.xOrSquare().whileTrue(intakeSubsystem.intakeCommand());
         controller.yOrTriangle().whileTrue(intakeSubsystem.outtakeCommand());
 
-        controller
-                .dPadUp()
-                .whileTrue(intakeSubsystem.sendHoodUpCommand());
+        controller.dPadUp().whileTrue(intakeSubsystem.sendHoodUpCommand());
 
-        controller
-                .dPadDown().whileTrue(intakeSubsystem.sendHoodDownCommand());
+        controller.dPadDown().whileTrue(intakeSubsystem.sendHoodDownCommand());
     }
 
     /**
@@ -333,7 +328,6 @@ public class RobotContainer {
                 .andThen(Commands.runOnce(() -> {
                     swerveDrive.drive(new ChassisSpeeds(0, 0, 0), false);
                 }))
-
                 .andThen(intakeSubsystem.sendHoodDownCommand())
                 .andThen(Commands.waitSeconds(0.7))
                 .andThen(intakeSubsystem.stopHoodCommand())
