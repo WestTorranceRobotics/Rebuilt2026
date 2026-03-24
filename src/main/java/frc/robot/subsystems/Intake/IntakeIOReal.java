@@ -17,15 +17,15 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 @Logged
 public class IntakeIOReal extends SubsystemBase implements IntakeIO {
     protected final SparkMax intakeMotor = new SparkMax(INTAKE_MOTOR_ID, MotorType.kBrushless);
-    protected final SparkMax hoodMotor = new SparkMax(HOOD_MOTOR_ID, MotorType.kBrushless);
+    protected final SparkMax pivotMotor = new SparkMax(PIVOT_MOTOR_ID, MotorType.kBrushless);
 
     protected boolean isIntakeOn = false;
 
     protected final double INTAKE_VOLTAGE = 11;
     protected final double OUTTAKE_VOLTAGE = -11;
 
-    protected final double HOOD_DOWN_VOLTAGE = 5;
-    protected final double HOOD_UP_VOLTAGE = -4;
+    protected final double PIVOT_DOWN_VOLTAGE = 5;
+    protected final double PIVOT_UP_VOLTAGE = -4;
 
     public IntakeIOReal() {
         SparkMaxConfig intakeConfig = new SparkMaxConfig();
@@ -33,17 +33,17 @@ public class IntakeIOReal extends SubsystemBase implements IntakeIO {
         intakeConfig.idleMode(IdleMode.kCoast);
         intakeMotor.configure(intakeConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-        SparkMaxConfig hoodConfig = new SparkMaxConfig();
-        hoodConfig.smartCurrentLimit(HOOD_MOTOR_CURRENT_LIMIT);
-        hoodConfig.idleMode(IdleMode.kBrake);
-        hoodConfig.inverted(true);
-        hoodConfig.encoder.positionConversionFactor(2 * Math.PI); // Converts from rotations to radians
-        hoodMotor.configure(hoodConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        SparkMaxConfig pivotConfig = new SparkMaxConfig();
+        pivotConfig.smartCurrentLimit(PIVOT_MOTOR_CURRENT_LIMIT);
+        pivotConfig.idleMode(IdleMode.kBrake);
+        pivotConfig.inverted(true);
+        pivotConfig.encoder.positionConversionFactor(2 * Math.PI); // Converts from rotations to radians
+        pivotMotor.configure(pivotConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-        // We're going to manually start the robot with the intake hood on top of the robot.
+        // We're going to manually start the robot with the intake pivot on top of the robot.
         // I'm setting the convention that this starting position is 90 degrees (pi/2 radians).
         // Our target angle (when the intake is down, level with the floor) should be zero degrees,
-        hoodMotor.getEncoder().setPosition(Math.PI / 2);
+        pivotMotor.getEncoder().setPosition(Math.PI / 2);
     }
 
     public boolean isIntakeOn() {
@@ -55,7 +55,7 @@ public class IntakeIOReal extends SubsystemBase implements IntakeIO {
     }
 
     public double getHoodRPM() {
-        return hoodMotor.getEncoder().getVelocity();
+        return pivotMotor.getEncoder().getVelocity();
     }
 
     public Command intakeCommand() {
@@ -83,29 +83,29 @@ public class IntakeIOReal extends SubsystemBase implements IntakeIO {
     }
 
     public Command sendHoodDownCommand() {
-        return runHoodAtVoltageCommand(Volts.of(HOOD_DOWN_VOLTAGE));
+        return runHoodAtVoltageCommand(Volts.of(PIVOT_DOWN_VOLTAGE));
     }
 
     public Command sendHoodUpCommand() {
-        return runHoodAtVoltageCommand(Volts.of(HOOD_UP_VOLTAGE));
+        return runHoodAtVoltageCommand(Volts.of(PIVOT_UP_VOLTAGE));
     }
 
     /**
-     * Runs the hood motor at a given voltage. Positive voltage sends the intake DOWN, negative sends it UP.
-     * @param voltage Voltage to be applied to the hood motor
-     * @return Command that runs the hood motor at the given voltage
+     * Runs the pivot motor at a given voltage. Positive voltage sends the intake DOWN, negative sends it UP.
+     * @param voltage Voltage to be applied to the pivot motor
+     * @return Command that runs the pivot motor at the given voltage
      */
     public Command runHoodAtVoltageCommand(Voltage voltage) {
         return this.startEnd(
                 () -> {
-                    hoodMotor.setVoltage(voltage);
+                    pivotMotor.setVoltage(voltage);
                 },
                 this::stopHoodCommand);
     }
 
     public Command stopHoodCommand() {
         return this.runOnce(() -> {
-            hoodMotor.setVoltage(0);
+            pivotMotor.setVoltage(0);
         });
     }
 }

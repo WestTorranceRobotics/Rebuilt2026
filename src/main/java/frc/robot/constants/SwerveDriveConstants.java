@@ -98,17 +98,17 @@ public final class SwerveDriveConstants {
     }
 
     public static class SimulatedControlSystemConstants {
-        public static final double kSDrive = 0.0058039;
-        public static final double kVDrive = 0.11504;
+        public static final double kSDrive = 0;
+        public static final double kVDrive = 2.435;
         public static final double kADrive = 0;
 
-        public static final double kPDrive = 0.098616;
+        public static final double kPDrive = 8;
         public static final double kIDrive = 0;
         public static final double kDDrive = 0;
 
-        public static final double kPSteer = 4;
-        public static final double kISteer = 8;
-        public static final double kDSteer = 0.3;
+        public static final double kPSteer = 13.26;
+        public static final double kISteer = 0;
+        public static final double kDSteer = 0.59364;
 
         public static class SimulatedModuleConstants {
             public static SwerveDriveConfigurator.SwerveDriveModuleConstants FLModuleConstants =
