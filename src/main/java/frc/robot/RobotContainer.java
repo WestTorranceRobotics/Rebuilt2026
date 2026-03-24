@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import frc.robot.commands.SwerveDrive.AutonomousPeriodicCommand;
 import frc.robot.commands.SwerveDrive.DefaultJoystickCommand;
 import frc.robot.constants.SwerveDriveConstants.RealRobotConstants;
 import frc.robot.constants.SwerveDriveConstants.RealRobotConstants.RealModuleConstants;
@@ -312,40 +313,50 @@ public class RobotContainer {
      * Removes the controller from being used for movement.
      */
     public void unbindJoystick() {
+        try {
+            swerveDrive.getDefaultCommand().cancel();
+        } catch (NullPointerException e) {
+            DriverStation.reportError("Tried to unbind non existent default command", true);
+        }
+
         swerveDrive.removeDefaultCommand();
+    }
+
+    public void bindAutoCommand() {
+        swerveDrive.setDefaultCommand(new AutonomousPeriodicCommand(swerveDrive));
     }
 
     /**
      * Gets path planner auto to be run during autonomous.
      */
     public Command getAutonomousCommand() {
-        // return m_auto.getSelected();
+        return autoChooser.getSelected();
 
-        return (Commands.runOnce(() -> {
-                    swerveDrive.drive(new ChassisSpeeds(1.5, 0, 0), false);
-                }))
-                .andThen(Commands.waitSeconds(0.5))
-                .andThen(Commands.runOnce(() -> {
-                    swerveDrive.drive(new ChassisSpeeds(0, 0, 0), false);
-                }))
-                .andThen(intakeSubsystem.sendHoodDownCommand())
-                .andThen(Commands.waitSeconds(0.7))
-                .andThen(intakeSubsystem.stopHoodCommand())
-                .andThen(Commands.runOnce(() -> {
-                            hopperSubsystem.setRollerVoltage(Volts.of(7));
-                            shooterSubsystem.setFlywheelSpeed(RotationsPerMinute.of(lastRPM));
-                            ;
-                        })
-                        .andThen(Commands.waitSeconds(0.2))
-                        .andThen(Commands.runOnce(() -> {
-                            shooterSubsystem.setFeederVoltageDirectly(Volts.of(-3));
-                        }))
-                        .andThen(Commands.waitSeconds(3))
-                        .andThen(Commands.runOnce(() -> {
-                            hopperSubsystem.stopRollers();
-                            shooterSubsystem.stopShooter();
-                            shooterSubsystem.setFeederVoltageDirectly(Volts.of(0));
-                        })));
+        // return (Commands.runOnce(() -> {
+        //             swerveDrive.drive(new ChassisSpeeds(1.5, 0, 0), false);
+        //         }))
+        //         .andThen(Commands.waitSeconds(0.5))
+        //         .andThen(Commands.runOnce(() -> {
+        //             swerveDrive.drive(new ChassisSpeeds(0, 0, 0), false);
+        //         }))
+        //         .andThen(intakeSubsystem.sendHoodDownCommand())
+        //         .andThen(Commands.waitSeconds(0.7))
+        //         .andThen(intakeSubsystem.stopHoodCommand())
+        //         .andThen(Commands.runOnce(() -> {
+        //                     hopperSubsystem.setRollerVoltage(Volts.of(7));
+        //                     shooterSubsystem.setFlywheelSpeed(RotationsPerMinute.of(lastRPM));
+        //                     ;
+        //                 })
+        //                 .andThen(Commands.waitSeconds(0.2))
+        //                 .andThen(Commands.runOnce(() -> {
+        //                     shooterSubsystem.setFeederVoltageDirectly(Volts.of(-3));
+        //                 }))
+        //                 .andThen(Commands.waitSeconds(3))
+        //                 .andThen(Commands.runOnce(() -> {
+        //                     hopperSubsystem.stopRollers();
+        //                     shooterSubsystem.stopShooter();
+        //                     shooterSubsystem.setFeederVoltageDirectly(Volts.of(0));
+        //                 })));
     }
 
     /**
