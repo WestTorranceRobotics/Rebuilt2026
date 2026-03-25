@@ -61,6 +61,10 @@ public class ShooterIOReal extends SubsystemBase implements ShooterIO {
         return flywheelMotor.getEncoder().getVelocity();
     }
 
+    public boolean isShooterUpToSpeed() {
+        return Math.abs(this.actualRPM - this.targetRPM) <= TOLERANCE_TO_RUN_FEEDER;
+    }
+
     public Command runShooterCommand(AngularVelocity velocity) {
         return this.runEnd(
                 () -> {

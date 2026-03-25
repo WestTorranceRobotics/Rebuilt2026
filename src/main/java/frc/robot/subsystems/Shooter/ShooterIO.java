@@ -13,5 +13,7 @@ public interface ShooterIO extends Subsystem {
 
     public void setFeederSpeed();
 
+    public boolean isShooterUpToSpeed();
+
     public void stopShooter();
 }

@@ -40,14 +40,15 @@ public class ShootCommand extends Command {
             }
             swerveDrive.setAlignStatus(false, 0);
         } else {
-            if (Math.abs(targetHubYaw) < MINIMUM_YAW_DISTANCE_TO_SHOOT) {
+            if (Math.abs(targetHubYaw) <= MINIMUM_YAW_DISTANCE_TO_SHOOT) {
                 SmartDashboard.putNumber("DISTANCE TO HUB (METERS)", vision.getDistance(hubAprilTagID));
-                shooter.setFlywheelSpeed(RotationsPerMinute.of(vision.getDistance(hubAprilTagID)));
+                shooter.setFlywheelSpeed(
+                        RotationsPerMinute.of(DISTANCE_VS_RPM_MAP.get(vision.getDistance(hubAprilTagID))));
             }
             swerveDrive.setAlignStatus(true, targetHubYaw);
         }
         hopper.setHopperSpeed();
-        shooter.setFeederSpeed();
+        if (shooter.isShooterUpToSpeed()) shooter.setFeederSpeed();
     }
 
     @Override
