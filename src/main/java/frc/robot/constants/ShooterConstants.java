@@ -19,6 +19,7 @@ public final class ShooterConstants {
     public static final double MINIMUM_SHOOTER_RPM =
             2950; /* 2950 is the RPM value for shooting directly next to the Hub. We fall back to it so we can still
                   shoot from a known position if vision breaks or is disabled. */
+    public static final double PASSING_SHOOTER_RPM = 3500;
 
     public static final InterpolatingDoubleTreeMap DISTANCE_TO_TOF_MAP = new InterpolatingDoubleTreeMap();
     public static final InterpolatingDoubleTreeMap SHOOTER_MAP = new InterpolatingDoubleTreeMap();

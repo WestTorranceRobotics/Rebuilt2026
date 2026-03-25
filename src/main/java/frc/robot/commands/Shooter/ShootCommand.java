@@ -1,6 +1,7 @@
 package frc.robot.commands.Shooter;
 
 import static frc.robot.constants.ShooterConstants.*;
+import static frc.robot.constants.VisionConstants.*;
 import static frc.robot.utilities.CustomUnits.RotationsPerMinute;
 
 import edu.wpi.first.wpilibj.DriverStation;
@@ -17,8 +18,6 @@ public class ShootCommand extends Command {
     private final VisionIO vision;
     private final HopperIO hopper;
 
-    private double shooterRPM = MINIMUM_SHOOTER_RPM;
-
     public ShootCommand(ShooterIO shooter, SwerveDrive swerveDrive, VisionIO vision, HopperIO hopper) {
         this.shooter = shooter;
         this.swerveDrive = swerveDrive;
@@ -34,13 +33,16 @@ public class ShootCommand extends Command {
         Double targetHubYaw = vision.getTX(hubAprilTagID).orElse(null);
 
         if (targetHubYaw == null) {
-            shooter.setFlywheelSpeed(RotationsPerMinute.of(MINIMUM_SHOOTER_RPM));
+            if (NEUTRAL_ZONE_APRILTAG_IDS.contains(vision.getBestTarget().getFiducialId())) {
+                shooter.setFlywheelSpeed(RotationsPerMinute.of(PASSING_SHOOTER_RPM));
+            } else {
+                shooter.setFlywheelSpeed(RotationsPerMinute.of(MINIMUM_SHOOTER_RPM));
+            }
             swerveDrive.setAlignStatus(false, 0);
         } else {
             if (Math.abs(targetHubYaw) < MINIMUM_YAW_DISTANCE_TO_SHOOT) {
                 SmartDashboard.putNumber("DISTANCE TO HUB (METERS)", vision.getDistance(hubAprilTagID));
-                shooterRPM = DISTANCE_VS_RPM_MAP.get(vision.getDistance(hubAprilTagID));
-                shooter.setFlywheelSpeed(RotationsPerMinute.of(shooterRPM));
+                shooter.setFlywheelSpeed(RotationsPerMinute.of(vision.getDistance(hubAprilTagID)));
             }
             swerveDrive.setAlignStatus(true, targetHubYaw);
         }
