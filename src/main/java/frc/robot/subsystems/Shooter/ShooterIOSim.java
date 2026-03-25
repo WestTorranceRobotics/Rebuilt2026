@@ -9,7 +9,6 @@ import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class ShooterIOSim extends ShooterIOReal implements ShooterIO {
-    // TODO: implement feeder sim in periodic
     private final SparkMaxSim feederMotorSim;
 
     private final SparkMaxSim launcherMotorLeaderSim;
@@ -47,6 +46,7 @@ public class ShooterIOSim extends ShooterIOReal implements ShooterIO {
         SmartDashboard.putNumber("Feeder RPM", feederSim.getAngularVelocityRPM());
 
         // TODO does this carry between sims? seems like it does
-        RoboRioSim.setVInVoltage(BatterySim.calculateDefaultBatteryLoadedVoltage(flywheelSim.getCurrentDrawAmps()));
+        RoboRioSim.setVInVoltage(BatterySim.calculateDefaultBatteryLoadedVoltage(
+                flywheelSim.getCurrentDrawAmps() + feederSim.getCurrentDrawAmps()));
     }
 }

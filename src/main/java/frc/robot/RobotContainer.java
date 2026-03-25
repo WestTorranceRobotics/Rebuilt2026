@@ -202,8 +202,14 @@ public class RobotContainer {
 
         NamedCommands.registerCommand("stopAligning", new InstantCommand(() -> swerveDrive.setAlignStatus(false, 0)));
 
-        NamedCommands.registerCommand("intakeDown", intakeSubsystem.sendHoodDownCommand());
-        NamedCommands.registerCommand("intakeStop", intakeSubsystem.stopHoodCommand());
+        NamedCommands.registerCommand(
+                "shoot", new ShootCommand(shooterSubsystem, swerveDrive, visionIO, hopperSubsystem));
+
+        NamedCommands.registerCommand("runIntake", intakeSubsystem.intakeCommand());
+        NamedCommands.registerCommand("stopIntake", intakeSubsystem.stopIntakeCommand());
+
+        NamedCommands.registerCommand("pivotDown", intakeSubsystem.sendHoodDownCommand());
+        NamedCommands.registerCommand("pivotStop", intakeSubsystem.stopHoodCommand());
     }
 
     private void configureBindings() {
