@@ -233,7 +233,7 @@ public class RobotContainer {
                                     }
                                 }),
                                 shooterSubsystem.runShooterCommand(RotationsPerMinute.of(lastRPM)),
-                                hopperSubsystem.runOnce(() -> hopperSubsystem.setRollerVoltage(Volts.of(7))))
+                                hopperSubsystem.runHopper())
                         // hopperSubsystem.setRollerVoltage(Volts.of(7));
                         // int hubAprilTagID = DriverStation.getAlliance().get().equals(DriverStation.Alliance.Blue) ?
                         // 25 : 10;
@@ -278,10 +278,7 @@ public class RobotContainer {
                         //         RotationsPerMinute.of(shooterMap.get(targetHorizontalVelocity)));
 
                         // }
-                        )
-                .onFalse(shooterSubsystem.runOnce(() -> {
-                    hopperSubsystem.stopRollers();
-                }));
+                        );
 
         // align button mapping
         controller
@@ -303,8 +300,8 @@ public class RobotContainer {
                     swerveDrive.setAlignStatus(false, 0);
                 }));
 
-        controller.xOrSquare().whileTrue(intakeSubsystem.intakeCommand());
-        controller.yOrTriangle().whileTrue(intakeSubsystem.outtakeCommand());
+        controller.xOrSquare().toggleOnTrue(intakeSubsystem.intakeCommand());
+        controller.yOrTriangle().toggleOnTrue(intakeSubsystem.outtakeCommand());
 
         controller.dPadUp().whileTrue(intakeSubsystem.sendHoodUpCommand());
         controller.dPadDown().whileTrue(intakeSubsystem.sendHoodDownCommand());

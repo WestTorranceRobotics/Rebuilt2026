@@ -11,6 +11,8 @@ public final class ShooterConstants {
     public static final int FEEDER_MOTOR_CURRENT_LIMIT = 40;
     public static final int LAUNCHER_MOTOR_CURRENT_LIMIT = 50;
 
+    public static final double FEEDER_VOLTAGE = 12;
+
     public static final double LATENCY_COMPENSATION = 0; // TODO tune latency compensation
 
     public static final InterpolatingDoubleTreeMap DISTANCE_TO_TOF_MAP = new InterpolatingDoubleTreeMap();

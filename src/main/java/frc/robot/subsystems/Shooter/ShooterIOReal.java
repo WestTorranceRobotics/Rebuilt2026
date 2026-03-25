@@ -33,8 +33,6 @@ public class ShooterIOReal extends SubsystemBase implements ShooterIO {
     protected double targetRPM = 0;
     protected double actualRPM = 0;
 
-    protected final double FEEDER_VOLTAGE = 12;
-
     public ShooterIOReal() {
         // feeder config
         SparkMaxConfig feederConfig = new SparkMaxConfig();

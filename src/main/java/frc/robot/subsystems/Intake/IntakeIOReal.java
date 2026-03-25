@@ -19,12 +19,6 @@ public class IntakeIOReal extends SubsystemBase implements IntakeIO {
     protected final SparkMax intakeMotor = new SparkMax(INTAKE_MOTOR_ID, MotorType.kBrushless);
     protected final SparkMax pivotMotor = new SparkMax(PIVOT_MOTOR_ID, MotorType.kBrushless);
 
-    protected final double INTAKE_VOLTAGE = 11;
-    protected final double OUTTAKE_VOLTAGE = -11;
-
-    protected final double PIVOT_DOWN_VOLTAGE = 5;
-    protected final double PIVOT_UP_VOLTAGE = -4;
-
     public IntakeIOReal() {
         SparkMaxConfig intakeConfig = new SparkMaxConfig();
         intakeConfig.smartCurrentLimit(INTAKE_MOTOR_CURRENT_LIMIT);
@@ -53,17 +47,17 @@ public class IntakeIOReal extends SubsystemBase implements IntakeIO {
     }
 
     public Command intakeCommand() {
-        return runIntakeAtVoltageCommand(Volts.of(INTAKE_VOLTAGE));
+        return this.runIntakeAtVoltageCommand(Volts.of(INTAKE_VOLTAGE));
     }
 
     public Command outtakeCommand() {
-        return runIntakeAtVoltageCommand(Volts.of(OUTTAKE_VOLTAGE));
+        return this.runIntakeAtVoltageCommand(Volts.of(OUTTAKE_VOLTAGE));
     }
 
     public Command runIntakeAtVoltageCommand(Voltage voltage) {
-        return this.startEnd(
+        return this.runEnd(
                 () -> {
-                    intakeMotor.setVoltage(voltage);
+                    this.setIntakeVoltage(voltage);
                 },
                 this::stopIntake);
     }
@@ -74,16 +68,20 @@ public class IntakeIOReal extends SubsystemBase implements IntakeIO {
         });
     }
 
+    public void setIntakeVoltage(Voltage voltage) {
+        intakeMotor.setVoltage(voltage);
+    }
+
     public void stopIntake() {
         intakeMotor.setVoltage(0);
     }
 
     public Command sendHoodDownCommand() {
-        return runHoodAtVoltageCommand(Volts.of(PIVOT_DOWN_VOLTAGE));
+        return this.runHoodAtVoltageCommand(Volts.of(PIVOT_DOWN_VOLTAGE));
     }
 
     public Command sendHoodUpCommand() {
-        return runHoodAtVoltageCommand(Volts.of(PIVOT_UP_VOLTAGE));
+        return this.runHoodAtVoltageCommand(Volts.of(PIVOT_UP_VOLTAGE));
     }
 
     /**
