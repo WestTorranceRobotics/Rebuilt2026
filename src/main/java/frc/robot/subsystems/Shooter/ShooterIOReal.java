@@ -63,12 +63,13 @@ public class ShooterIOReal extends SubsystemBase implements ShooterIO {
         return flywheelMotor.getEncoder().getVelocity();
     }
 
-    public Command setFlywheelSpeedCommand(AngularVelocity velocity) {
+    public Command runShooterCommand(AngularVelocity velocity) {
         return this.runEnd(
                 () -> {
-                    setFlywheelSpeed(velocity);
+                    this.setFlywheelSpeed(velocity);
+                    this.setFeederVoltageDirectly(Volts.of(FEEDER_VOLTAGE));
                 },
-                this::stopShooterCommand);
+                this::stopShooter);
     }
 
     public void setFlywheelSpeed(AngularVelocity velocity) {
@@ -103,7 +104,7 @@ public class ShooterIOReal extends SubsystemBase implements ShooterIO {
                 () -> {
                     setFeederVoltageDirectly(Volts.of(FEEDER_VOLTAGE));
                 },
-                this::stopFeederCommand);
+                this::stopFeeder);
     }
 
     public void setFeederVoltageDirectly(Voltage voltage) {

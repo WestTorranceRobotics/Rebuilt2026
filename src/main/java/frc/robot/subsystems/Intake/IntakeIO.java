@@ -7,8 +7,6 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 
 @Logged
 public interface IntakeIO extends Subsystem {
-    public boolean isIntakeOn();
-
     public double getIntakeRPM();
 
     public double getHoodRPM();

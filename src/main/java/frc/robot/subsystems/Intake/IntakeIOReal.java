@@ -19,8 +19,6 @@ public class IntakeIOReal extends SubsystemBase implements IntakeIO {
     protected final SparkMax intakeMotor = new SparkMax(INTAKE_MOTOR_ID, MotorType.kBrushless);
     protected final SparkMax pivotMotor = new SparkMax(PIVOT_MOTOR_ID, MotorType.kBrushless);
 
-    protected boolean isIntakeOn = false;
-
     protected final double INTAKE_VOLTAGE = 11;
     protected final double OUTTAKE_VOLTAGE = -11;
 
@@ -46,10 +44,6 @@ public class IntakeIOReal extends SubsystemBase implements IntakeIO {
         pivotMotor.getEncoder().setPosition(Math.PI / 2);
     }
 
-    public boolean isIntakeOn() {
-        return isIntakeOn;
-    }
-
     public double getIntakeRPM() {
         return intakeMotor.getEncoder().getVelocity();
     }
@@ -70,16 +64,18 @@ public class IntakeIOReal extends SubsystemBase implements IntakeIO {
         return this.startEnd(
                 () -> {
                     intakeMotor.setVoltage(voltage);
-                    isIntakeOn = true;
                 },
-                this::stopIntakeCommand);
+                this::stopIntake);
     }
 
     public Command stopIntakeCommand() {
         return this.runOnce(() -> {
-            intakeMotor.setVoltage(0);
-            isIntakeOn = false;
+            this.stopIntake();
         });
+    }
+
+    public void stopIntake() {
+        intakeMotor.setVoltage(0);
     }
 
     public Command sendHoodDownCommand() {
@@ -105,7 +101,11 @@ public class IntakeIOReal extends SubsystemBase implements IntakeIO {
 
     public Command stopHoodCommand() {
         return this.runOnce(() -> {
-            pivotMotor.setVoltage(0);
+            this.stopHood();
         });
+    }
+
+    public void stopHood() {
+        pivotMotor.setVoltage(0);
     }
 }

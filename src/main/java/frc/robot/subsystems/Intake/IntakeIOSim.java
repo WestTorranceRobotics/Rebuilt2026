@@ -1,15 +1,15 @@
 package frc.robot.subsystems.Intake;
 
-import static frc.robot.constants.IntakeConstants.*;
-
 import com.revrobotics.sim.SparkMaxSim;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.simulation.BatterySim;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 @Logged
 public class IntakeIOSim extends IntakeIOReal implements IntakeIO {
@@ -47,6 +47,10 @@ public class IntakeIOSim extends IntakeIOReal implements IntakeIO {
         // Update motors
         intakeMotorSim.iterate(rollerSim.getAngularVelocityRPM(), RoboRioSim.getVInVoltage(), 0.02);
         pivotMotorSim.iterate(pivotSim.getVelocityRadPerSec(), RoboRioSim.getVInVoltage(), 0.02);
+
+        SmartDashboard.putNumber("Intake RPM", rollerSim.getAngularVelocityRPM());
+        SmartDashboard.putNumber(
+                "Pivot RPM", Units.radiansPerSecondToRotationsPerMinute(pivotSim.getVelocityRadPerSec()));
 
         // TODO does this carry between sims? seems like it does
         RoboRioSim.setVInVoltage(BatterySim.calculateDefaultBatteryLoadedVoltage(

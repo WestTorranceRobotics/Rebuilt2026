@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import frc.robot.commands.SwerveDrive.AutonomousPeriodicCommand;
 import frc.robot.commands.SwerveDrive.DefaultJoystickCommand;
 import frc.robot.constants.SwerveDriveConstants.RealRobotConstants;
@@ -218,52 +219,67 @@ public class RobotContainer {
         // shooter button mapping
         controller
                 .aOrCross()
-                .whileTrue(shooterSubsystem.run(() -> {
-                    hopperSubsystem.setRollerVoltage(Volts.of(7));
-                    int hubAprilTagID = DriverStation.getAlliance().get().equals(DriverStation.Alliance.Blue) ? 25 : 10;
+                .whileTrue(
+                        new ParallelCommandGroup(
+                                new InstantCommand(() -> {
+                                    int hubAprilTagID =
+                                            DriverStation.getAlliance().get().equals(DriverStation.Alliance.Blue)
+                                                    ? 25
+                                                    : 10;
+                                    if (visionIO.getTX(hubAprilTagID).isPresent()) {
+                                        SmartDashboard.putNumber(
+                                                "DISTANCE TO HUB (METERS)", visionIO.getDistance(hubAprilTagID));
+                                        lastRPM = DISTANCE_VS_RPM_MAP.get(visionIO.getDistance(hubAprilTagID));
+                                    }
+                                }),
+                                shooterSubsystem.runShooterCommand(RotationsPerMinute.of(lastRPM)),
+                                hopperSubsystem.runOnce(() -> hopperSubsystem.setRollerVoltage(Volts.of(7))))
+                        // hopperSubsystem.setRollerVoltage(Volts.of(7));
+                        // int hubAprilTagID = DriverStation.getAlliance().get().equals(DriverStation.Alliance.Blue) ?
+                        // 25 : 10;
 
-                    if (visionIO.getTX(hubAprilTagID).isPresent()) {
-                        SmartDashboard.putNumber("DISTANCE TO HUB (METERS)", visionIO.getDistance(hubAprilTagID));
-                        lastRPM = DISTANCE_VS_RPM_MAP.get(visionIO.getDistance(hubAprilTagID));
-                    }
-                    shooterSubsystem.setFlywheelSpeed(RotationsPerMinute.of(lastRPM));
-                    shooterSubsystem.setFeederVoltageDirectly(Volts.of(3));
-                    // if (visionIO.getTX(hubAprilTagID).isPresent()) {
-                    //                        Translation2d hubPosition = visionIO.getTargetPose(hubAprilTagID)
-                    //                                .orElse(null)
-                    //                                .getTranslation();
-                    //
-                    //                        ChassisSpeeds robotVelocityTranslation =
-                    // m_swerveDrive.getChassisSpeed();
-                    //                        Translation2d robotVelocity = new Translation2d(
-                    //                                -robotVelocityTranslation.vxMetersPerSecond,
-                    //                                -robotVelocityTranslation.vyMetersPerSecond);
-                    //
-                    //                        Translation2d futurePosition = swerveDriveSimulation
-                    //                                .getSimulatedDriveTrainPose()
-                    //                                .getTranslation()
-                    //                                .plus(robotVelocity.times(LATENCY_COMPENSATION));
-                    //
-                    //                        Translation2d distanceFromTarget = hubPosition.minus(futurePosition);
-                    //
-                    //                        double baseHorizontalVelocity =
-                    //                                distanceFromTarget.getNorm() /
-                    // DISTANCE_TO_TOF_MAP.get(distanceFromTarget.getNorm());
-                    //
-                    //                        double targetHorizontalVelocity = distanceFromTarget
-                    //                                .div(distanceFromTarget.getNorm())
-                    //                                .times(baseHorizontalVelocity)
-                    //                                .minus(robotVelocity)
-                    //                                .getNorm();
-                    /* we realistically want to prioritize changing our hood angle rather than the flywheel speed
-                    because our flywheel recovery speed is slow */
-                    // shooterSubsystem.setFlywheelSpeed(
-                    //         RotationsPerMinute.of(shooterMap.get(targetHorizontalVelocity)));
+                        // if (visionIO.getTX(hubAprilTagID).isPresent()) {
+                        //     SmartDashboard.putNumber("DISTANCE TO HUB (METERS)",
+                        // visionIO.getDistance(hubAprilTagID));
+                        //     lastRPM = DISTANCE_VS_RPM_MAP.get(visionIO.getDistance(hubAprilTagID));
+                        // }
+                        // shooterSubsystem.setFlywheelSpeedCommand(RotationsPerMinute.of(lastRPM));
+                        // shooterSubsystem.runFeederCommand();
+                        // if (visionIO.getTX(hubAprilTagID).isPresent()) {
+                        //                        Translation2d hubPosition = visionIO.getTargetPose(hubAprilTagID)
+                        //                                .orElse(null)
+                        //                                .getTranslation();
+                        //
+                        //                        ChassisSpeeds robotVelocityTranslation =
+                        // m_swerveDrive.getChassisSpeed();
+                        //                        Translation2d robotVelocity = new Translation2d(
+                        //                                -robotVelocityTranslation.vxMetersPerSecond,
+                        //                                -robotVelocityTranslation.vyMetersPerSecond);
+                        //
+                        //                        Translation2d futurePosition = swerveDriveSimulation
+                        //                                .getSimulatedDriveTrainPose()
+                        //                                .getTranslation()
+                        //                                .plus(robotVelocity.times(LATENCY_COMPENSATION));
+                        //
+                        //                        Translation2d distanceFromTarget = hubPosition.minus(futurePosition);
+                        //
+                        //                        double baseHorizontalVelocity =
+                        //                                distanceFromTarget.getNorm() /
+                        // DISTANCE_TO_TOF_MAP.get(distanceFromTarget.getNorm());
+                        //
+                        //                        double targetHorizontalVelocity = distanceFromTarget
+                        //                                .div(distanceFromTarget.getNorm())
+                        //                                .times(baseHorizontalVelocity)
+                        //                                .minus(robotVelocity)
+                        //                                .getNorm();
+                        /* we realistically want to prioritize changing our hood angle rather than the flywheel speed
+                        because our flywheel recovery speed is slow */
+                        // shooterSubsystem.setFlywheelSpeed(
+                        //         RotationsPerMinute.of(shooterMap.get(targetHorizontalVelocity)));
 
-                    // }
-                }))
+                        // }
+                        )
                 .onFalse(shooterSubsystem.runOnce(() -> {
-                    shooterSubsystem.stopShooter();
                     hopperSubsystem.stopRollers();
                 }));
 
@@ -274,8 +290,8 @@ public class RobotContainer {
                     // align robot to best AprilTag
                     // swerveDrive.setAlignStatus(true,
                     // visionIO.getTX(visionIO.getBestTarget().getFiducialId()).orElse(null));
-
                     int hubAprilTagID = DriverStation.getAlliance().get().equals(DriverStation.Alliance.Blue) ? 25 : 10;
+
                     if (visionIO.getTX(hubAprilTagID).orElse(null) != null) {
                         swerveDrive.setAlignStatus(
                                 true, visionIO.getTX(hubAprilTagID).get());
@@ -291,7 +307,6 @@ public class RobotContainer {
         controller.yOrTriangle().whileTrue(intakeSubsystem.outtakeCommand());
 
         controller.dPadUp().whileTrue(intakeSubsystem.sendHoodUpCommand());
-
         controller.dPadDown().whileTrue(intakeSubsystem.sendHoodDownCommand());
     }
 
