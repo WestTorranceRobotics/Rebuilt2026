@@ -105,6 +105,10 @@ public class ShooterIOReal extends SubsystemBase implements ShooterIO {
                 this::stopFeeder);
     }
 
+    public void setFeederSpeed() {
+        this.setFeederVoltageDirectly(Volts.of(FEEDER_VOLTAGE));
+    }
+
     public void setFeederVoltageDirectly(Voltage voltage) {
         feederMotor.setVoltage(voltage.in(Volts));
     }

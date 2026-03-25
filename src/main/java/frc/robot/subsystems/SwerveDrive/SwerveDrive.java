@@ -1,7 +1,6 @@
 package frc.robot.subsystems.SwerveDrive;
 
 import static edu.wpi.first.units.Units.*;
-import static frc.robot.constants.SwerveDriveConstants.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
@@ -123,18 +122,24 @@ public class SwerveDrive extends SubsystemBase {
     public void drive(ChassisSpeeds chassisSpeeds, boolean absolute) {
         // TODO make use swerve kinematics class
         if (isAligning)
-            chassisSpeeds = new ChassisSpeeds(
-                    chassisSpeeds.vxMetersPerSecond,
-                    chassisSpeeds.vyMetersPerSecond,
-                    -targetRotationYaw
-                            * RealRobotConstants.PROPORTIONALITY_CONSTANT
-                            * RealRobotConstants.MAX_ANGULAR_SPEED);
+            chassisSpeeds = createAlignChassisSpeeds(
+                    chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond, targetRotationYaw);
 
         double heading = getHeading().getRadians() + headingOffset;
         calculateState(chassisSpeeds, heading, frontRight, absolute);
         calculateState(chassisSpeeds, heading, frontLeft, absolute);
         calculateState(chassisSpeeds, heading, backRight, absolute);
         calculateState(chassisSpeeds, heading, backLeft, absolute);
+    }
+
+    public ChassisSpeeds createAlignChassisSpeeds(
+            double vxMetersPerSecond, double vyMetersPerSecond, double targetRotationYaw) {
+        return new ChassisSpeeds(
+                vxMetersPerSecond,
+                vyMetersPerSecond,
+                -targetRotationYaw
+                        * RealRobotConstants.PROPORTIONALITY_CONSTANT
+                        * RealRobotConstants.MAX_ANGULAR_SPEED);
     }
 
     public void setAlignStatus(boolean isAligning, double targetRotationYaw) {

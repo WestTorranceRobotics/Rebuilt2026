@@ -10,7 +10,6 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -33,19 +32,19 @@ public class HopperIOReal extends SubsystemBase implements HopperIO {
         return CustomUnits.RotationsPerMinute.of(actualRPM);
     }
 
-    public Command runHopper() {
+    public Command runHopperCommand() {
         return this.runEnd(
                 () -> {
-                    this.setRollerVoltage(Volts.of(HOPPER_VOLTAGE));
+                    this.setHopperSpeed();
                 },
-                this::stopRollers);
+                this::stopHopper);
     }
 
-    public void setRollerVoltage(Voltage voltage) {
-        hopperMotor.setVoltage(voltage);
+    public void setHopperSpeed() {
+        hopperMotor.setVoltage(Volts.of(HOPPER_VOLTAGE));
     }
 
-    public void stopRollers() {
+    public void stopHopper() {
         hopperMotor.set(0);
     }
 

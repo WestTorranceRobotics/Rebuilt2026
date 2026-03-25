@@ -6,8 +6,6 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 import static frc.robot.constants.GlobalConstants.OperatorConstants.DRIVER_CONTROLLER_PORT;
-import static frc.robot.constants.ShooterConstants.DISTANCE_VS_RPM_MAP;
-import static frc.robot.utilities.CustomUnits.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
@@ -24,7 +22,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import frc.robot.commands.Shooter.ShootCommand;
 import frc.robot.commands.SwerveDrive.AutonomousPeriodicCommand;
 import frc.robot.commands.SwerveDrive.DefaultJoystickCommand;
 import frc.robot.constants.SwerveDriveConstants.RealRobotConstants;
@@ -79,10 +77,6 @@ public class RobotContainer {
 
     private final SendableChooser<Double> m_chooser = new SendableChooser<>(); // prepare to build LUT
     private SendableChooser<Command> autoChooser = new SendableChooser<>();
-
-    private double lastRPM = 2950; // 2950 is the RPM value for shooting directly next to the Hub.
-    // 							      We fall back to it so we can still shoot from a known position
-    //                                   if vision breaks or is disabled.
 
     public static final SwerveDriveKinematics swerveDriveKinematics = new SwerveDriveKinematics(
             new Translation2d(-25.0 / 2, -19.5 / 2),
@@ -220,24 +214,7 @@ public class RobotContainer {
         controller
                 .aOrCross()
                 .whileTrue(
-                        new ParallelCommandGroup(
-                                new InstantCommand(() -> {
-                                    int hubAprilTagID =
-                                            DriverStation.getAlliance().get().equals(DriverStation.Alliance.Blue)
-                                                    ? 25
-                                                    : 10;
-                                    if (visionIO.getTX(hubAprilTagID).isPresent()) {
-                                        SmartDashboard.putNumber(
-                                                "DISTANCE TO HUB (METERS)", visionIO.getDistance(hubAprilTagID));
-                                        lastRPM = DISTANCE_VS_RPM_MAP.get(visionIO.getDistance(hubAprilTagID));
-                                    }
-                                }),
-                                shooterSubsystem.runShooterCommand(RotationsPerMinute.of(lastRPM)),
-                                hopperSubsystem.runHopper())
-                        // hopperSubsystem.setRollerVoltage(Volts.of(7));
-                        // int hubAprilTagID = DriverStation.getAlliance().get().equals(DriverStation.Alliance.Blue) ?
-                        // 25 : 10;
-
+                        new ShootCommand(shooterSubsystem, swerveDrive, visionIO, hopperSubsystem)
                         // if (visionIO.getTX(hubAprilTagID).isPresent()) {
                         //     SmartDashboard.putNumber("DISTANCE TO HUB (METERS)",
                         // visionIO.getDistance(hubAprilTagID));
@@ -285,16 +262,10 @@ public class RobotContainer {
                 .bOrCircle()
                 .whileTrue(Commands.run(() -> {
                     // align robot to best AprilTag
-                    // swerveDrive.setAlignStatus(true,
-                    // visionIO.getTX(visionIO.getBestTarget().getFiducialId()).orElse(null));
-                    int hubAprilTagID = DriverStation.getAlliance().get().equals(DriverStation.Alliance.Blue) ? 25 : 10;
-
-                    if (visionIO.getTX(hubAprilTagID).orElse(null) != null) {
-                        swerveDrive.setAlignStatus(
-                                true, visionIO.getTX(hubAprilTagID).get());
-                    } else {
-                        swerveDrive.setAlignStatus(false, 0);
-                    }
+                    swerveDrive.setAlignStatus(
+                            true,
+                            visionIO.getTX(visionIO.getBestTarget().getFiducialId())
+                                    .orElse(null));
                 }))
                 .onFalse(Commands.run(() -> {
                     swerveDrive.setAlignStatus(false, 0);

@@ -15,6 +15,11 @@ public final class ShooterConstants {
 
     public static final double LATENCY_COMPENSATION = 0; // TODO tune latency compensation
 
+    public static final double MINIMUM_YAW_DISTANCE_TO_SHOOT = 1;
+    public static final double MINIMUM_SHOOTER_RPM =
+            2950; /* 2950 is the RPM value for shooting directly next to the Hub. We fall back to it so we can still
+                  shoot from a known position if vision breaks or is disabled. */
+
     public static final InterpolatingDoubleTreeMap DISTANCE_TO_TOF_MAP = new InterpolatingDoubleTreeMap();
     public static final InterpolatingDoubleTreeMap SHOOTER_MAP = new InterpolatingDoubleTreeMap();
 

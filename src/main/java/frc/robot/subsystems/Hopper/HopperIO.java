@@ -7,5 +7,9 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 public interface HopperIO extends Subsystem {
     public AngularVelocity getRollerSpeed();
 
-    public Command runHopper();
+    public Command runHopperCommand();
+
+    public void setHopperSpeed();
+
+    public void stopHopper();
 }
