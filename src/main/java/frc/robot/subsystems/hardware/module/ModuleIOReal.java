@@ -196,10 +196,8 @@ public class ModuleIOReal implements ModuleIO {
     @Override
     public SwerveModulePosition getPosition() {
         swerveModulePosition.angle = this.getSteerAngle();
-        swerveModulePosition.distanceMeters = Rotations.ofBaseUnits(
-                                this.getDriveWheelPosition().baseUnitMagnitude())
-                        .magnitude()
-                * robotConstants.wheelCircumference.magnitude()
+        swerveModulePosition.distanceMeters = this.getDriveWheelPosition().in(Rotations)
+                * robotConstants.wheelCircumference.in(Meters)
                 * moduleConstants.driveGearRatio;
         return this.swerveModulePosition;
     }
