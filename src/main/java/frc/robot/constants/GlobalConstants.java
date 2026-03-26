@@ -24,6 +24,7 @@ import edu.wpi.first.units.measure.Mass;
 public final class GlobalConstants {
     public static class OperatorConstants {
         public static final int DRIVER_CONTROLLER_PORT = 0;
+        public static final int OVERRIDE_CONTROLLER_PORT = 1;
 
         public static final double DEADBAND_THRESHOLD = 0.08;
     }

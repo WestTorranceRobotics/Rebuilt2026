@@ -6,6 +6,9 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 import static frc.robot.constants.GlobalConstants.OperatorConstants.DRIVER_CONTROLLER_PORT;
+import static frc.robot.constants.GlobalConstants.OperatorConstants.OVERRIDE_CONTROLLER_PORT;
+import static frc.robot.constants.ShooterConstants.MINIMUM_SHOOTER_RPM;
+import static frc.robot.utilities.CustomUnits.RotationsPerMinute;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
@@ -70,6 +73,7 @@ public class RobotContainer {
     private final HopperIO hopperSubsystem;
 
     private final Controller controller;
+    private final Controller overrideController;
 
     public static SwerveDriveSimulation swerveDriveSimulation;
 
@@ -125,7 +129,6 @@ public class RobotContainer {
                     new ModuleIOReal(
                             SwerveDriveConfigurator.SwerveModuleCornerPosition.BACK_RIGHT, swerveDriveConfigurator));
 
-            controller = new DualShock4Controller(DRIVER_CONTROLLER_PORT);
             shooterSubsystem = new ShooterIOReal();
             intakeSubsystem = new IntakeIOReal();
             hopperSubsystem = new HopperIOReal();
@@ -178,12 +181,14 @@ public class RobotContainer {
                             swerveDriveConfigurator));
 
             SimulatedArena.getInstance().addDriveTrainSimulation(swerveDriveSimulation);
-            controller = new DualShock4Controller(DRIVER_CONTROLLER_PORT);
             shooterSubsystem = new ShooterIOSim();
             intakeSubsystem = new IntakeIOSim();
             hopperSubsystem = new HopperIOSim();
             visionIO = new VisionIOSim();
         }
+
+        controller = new DualShock4Controller(DRIVER_CONTROLLER_PORT);
+        overrideController = new DualShock4Controller(OVERRIDE_CONTROLLER_PORT);
 
         registerNamedCommands();
         autoChooser = AutoBuilder.buildAutoChooser();
@@ -282,6 +287,10 @@ public class RobotContainer {
 
         controller.dPadUp().whileTrue(intakeSubsystem.sendHoodUpCommand());
         controller.dPadDown().whileTrue(intakeSubsystem.sendHoodDownCommand());
+
+        overrideController
+                .aOrCross()
+                .whileTrue(shooterSubsystem.runShooterCommand(RotationsPerMinute.of(MINIMUM_SHOOTER_RPM)));
     }
 
     /**
