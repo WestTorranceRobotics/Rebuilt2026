@@ -186,7 +186,8 @@ public class ModuleIOReal implements ModuleIO {
         currentState.speedMetersPerSecond = driveMotorController
                         .getVelocity()
                         .getValue()
-                        .in(RadiansPerSecond)
+                        .in(RotationsPerSecond)
+                * moduleConstants.driveGearRatio
                 * robotConstants.wheelCircumference.in(Meters);
 
         return currentState;
