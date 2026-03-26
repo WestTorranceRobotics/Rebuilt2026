@@ -4,10 +4,10 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
-public class CommandLogitechController extends CommandGenericHID implements Controller {
+public class LogitechController extends CommandGenericHID implements Controller {
     private GenericHID controller;
 
-    public CommandLogitechController(int port) {
+    public LogitechController(int port) {
         super(port);
         controller = super.getHID();
     }

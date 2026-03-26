@@ -51,6 +51,7 @@ import frc.robot.subsystems.hardware.vision.VisionIOReal;
 import frc.robot.subsystems.hardware.vision.VisionIOSim;
 import frc.robot.utilities.controller.Controller;
 import frc.robot.utilities.controller.DualShock4Controller;
+import frc.robot.utilities.controller.LogitechController;
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.COTS;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
@@ -188,7 +189,7 @@ public class RobotContainer {
         }
 
         controller = new DualShock4Controller(DRIVER_CONTROLLER_PORT);
-        overrideController = new DualShock4Controller(OVERRIDE_CONTROLLER_PORT);
+        overrideController = new LogitechController(OVERRIDE_CONTROLLER_PORT);
 
         registerNamedCommands();
         autoChooser = AutoBuilder.buildAutoChooser();

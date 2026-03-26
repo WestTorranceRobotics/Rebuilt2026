@@ -53,10 +53,10 @@
       "axisCount": 2,
       "buttonCount": 4,
       "buttonKeys": [
-        77,
-        44,
-        46,
-        47
+        48,
+        49,
+        50,
+        51
       ],
       "povCount": 0
     },
@@ -82,6 +82,9 @@
   "robotJoysticks": [
     {
       "guid": "Keyboard0"
+    },
+    {
+      "guid": "Keyboard1"
     }
   ],
   "useEnableDisableHotkeys": true,
