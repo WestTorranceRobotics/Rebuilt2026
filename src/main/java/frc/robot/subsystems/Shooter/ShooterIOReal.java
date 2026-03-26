@@ -130,6 +130,6 @@ public class ShooterIOReal extends SubsystemBase implements ShooterIO {
         this.actualRPM = flywheelMotor.getEncoder().getVelocity();
         SmartDashboard.putNumber("Shooter Target RPM", targetRPM);
         SmartDashboard.putNumber("Shooter RPM", actualRPM);
-        SmartDashboard.putNumber("Feeder RPM", feederMotor.getEncoder().getVelocity()) ;
+        SmartDashboard.putNumber("Feeder RPM", feederMotor.getEncoder().getVelocity());
     }
 }

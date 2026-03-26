@@ -9,6 +9,8 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 public interface ShooterIO extends Subsystem {
     public Command runShooterCommand(AngularVelocity velocity);
 
+    public Command runFeederCommand();
+
     public void setFlywheelSpeed(AngularVelocity velocity);
 
     public void setFeederSpeed();

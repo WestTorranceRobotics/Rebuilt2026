@@ -33,7 +33,8 @@ public class ShootCommand extends Command {
         Double targetHubYaw = vision.getTX(hubAprilTagID).orElse(null);
 
         if (targetHubYaw == null) {
-            if (NEUTRAL_ZONE_APRILTAG_IDS.contains(vision.getBestTarget().getFiducialId())) {
+            if (vision.getBestTarget() != null
+                    && NEUTRAL_ZONE_APRILTAG_IDS.contains(vision.getBestTarget().getFiducialId())) {
                 shooter.setFlywheelSpeed(RotationsPerMinute.of(PASSING_SHOOTER_RPM));
             } else {
                 shooter.setFlywheelSpeed(RotationsPerMinute.of(MINIMUM_SHOOTER_RPM));

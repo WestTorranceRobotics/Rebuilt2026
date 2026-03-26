@@ -84,10 +84,10 @@ public class RobotContainer {
     private SendableChooser<Command> autoChooser = new SendableChooser<>();
 
     public static final SwerveDriveKinematics swerveDriveKinematics = new SwerveDriveKinematics(
-            new Translation2d(-25.0 / 2, -19.5 / 2),
-            new Translation2d(-25.0 / 2, 19.5 / 2),
-            new Translation2d(25.0 / 2, -19.5 / 2),
-            new Translation2d(25.0 / 2, 19.5 / 2));
+            new Translation2d(-25.0 / 2, -19.5 / 2), // Front left
+            new Translation2d(-25.0 / 2, 19.5 / 2), // Front right
+            new Translation2d(25.0 / 2, -19.5 / 2), // Back left
+            new Translation2d(25.0 / 2, 19.5 / 2)); // Back right
 
     /**
      * Registers all important robot code, e.g. swerve, path planner, controls
@@ -292,6 +292,8 @@ public class RobotContainer {
         overrideController
                 .aOrCross()
                 .whileTrue(shooterSubsystem.runShooterCommand(RotationsPerMinute.of(MINIMUM_SHOOTER_RPM)));
+
+        overrideController.bOrCircle().whileTrue(shooterSubsystem.runFeederCommand());
     }
 
     /**
