@@ -48,17 +48,17 @@ public class IntakeIOReal extends SubsystemBase implements IntakeIO {
     }
 
     public Command intakeCommand() {
-        return this.runIntakeAtVoltageCommand(Volts.of(INTAKE_VOLTAGE));
+        return this.startEnd(
+                () -> {
+                    this.intake();
+                },
+                this::stopIntake);
     }
 
     public Command outtakeCommand() {
-        return this.runIntakeAtVoltageCommand(Volts.of(OUTTAKE_VOLTAGE));
-    }
-
-    public Command runIntakeAtVoltageCommand(Voltage voltage) {
         return this.startEnd(
                 () -> {
-                    this.setIntakeVoltage(voltage);
+                    this.outtake();
                 },
                 this::stopIntake);
     }
@@ -101,9 +101,9 @@ public class IntakeIOReal extends SubsystemBase implements IntakeIO {
     public Command runHoodAtVoltageCommand(Voltage voltage) {
         return this.runEnd(
                 () -> {
-                    runHoodAtVoltage(voltage);
+                    this.runHoodAtVoltage(voltage);
                 },
-                this::stopHoodCommand);
+                this::stopHood);
     }
 
     public void runHoodAtVoltage(Voltage voltage) {

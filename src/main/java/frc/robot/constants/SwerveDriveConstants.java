@@ -47,7 +47,7 @@ public final class SwerveDriveConstants {
         public static final double kIRotation = 0;
         public static final double kDRotation = 0.59364;
 
-        public static final double MAX_ANGULAR_SPEED = Math.PI;
+        public static final double MAX_ANGULAR_SPEED = Math.PI * Math.PI;
         public static final double PROPORTIONALITY_CONSTANT = 0.0075;
 
         public static class RealModuleConstants {

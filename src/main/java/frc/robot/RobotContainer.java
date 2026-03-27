@@ -280,17 +280,22 @@ public class RobotContainer {
                 .whileTrue(Commands.run(() -> {
                     if (visionIO.getBestTarget() == null) return;
                     // align robot to best AprilTag
-                    swerveDrive.setAlignStatus(
-                            true,
-                            visionIO.getTX(visionIO.getBestTarget().getFiducialId())
-                                    .orElse(null));
+                    //     swerveDrive.setAlignStatus(
+                    //             true,
+                    //             visionIO.getTX(visionIO.getBestTarget().getFiducialId())
+                    //                     .orElse(null));
+                    int hubAprilTagID = DriverStation.getAlliance().get().equals(DriverStation.Alliance.Blue) ? 25 : 10;
+                    if (visionIO.getTX(hubAprilTagID).orElse(null) != null) {
+                        swerveDrive.setAlignStatus(
+                                true, visionIO.getTX(hubAprilTagID).get());
+                    }
                 }))
                 .onFalse(Commands.run(() -> {
                     swerveDrive.setAlignStatus(false, 0);
                 }));
 
-        controller.xOrSquare().toggleOnTrue(intakeSubsystem.intakeCommand());
-        controller.yOrTriangle().toggleOnTrue(intakeSubsystem.outtakeCommand());
+        controller.xOrSquare().whileTrue(intakeSubsystem.intakeCommand());
+        controller.yOrTriangle().whileTrue(intakeSubsystem.outtakeCommand());
 
         controller.dPadUp().whileTrue(intakeSubsystem.sendHoodUpCommand());
         controller.dPadDown().whileTrue(intakeSubsystem.sendHoodDownCommand());
