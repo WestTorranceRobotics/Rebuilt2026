@@ -278,6 +278,7 @@ public class RobotContainer {
         controller
                 .bOrCircle()
                 .whileTrue(Commands.run(() -> {
+                    if (visionIO.getBestTarget() == null) return;
                     // align robot to best AprilTag
                     swerveDrive.setAlignStatus(
                             true,
