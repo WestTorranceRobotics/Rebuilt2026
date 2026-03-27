@@ -211,11 +211,16 @@ public class RobotContainer {
         NamedCommands.registerCommand(
                 "shoot", new ShootCommand(shooterSubsystem, swerveDrive, visionIO, hopperSubsystem));
 
-        NamedCommands.registerCommand("runIntake", intakeSubsystem.intakeCommand());
-        NamedCommands.registerCommand("stopIntake", intakeSubsystem.stopIntakeCommand());
+        NamedCommands.registerCommand("startIntake", intakeSubsystem.runOnce(() -> {
+            intakeSubsystem.intake();
+        }));
 
-        NamedCommands.registerCommand("pivotDown", intakeSubsystem.sendHoodDownCommand());
-        NamedCommands.registerCommand("pivotStop", intakeSubsystem.stopHoodCommand());
+        NamedCommands.registerCommand("stopIntake", intakeSubsystem.runOnce(() -> {
+            intakeSubsystem.stopIntake();
+        }));
+
+        NamedCommands.registerCommand(
+                "pivotDown", intakeSubsystem.sendHoodDownCommand().withTimeout(0.75));
     }
 
     private void configureBindings() {

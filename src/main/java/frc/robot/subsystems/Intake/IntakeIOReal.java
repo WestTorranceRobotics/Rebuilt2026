@@ -23,6 +23,7 @@ public class IntakeIOReal extends SubsystemBase implements IntakeIO {
         SparkMaxConfig intakeConfig = new SparkMaxConfig();
         intakeConfig.smartCurrentLimit(INTAKE_MOTOR_CURRENT_LIMIT);
         intakeConfig.idleMode(IdleMode.kCoast);
+        intakeConfig.inverted(true);
         intakeMotor.configure(intakeConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
         SparkMaxConfig pivotConfig = new SparkMaxConfig();
@@ -55,7 +56,7 @@ public class IntakeIOReal extends SubsystemBase implements IntakeIO {
     }
 
     public Command runIntakeAtVoltageCommand(Voltage voltage) {
-        return this.runEnd(
+        return this.startEnd(
                 () -> {
                     this.setIntakeVoltage(voltage);
                 },
@@ -66,6 +67,14 @@ public class IntakeIOReal extends SubsystemBase implements IntakeIO {
         return this.runOnce(() -> {
             this.stopIntake();
         });
+    }
+
+    public void outtake() {
+        intakeMotor.setVoltage(OUTTAKE_VOLTAGE);
+    }
+
+    public void intake() {
+        intakeMotor.setVoltage(INTAKE_VOLTAGE);
     }
 
     public void setIntakeVoltage(Voltage voltage) {
@@ -90,11 +99,15 @@ public class IntakeIOReal extends SubsystemBase implements IntakeIO {
      * @return Command that runs the pivot motor at the given voltage
      */
     public Command runHoodAtVoltageCommand(Voltage voltage) {
-        return this.startEnd(
+        return this.runEnd(
                 () -> {
-                    pivotMotor.setVoltage(voltage);
+                    runHoodAtVoltage(voltage);
                 },
                 this::stopHoodCommand);
+    }
+
+    public void runHoodAtVoltage(Voltage voltage) {
+        pivotMotor.setVoltage(voltage);
     }
 
     public Command stopHoodCommand() {

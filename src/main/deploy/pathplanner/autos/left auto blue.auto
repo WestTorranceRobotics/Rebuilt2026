@@ -5,15 +5,9 @@
     "data": {
       "commands": [
         {
-          "type": "path",
-          "data": {
-            "pathName": "left side blue"
-          }
-        },
-        {
           "type": "named",
           "data": {
-            "name": "intakeDown"
+            "name": "pivotDown"
           }
         },
         {
@@ -25,7 +19,19 @@
         {
           "type": "named",
           "data": {
-            "name": "intakeStop"
+            "name": null
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "left side blue"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": null
           }
         }
       ]

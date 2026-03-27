@@ -26,4 +26,12 @@ public interface IntakeIO extends Subsystem {
     public Command sendHoodDownCommand();
 
     public Command stopHoodCommand();
+
+    public void runHoodAtVoltage(Voltage voltage);
+
+    public void intake();
+
+    public void outtake();
+
+    public void stopIntake();
 }
