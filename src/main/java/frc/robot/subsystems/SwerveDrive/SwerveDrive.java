@@ -194,8 +194,7 @@ public class SwerveDrive extends SubsystemBase {
         Translation2d moduleVector;
 
         // Calculates rotation vector as described
-        Translation2d rotationVector =
-                module.getUnitRotationVec().times(chassisSpeeds.omegaRadiansPerSecond * 1 * Math.PI);
+        Translation2d rotationVector = module.getUnitRotationVec().times(chassisSpeeds.omegaRadiansPerSecond * 1);
 
         // VY is the desired left velocity, vx is the desired forward velocity
         Translation2d translationVector =

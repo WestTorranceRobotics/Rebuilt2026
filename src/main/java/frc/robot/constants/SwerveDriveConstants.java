@@ -41,11 +41,11 @@ public final class SwerveDriveConstants {
 
         public static final double kPTranslation = .1;
         public static final double kITranslation = 0;
-        public static final double kDTranslation = 0.02;
+        public static final double kDTranslation = 0;
 
-        public static final double kPRotation = 0;
+        public static final double kPRotation = 13.26;
         public static final double kIRotation = 0;
-        public static final double kDRotation = 0;
+        public static final double kDRotation = 0.59364;
 
         public static final double MAX_ANGULAR_SPEED = Math.PI;
         public static final double PROPORTIONALITY_CONSTANT = 0.0075;
