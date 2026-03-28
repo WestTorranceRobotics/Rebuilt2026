@@ -8,6 +8,7 @@ import static edu.wpi.first.units.Units.*;
 import static frc.robot.constants.GlobalConstants.OperatorConstants.DRIVER_CONTROLLER_PORT;
 import static frc.robot.constants.GlobalConstants.OperatorConstants.OVERRIDE_CONTROLLER_PORT;
 import static frc.robot.constants.ShooterConstants.MINIMUM_SHOOTER_RPM;
+import static frc.robot.constants.ShooterConstants.YAW_ACCEPTABLE_ERROR;
 import static frc.robot.utilities.CustomUnits.RotationsPerMinute;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -24,7 +25,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.commands.Shooter.ShootCommand;
 import frc.robot.commands.SwerveDrive.AutonomousPeriodicCommand;
 import frc.robot.commands.SwerveDrive.DefaultJoystickCommand;
@@ -192,32 +192,55 @@ public class RobotContainer {
         overrideController = new LogitechController(OVERRIDE_CONTROLLER_PORT);
 
         registerNamedCommands();
-        autoChooser = AutoBuilder.buildAutoChooser();
+        autoChooser = AutoBuilder.buildAutoChooserWithOptionsModifier(
+                (stream) -> stream.filter(auto -> !auto.getName().startsWith("test")));
         SmartDashboard.putData("Current Auto:", autoChooser);
 
         configureBindings();
     }
 
     private void registerNamedCommands() {
+        var alignCommand = Commands.startRun(
+                        () -> {
+                            swerveDrive.setAlignStatus(true, 0);
+                            // PPHolonomicDriveController.overrideRotationFeedback(() ->
+                            // -swerveDrive.getChassisSpeed().omegaRadiansPerSecond);
+                        },
+                        () -> {
+                            swerveDrive.drive(new ChassisSpeeds(), false);
+                        })
+                .until(() -> {
+                    var apriltagId = DriverStation.getAlliance()
+                                    .orElse(DriverStation.Alliance.Blue)
+                                    .equals(DriverStation.Alliance.Blue)
+                            ? 25
+                            : 10;
+                    var yaw = visionIO.getTX(apriltagId);
+                    if (yaw.isEmpty()) {
+                        SmartDashboard.putNumber("Yaw from target", -1);
+                        return true; // Break because no AprilTag was found
+                    }
+                    SmartDashboard.putNumber("Yaw from target", yaw.get());
+                    swerveDrive.setAlignStatus(true, yaw.get());
+                    return Math.abs(yaw.get()) < YAW_ACCEPTABLE_ERROR;
+                })
+                .finallyDo(() -> {
+                    swerveDrive.setAlignStatus(false, 0);
+                    swerveDrive.drive(new ChassisSpeeds(), false);
+                    // PPHolonomicDriveController.clearFeedbackOverrides();
+                });
+
+        NamedCommands.registerCommand("align", alignCommand);
+
         NamedCommands.registerCommand(
-                "alignToHub",
-                new InstantCommand(() -> swerveDrive.setAlignStatus(
-                        true,
-                        visionIO.getTX(DriverStation.getAlliance().get().equals(DriverStation.Alliance.Blue) ? 25 : 10)
-                                .orElse(null))));
+                "alignAndShoot",
+                Commands.sequence(
+                        alignCommand,
+                        new ShootCommand(shooterSubsystem, swerveDrive, visionIO, hopperSubsystem).withTimeout(3)));
 
-        NamedCommands.registerCommand("stopAligning", new InstantCommand(() -> swerveDrive.setAlignStatus(false, 0)));
+        NamedCommands.registerCommand("startIntake", intakeSubsystem.runOnce(intakeSubsystem::intake));
 
-        NamedCommands.registerCommand(
-                "shoot", new ShootCommand(shooterSubsystem, swerveDrive, visionIO, hopperSubsystem));
-
-        NamedCommands.registerCommand("startIntake", intakeSubsystem.runOnce(() -> {
-            intakeSubsystem.intake();
-        }));
-
-        NamedCommands.registerCommand("stopIntake", intakeSubsystem.runOnce(() -> {
-            intakeSubsystem.stopIntake();
-        }));
+        NamedCommands.registerCommand("stopIntake", intakeSubsystem.runOnce(intakeSubsystem::stopIntake));
 
         NamedCommands.registerCommand(
                 "pivotDown", intakeSubsystem.sendHoodDownCommand().withTimeout(0.75));
