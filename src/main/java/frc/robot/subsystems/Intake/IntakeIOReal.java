@@ -119,4 +119,15 @@ public class IntakeIOReal extends SubsystemBase implements IntakeIO {
     public void stopHood() {
         pivotMotor.setVoltage(0);
     }
+
+    public String getIntakeLocation() {
+        var deadband = 0.2;
+        if (pivotMotor.getEncoder().getPosition() <= (0 + deadband)) {
+            return "DOWN";
+        } else if (pivotMotor.getEncoder().getPosition() >= (Math.PI / 2 - deadband)) {
+            return "UP";
+        } else {
+            return "IN BETWEEN";
+        }
+    }
 }

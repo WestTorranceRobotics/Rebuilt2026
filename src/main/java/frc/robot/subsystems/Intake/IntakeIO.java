@@ -32,4 +32,6 @@ public interface IntakeIO extends Subsystem {
     public void outtake();
 
     public void stopIntake();
+
+    public String getIntakeLocation();
 }
