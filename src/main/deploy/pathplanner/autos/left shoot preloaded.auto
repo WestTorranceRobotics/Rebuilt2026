@@ -13,7 +13,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "right side blue"
+            "pathName": "backwards from left"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "alignAndShoot"
           }
         }
       ]

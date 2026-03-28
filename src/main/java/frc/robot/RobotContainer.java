@@ -222,7 +222,8 @@ public class RobotContainer {
                     }
                     SmartDashboard.putNumber("Yaw from target", yaw.get());
                     swerveDrive.setAlignStatus(true, yaw.get());
-                    return Math.abs(yaw.get()) < YAW_ACCEPTABLE_ERROR;
+                    return Math.abs(yaw.get())
+                            < YAW_ACCEPTABLE_ERROR; // Break when we're within acceptable yaw to shoot
                 })
                 .finallyDo(() -> {
                     swerveDrive.setAlignStatus(false, 0);
@@ -234,8 +235,10 @@ public class RobotContainer {
 
         NamedCommands.registerCommand(
                 "alignAndShoot",
-                Commands.sequence(
-                        alignCommand,
+                Commands.parallel(
+                        Commands.run(() -> {
+                            swerveDrive.drive(new ChassisSpeeds(), true);
+                        }),
                         new ShootCommand(shooterSubsystem, swerveDrive, visionIO, hopperSubsystem).withTimeout(3)));
 
         NamedCommands.registerCommand("startIntake", intakeSubsystem.runOnce(intakeSubsystem::intake));

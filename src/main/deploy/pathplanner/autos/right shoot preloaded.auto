@@ -13,19 +13,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "backward from middle"
+            "pathName": "backwards from right"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "align"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "startIntake"
+            "name": "alignAndShoot"
           }
         }
       ]

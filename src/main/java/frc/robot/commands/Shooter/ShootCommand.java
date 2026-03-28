@@ -4,6 +4,7 @@ import static frc.robot.constants.ShooterConstants.*;
 import static frc.robot.constants.VisionConstants.*;
 import static frc.robot.utilities.CustomUnits.RotationsPerMinute;
 
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -17,6 +18,9 @@ public class ShootCommand extends Command {
     private final SwerveDrive swerveDrive;
     private final VisionIO vision;
     private final HopperIO hopper;
+
+    private double lastDistanceToHub = -1;
+    private double lastShooterMapRPM = -1;
 
     public ShootCommand(ShooterIO shooter, SwerveDrive swerveDrive, VisionIO vision, HopperIO hopper) {
         this.shooter = shooter;
@@ -50,21 +54,32 @@ public class ShootCommand extends Command {
             swerveDrive.setAlignStatus(false, 0);
             SmartDashboard.putNumber("Yaw from target", -1);
 
-            if (vision.getBestTarget() != null
+            if (lastShooterMapRPM > 0 && lastDistanceToHub >= 1.5) {
+                // If our last distance detected was within the range of DISTANCE_VS_RPM_MAP
+                // and we have detected the tag at least once
+                // we keep shooting at that speed so the shooter doesn't stutter
+                // (i.e. if we lose detection for a second or two)
+                shooter.setFlywheelSpeed(RotationsPerMinute.of(lastShooterMapRPM));
+            } else if (vision.getBestTarget() != null
                     && NEUTRAL_ZONE_APRILTAG_IDS.contains(vision.getBestTarget().getFiducialId())) {
                 // If robot is in the neutral zone / sees a neutral zone Apriltag
+                // we shoot faster to be able to pass to our side
                 shooter.setFlywheelSpeed(RotationsPerMinute.of(PASSING_SHOOTER_RPM));
             } else {
+                // Otherwise (if we're right up against the hub)
+                // shoot at minimum RPM
                 shooter.setFlywheelSpeed(RotationsPerMinute.of(MINIMUM_SHOOTER_RPM));
             }
         } else {
             swerveDrive.setAlignStatus(true, targetHubYaw.get());
+            this.lastDistanceToHub = vision.getDistance(hubAprilTagID);
+
             SmartDashboard.putNumber("Yaw from target", targetHubYaw.get());
-            SmartDashboard.putNumber("Distance from hub", vision.getDistance(hubAprilTagID));
+            SmartDashboard.putNumber("Distance from hub", lastDistanceToHub);
 
             if (Math.abs(targetHubYaw.get()) <= YAW_ACCEPTABLE_ERROR) {
-                shooter.setFlywheelSpeed(
-                        RotationsPerMinute.of(DISTANCE_VS_RPM_MAP.get(vision.getDistance(hubAprilTagID))));
+                lastShooterMapRPM = DISTANCE_VS_RPM_MAP.get(vision.getDistance(hubAprilTagID));
+                shooter.setFlywheelSpeed(RotationsPerMinute.of(lastShooterMapRPM));
             } else {
                 shooter.stopShooter();
             }
@@ -74,6 +89,7 @@ public class ShootCommand extends Command {
     @Override
     public void end(boolean interrupted) {
         swerveDrive.setAlignStatus(false, 0);
+        swerveDrive.drive(new ChassisSpeeds(), true);
         shooter.stopShooter();
         hopper.stopHopper();
     }
