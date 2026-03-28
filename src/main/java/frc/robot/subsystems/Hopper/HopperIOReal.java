@@ -33,14 +33,10 @@ public class HopperIOReal extends SubsystemBase implements HopperIO {
     }
 
     public Command runHopperCommand() {
-        return this.runEnd(
-                () -> {
-                    this.setHopperSpeed();
-                },
-                this::stopHopper);
+        return this.runEnd(this::runHopper, this::stopHopper);
     }
 
-    public void setHopperSpeed() {
+    public void runHopper() {
         hopperMotor.setVoltage(Volts.of(HOPPER_VOLTAGE));
     }
 

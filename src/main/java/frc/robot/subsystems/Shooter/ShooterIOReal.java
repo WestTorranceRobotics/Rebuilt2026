@@ -61,7 +61,7 @@ public class ShooterIOReal extends SubsystemBase implements ShooterIO {
         return flywheelMotor.getEncoder().getVelocity();
     }
 
-    public boolean isShooterUpToSpeed() {
+    public boolean shooterIsUpToSpeed() {
         return Math.abs(this.actualRPM - this.targetRPM) <= TOLERANCE_TO_RUN_FEEDER;
     }
 
@@ -109,7 +109,7 @@ public class ShooterIOReal extends SubsystemBase implements ShooterIO {
                 this::stopFeeder);
     }
 
-    public void setFeederSpeed() {
+    public void runFeeder() {
         this.setFeederVoltageDirectly(Volts.of(FEEDER_VOLTAGE));
     }
 

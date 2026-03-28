@@ -28,32 +28,52 @@ public class ShootCommand extends Command {
     }
 
     @Override
-    public void execute() {
-        int hubAprilTagID = DriverStation.getAlliance().get().equals(DriverStation.Alliance.Blue) ? 25 : 10;
-        Double targetHubYaw = vision.getTX(hubAprilTagID).orElse(null);
+    public void initialize() {
+        hopper.runHopper();
+        shooter.stopFeeder();
+    }
 
-        if (targetHubYaw == null) {
+    @Override
+    public void execute() {
+        if (shooter.shooterIsUpToSpeed()) {
+            shooter.runFeeder();
+        }
+
+        int hubAprilTagID =
+                DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue).equals(DriverStation.Alliance.Blue)
+                        ? 25
+                        : 10;
+
+        var targetHubYaw = vision.getTX(hubAprilTagID);
+
+        if (targetHubYaw.isEmpty()) {
+            swerveDrive.setAlignStatus(false, 0);
+            SmartDashboard.putNumber("Yaw from target", -1);
+
             if (vision.getBestTarget() != null
                     && NEUTRAL_ZONE_APRILTAG_IDS.contains(vision.getBestTarget().getFiducialId())) {
+                // If robot is in the neutral zone / sees a neutral zone Apriltag
                 shooter.setFlywheelSpeed(RotationsPerMinute.of(PASSING_SHOOTER_RPM));
             } else {
                 shooter.setFlywheelSpeed(RotationsPerMinute.of(MINIMUM_SHOOTER_RPM));
             }
-            swerveDrive.setAlignStatus(false, 0);
         } else {
-            if (Math.abs(targetHubYaw) <= MINIMUM_YAW_DISTANCE_TO_SHOOT) {
-                SmartDashboard.putNumber("DISTANCE TO HUB (METERS)", vision.getDistance(hubAprilTagID));
+            swerveDrive.setAlignStatus(true, targetHubYaw.get());
+            SmartDashboard.putNumber("Yaw from target", targetHubYaw.get());
+            SmartDashboard.putNumber("Distance from hub", vision.getDistance(hubAprilTagID));
+
+            if (Math.abs(targetHubYaw.get()) <= YAW_ACCEPTABLE_ERROR) {
                 shooter.setFlywheelSpeed(
                         RotationsPerMinute.of(DISTANCE_VS_RPM_MAP.get(vision.getDistance(hubAprilTagID))));
+            } else {
+                shooter.stopShooter();
             }
-            swerveDrive.setAlignStatus(true, targetHubYaw);
         }
-        hopper.setHopperSpeed();
-        if (shooter.isShooterUpToSpeed()) shooter.setFeederSpeed();
     }
 
     @Override
     public void end(boolean interrupted) {
+        swerveDrive.setAlignStatus(false, 0);
         shooter.stopShooter();
         hopper.stopHopper();
     }

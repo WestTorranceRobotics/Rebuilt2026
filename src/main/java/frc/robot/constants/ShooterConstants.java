@@ -17,7 +17,7 @@ public final class ShooterConstants {
 
     public static final double TOLERANCE_TO_RUN_FEEDER = 100;
 
-    public static final double MINIMUM_YAW_DISTANCE_TO_SHOOT = 1;
+    public static final double YAW_ACCEPTABLE_ERROR = 10;
     public static final double MINIMUM_SHOOTER_RPM =
             2950; /* 2950 is the RPM value for shooting directly next to the Hub. We fall back to it so we can still
                   shoot from a known position if vision breaks or is disabled. */

@@ -9,7 +9,7 @@ public interface HopperIO extends Subsystem {
 
     public Command runHopperCommand();
 
-    public void setHopperSpeed();
+    public void runHopper();
 
     public void stopHopper();
 }

@@ -13,9 +13,11 @@ public interface ShooterIO extends Subsystem {
 
     public void setFlywheelSpeed(AngularVelocity velocity);
 
-    public void setFeederSpeed();
+    public void runFeeder();
 
-    public boolean isShooterUpToSpeed();
+    public void stopFeeder();
+
+    public boolean shooterIsUpToSpeed();
 
     public void stopShooter();
 }

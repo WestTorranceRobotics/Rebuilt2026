@@ -221,6 +221,9 @@ public class RobotContainer {
 
         NamedCommands.registerCommand(
                 "pivotDown", intakeSubsystem.sendHoodDownCommand().withTimeout(0.75));
+
+        NamedCommands.registerCommand(
+                "pivotUp", intakeSubsystem.sendHoodUpCommand().withTimeout(0.75));
     }
 
     private void configureBindings() {
@@ -228,51 +231,7 @@ public class RobotContainer {
         controller.zero().onTrue(Commands.runOnce(this::zeroHeading));
 
         // shooter button mapping
-        controller
-                .aOrCross()
-                .whileTrue(
-                        new ShootCommand(shooterSubsystem, swerveDrive, visionIO, hopperSubsystem)
-                        // if (visionIO.getTX(hubAprilTagID).isPresent()) {
-                        //     SmartDashboard.putNumber("DISTANCE TO HUB (METERS)",
-                        // visionIO.getDistance(hubAprilTagID));
-                        //     lastRPM = DISTANCE_VS_RPM_MAP.get(visionIO.getDistance(hubAprilTagID));
-                        // }
-                        // shooterSubsystem.setFlywheelSpeedCommand(RotationsPerMinute.of(lastRPM));
-                        // shooterSubsystem.runFeederCommand();
-                        // if (visionIO.getTX(hubAprilTagID).isPresent()) {
-                        //                        Translation2d hubPosition = visionIO.getTargetPose(hubAprilTagID)
-                        //                                .orElse(null)
-                        //                                .getTranslation();
-                        //
-                        //                        ChassisSpeeds robotVelocityTranslation =
-                        // m_swerveDrive.getChassisSpeed();
-                        //                        Translation2d robotVelocity = new Translation2d(
-                        //                                -robotVelocityTranslation.vxMetersPerSecond,
-                        //                                -robotVelocityTranslation.vyMetersPerSecond);
-                        //
-                        //                        Translation2d futurePosition = swerveDriveSimulation
-                        //                                .getSimulatedDriveTrainPose()
-                        //                                .getTranslation()
-                        //                                .plus(robotVelocity.times(LATENCY_COMPENSATION));
-                        //
-                        //                        Translation2d distanceFromTarget = hubPosition.minus(futurePosition);
-                        //
-                        //                        double baseHorizontalVelocity =
-                        //                                distanceFromTarget.getNorm() /
-                        // DISTANCE_TO_TOF_MAP.get(distanceFromTarget.getNorm());
-                        //
-                        //                        double targetHorizontalVelocity = distanceFromTarget
-                        //                                .div(distanceFromTarget.getNorm())
-                        //                                .times(baseHorizontalVelocity)
-                        //                                .minus(robotVelocity)
-                        //                                .getNorm();
-                        /* we realistically want to prioritize changing our hood angle rather than the flywheel speed
-                        because our flywheel recovery speed is slow */
-                        // shooterSubsystem.setFlywheelSpeed(
-                        //         RotationsPerMinute.of(shooterMap.get(targetHorizontalVelocity)));
-
-                        // }
-                        );
+        controller.aOrCross().whileTrue(new ShootCommand(shooterSubsystem, swerveDrive, visionIO, hopperSubsystem));
 
         // align button mapping
         controller
