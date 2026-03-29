@@ -45,11 +45,9 @@ public class VisionIOSim implements VisionIO {
         camera = new PhotonCamera(VisionConstants.CAMERA_NAME);
         cameraSim = new PhotonCameraSim(camera, cameraProps);
 
-        Rotation3d cameraRotation = new Rotation3d(
-                0,
-                Radians.of(Degrees.of(-15).in(Radian)).magnitude(),
-                Degrees.of(180).in(Radians));
-        Transform3d cameraPosition = new Transform3d(Translation3d.kZero, cameraRotation);
+        Rotation3d cameraRotation =
+                new Rotation3d(0, Degrees.of(-15).in(Radians), Degrees.of(180).in(Radians));
+        Transform3d cameraPosition = new Transform3d(new Translation3d(0, 0.254, 0), cameraRotation);
 
         visionSystemSim.addCamera(cameraSim, cameraPosition);
 
@@ -102,11 +100,12 @@ public class VisionIOSim implements VisionIO {
         return Optional.empty();
     }
 
-    public Double getDistance(int targetID) {
-        return getTrackedTarget(targetID)
+    public Optional<Double> getDistance(int targetID) {
+        if (getTrackedTarget(targetID) == null) return Optional.empty();
+        return Optional.of(getTrackedTarget(targetID)
                 .getBestCameraToTarget()
                 .getTranslation()
-                .getNorm();
+                .getNorm());
     }
 
     public PhotonTrackedTarget getBestTarget() {

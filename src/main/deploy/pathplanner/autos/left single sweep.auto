@@ -13,13 +13,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "backwards from right"
+            "pathName": "neutral middle from left"
           }
         },
         {
           "type": "named",
           "data": {
             "name": "startIntake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "left from neutral middle"
           }
         },
         {

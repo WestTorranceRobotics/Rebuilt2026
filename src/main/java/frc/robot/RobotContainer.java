@@ -7,7 +7,6 @@ package frc.robot;
 import static edu.wpi.first.units.Units.*;
 import static frc.robot.constants.GlobalConstants.OperatorConstants.DRIVER_CONTROLLER_PORT;
 import static frc.robot.constants.GlobalConstants.OperatorConstants.OVERRIDE_CONTROLLER_PORT;
-import static frc.robot.constants.ShooterConstants.MINIMUM_SHOOTER_RPM;
 import static frc.robot.constants.ShooterConstants.YAW_ACCEPTABLE_ERROR;
 import static frc.robot.utilities.CustomUnits.RotationsPerMinute;
 
@@ -230,7 +229,6 @@ public class RobotContainer {
                     swerveDrive.drive(new ChassisSpeeds(), false);
                     // PPHolonomicDriveController.clearFeedbackOverrides();
                 });
-
         NamedCommands.registerCommand("align", alignCommand);
 
         NamedCommands.registerCommand(
@@ -239,7 +237,7 @@ public class RobotContainer {
                         Commands.run(() -> {
                             swerveDrive.drive(new ChassisSpeeds(), true);
                         }),
-                        new ShootCommand(shooterSubsystem, swerveDrive, visionIO, hopperSubsystem).withTimeout(3)));
+                        new ShootCommand(shooterSubsystem, swerveDrive, visionIO, hopperSubsystem).withTimeout(6)));
 
         NamedCommands.registerCommand("startIntake", intakeSubsystem.runOnce(intakeSubsystem::intake));
 
@@ -269,7 +267,11 @@ public class RobotContainer {
                     //             true,
                     //             visionIO.getTX(visionIO.getBestTarget().getFiducialId())
                     //                     .orElse(null));
-                    int hubAprilTagID = DriverStation.getAlliance().get().equals(DriverStation.Alliance.Blue) ? 25 : 10;
+                    int hubAprilTagID = DriverStation.getAlliance()
+                                    .orElse(DriverStation.Alliance.Blue)
+                                    .equals(DriverStation.Alliance.Blue)
+                            ? 25
+                            : 10;
                     if (visionIO.getTX(hubAprilTagID).orElse(null) != null) {
                         swerveDrive.setAlignStatus(
                                 true, visionIO.getTX(hubAprilTagID).get());
@@ -279,17 +281,35 @@ public class RobotContainer {
                     swerveDrive.setAlignStatus(false, 0);
                 }));
 
-        controller.xOrSquare().whileTrue(intakeSubsystem.intakeCommand());
-        controller.yOrTriangle().whileTrue(intakeSubsystem.outtakeCommand());
+        controller.xOrSquare().toggleOnTrue(intakeSubsystem.intakeCommand());
+        controller.yOrTriangle().toggleOnTrue(intakeSubsystem.outtakeCommand());
 
         controller.dPadUp().whileTrue(intakeSubsystem.sendHoodUpCommand());
         controller.dPadDown().whileTrue(intakeSubsystem.sendHoodDownCommand());
 
         overrideController
                 .aOrCross()
-                .whileTrue(shooterSubsystem.runShooterCommand(RotationsPerMinute.of(MINIMUM_SHOOTER_RPM)));
+                .whileTrue(Commands.parallel(
+                        hopperSubsystem.runHopperCommand(),
+                        shooterSubsystem.runShooterCommand(RotationsPerMinute.of(2700.0))));
 
-        overrideController.bOrCircle().whileTrue(shooterSubsystem.runFeederCommand());
+        overrideController
+                .bOrCircle()
+                .whileTrue(Commands.parallel(
+                        hopperSubsystem.runHopperCommand(),
+                        shooterSubsystem.runShooterCommand(RotationsPerMinute.of(3850.0))));
+
+        overrideController
+                .xOrSquare()
+                .whileTrue(Commands.parallel(
+                        hopperSubsystem.runHopperCommand(),
+                        shooterSubsystem.runShooterCommand(RotationsPerMinute.of(4316.6667))));
+
+        overrideController
+                .yOrTriangle()
+                .whileTrue(Commands.parallel(
+                        hopperSubsystem.runHopperCommand(),
+                        shooterSubsystem.runShooterCommand(RotationsPerMinute.of(4767.0))));
     }
 
     /**
@@ -328,32 +348,6 @@ public class RobotContainer {
      */
     public Command getAutonomousCommand() {
         return autoChooser.getSelected();
-
-        // return (Commands.runOnce(() -> {
-        //             swerveDrive.drive(new ChassisSpeeds(1.5, 0, 0), false);
-        //         }))
-        //         .andThen(Commands.waitSeconds(0.5))
-        //         .andThen(Commands.runOnce(() -> {
-        //             swerveDrive.drive(new ChassisSpeeds(0, 0, 0), false);
-        //         }))
-        //         .andThen(intakeSubsystem.sendHoodDownCommand())
-        //         .andThen(Commands.waitSeconds(0.7))
-        //         .andThen(intakeSubsystem.stopHoodCommand())
-        //         .andThen(Commands.runOnce(() -> {
-        //                     hopperSubsystem.setRollerVoltage(Volts.of(7));
-        //                     shooterSubsystem.setFlywheelSpeed(RotationsPerMinute.of(lastRPM));
-        //                     ;
-        //                 })
-        //                 .andThen(Commands.waitSeconds(0.2))
-        //                 .andThen(Commands.runOnce(() -> {
-        //                     shooterSubsystem.setFeederVoltageDirectly(Volts.of(-3));
-        //                 }))
-        //                 .andThen(Commands.waitSeconds(3))
-        //                 .andThen(Commands.runOnce(() -> {
-        //                     hopperSubsystem.stopRollers();
-        //                     shooterSubsystem.stopShooter();
-        //                     shooterSubsystem.setFeederVoltageDirectly(Volts.of(0));
-        //                 })));
     }
 
     /**

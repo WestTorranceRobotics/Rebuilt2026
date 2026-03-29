@@ -53,11 +53,12 @@ public class VisionIOReal implements VisionIO {
         return Optional.empty();
     }
 
-    public Double getDistance(int targetID) {
-        return getTrackedTarget(targetID)
+    public Optional<Double> getDistance(int targetID) {
+        if (getTrackedTarget(targetID) == null) return Optional.empty();
+        return Optional.of(getTrackedTarget(targetID)
                 .getBestCameraToTarget()
                 .getTranslation()
-                .getNorm();
+                .getNorm());
     }
 
     public PhotonTrackedTarget getBestTarget() {

@@ -19,9 +19,9 @@ public final class ShooterConstants {
 
     public static final double YAW_ACCEPTABLE_ERROR = 2;
     public static final double MINIMUM_SHOOTER_RPM =
-            2950; /* 2950 is the RPM value for shooting directly next to the Hub. We fall back to it so we can still
-                  shoot from a known position if vision breaks or is disabled. */
-    public static final double PASSING_SHOOTER_RPM = 3500;
+            2700.0; /* 2700 is the RPM value for shooting directly next to the Hub. We fall back to it so we can still
+                    shoot from a known position if vision breaks or is disabled. */
+    public static final double PASSING_SHOOTER_RPM = 3500.0;
 
     public static final InterpolatingDoubleTreeMap DISTANCE_TO_TOF_MAP = new InterpolatingDoubleTreeMap();
     public static final InterpolatingDoubleTreeMap SHOOTER_MAP = new InterpolatingDoubleTreeMap();
@@ -48,10 +48,10 @@ public final class ShooterConstants {
         SHOOTER_MAP.put(5.35714286, 4350.0);
         SHOOTER_MAP.put(5.49450549, 4550.0);
 
-        DISTANCE_VS_RPM_MAP.put(1.5, 2950.0);
-        DISTANCE_VS_RPM_MAP.put(2.5, 3450.0);
-        DISTANCE_VS_RPM_MAP.put(3.5, 3850.0);
-        DISTANCE_VS_RPM_MAP.put(4.5, 4316.6667); // INTERPOLATED
-        DISTANCE_VS_RPM_MAP.put(5.5, 4767.0); // INTERPOLATED
+        DISTANCE_VS_RPM_MAP.put(1.0, 2778.0); // INTERPOLATED
+        DISTANCE_VS_RPM_MAP.put(2.0, 3200.0);
+        DISTANCE_VS_RPM_MAP.put(3.067, 3650.0);
+        //        DISTANCE_VS_RPM_MAP.put(4.5, 4116.6667); // INTERPOLATED
+        //        DISTANCE_VS_RPM_MAP.put(5.5, 4567.0); // INTERPOLATED
     }
 }

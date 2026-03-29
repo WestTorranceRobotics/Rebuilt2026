@@ -72,13 +72,18 @@ public class ShootCommand extends Command {
             }
         } else {
             swerveDrive.setAlignStatus(true, targetHubYaw.get());
-            this.lastDistanceToHub = vision.getDistance(hubAprilTagID);
+            if (vision.getDistance(hubAprilTagID).isPresent()) {
+                lastDistanceToHub = vision.getDistance(hubAprilTagID).get();
+            }
 
             SmartDashboard.putNumber("Yaw from target", targetHubYaw.get());
             SmartDashboard.putNumber("Distance from hub", lastDistanceToHub);
 
             if (Math.abs(targetHubYaw.get()) <= YAW_ACCEPTABLE_ERROR) {
-                lastShooterMapRPM = DISTANCE_VS_RPM_MAP.get(vision.getDistance(hubAprilTagID));
+                if (lastDistanceToHub == -1) {
+                    shooter.setFlywheelSpeed(RotationsPerMinute.of(MINIMUM_SHOOTER_RPM));
+                }
+                lastShooterMapRPM = DISTANCE_VS_RPM_MAP.get(lastDistanceToHub);
                 shooter.setFlywheelSpeed(RotationsPerMinute.of(lastShooterMapRPM));
             } else {
                 shooter.stopShooter();

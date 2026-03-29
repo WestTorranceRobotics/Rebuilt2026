@@ -50,7 +50,7 @@ public class DefaultJoystickCommand extends Command {
         ChassisSpeeds chassisSpeeds = new ChassisSpeeds(
                 -curve(applyDeadband(ly.getAsDouble())) * 4,
                 -curve(applyDeadband(lx.getAsDouble())) * 4,
-                -curve(applyDeadband(rx.getAsDouble())) * 2);
+                -curve(applyDeadband(rx.getAsDouble())) * 6);
 
         drive.drive(chassisSpeeds, true);
 

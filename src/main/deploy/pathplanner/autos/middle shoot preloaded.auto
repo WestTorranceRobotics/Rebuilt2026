@@ -19,13 +19,13 @@
         {
           "type": "named",
           "data": {
-            "name": "alignAndShoot"
+            "name": "startIntake"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "startIntake"
+            "name": "alignAndShoot"
           }
         }
       ]
