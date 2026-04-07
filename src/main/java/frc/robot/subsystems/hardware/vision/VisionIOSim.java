@@ -1,6 +1,7 @@
 package frc.robot.subsystems.hardware.vision;
 
 import static edu.wpi.first.units.Units.*;
+import static frc.robot.constants.VisionConstants.*;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
@@ -10,11 +11,12 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import frc.robot.RobotContainer;
-import frc.robot.constants.VisionConstants;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
+import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonTargetSortMode;
 import org.photonvision.simulation.PhotonCameraSim;
 import org.photonvision.simulation.SimCameraProperties;
@@ -26,7 +28,11 @@ public class VisionIOSim implements VisionIO {
     PhotonCamera camera;
     PhotonCameraSim cameraSim;
 
-    AprilTagFieldLayout aprilTagFieldLayout;
+    AprilTagFieldLayout aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltWelded);
+    ;
+    PhotonPoseEstimator photonEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, ROBOT_TO_CAM);
+    Optional<EstimatedRobotPose> estimatedPose;
+
     List<PhotonTrackedTarget> trackedTargets;
     PhotonTrackedTarget bestTarget;
 
@@ -42,7 +48,7 @@ public class VisionIOSim implements VisionIO {
         cameraProps.setAvgLatencyMs(16);
         cameraProps.setLatencyStdDevMs(5);
 
-        camera = new PhotonCamera(VisionConstants.CAMERA_NAME);
+        camera = new PhotonCamera(CAMERA_NAME);
         cameraSim = new PhotonCameraSim(camera, cameraProps);
 
         Rotation3d cameraRotation =
@@ -56,8 +62,6 @@ public class VisionIOSim implements VisionIO {
         cameraSim.setTargetSortMode(PhotonTargetSortMode.Centermost);
 
         cameraSim.enableDrawWireframe(true);
-
-        aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltWelded);
 
         try {
             visionSystemSim.addAprilTags(
@@ -78,6 +82,9 @@ public class VisionIOSim implements VisionIO {
             if (result.hasTargets()) {
                 trackedTargets = result.getTargets();
                 bestTarget = result.getBestTarget();
+
+                estimatedPose = photonEstimator.estimateCoprocMultiTagPose(
+                        result); // TODO: This doesn't work the same way in sim
             }
         }
     }
@@ -93,7 +100,15 @@ public class VisionIOSim implements VisionIO {
         return null;
     }
 
-    public Optional<Pose2d> getTargetPose(int targetID) {
+    public Optional<EstimatedRobotPose> getEstimatedRobotPose() {
+        if (estimatedPose.isPresent()) {
+            return estimatedPose;
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    public Optional<Pose2d> getTargetPoseOfAprilTag(int targetID) {
         Pose2d pose = aprilTagFieldLayout.getTagPose(targetID).get().toPose2d();
 
         if (pose != null) return Optional.of(pose);

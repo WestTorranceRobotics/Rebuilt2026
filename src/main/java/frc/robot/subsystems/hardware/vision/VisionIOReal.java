@@ -28,10 +28,6 @@ public class VisionIOReal implements VisionIO {
         aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltWelded);
     }
 
-    public VisionIOReal(Object object) {
-        // TODO Auto-generated constructor stub
-    }
-
     public void tick() {
         var results = camera.getAllUnreadResults();
 
