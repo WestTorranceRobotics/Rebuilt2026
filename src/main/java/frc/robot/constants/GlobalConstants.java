@@ -6,6 +6,7 @@ package frc.robot.constants;
 
 import static edu.wpi.first.units.Units.*;
 
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Mass;
 
@@ -27,6 +28,11 @@ public final class GlobalConstants {
         public static final int OVERRIDE_CONTROLLER_PORT = 1;
 
         public static final double DEADBAND_THRESHOLD = 0.08;
+    }
+
+    public static class FieldConstants {
+        public static final Translation2d BLUE_HUB_POSITION = new Translation2d(4.62, 4.035);
+        public static final Translation2d RED_HUB_POSITION = new Translation2d(11.92105, 4.035);
     }
 
     public static class PhysicalRobotConstants {

@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.MathUtils;
 import frc.robot.Robot;
 import frc.robot.RobotContainer;
+import frc.robot.constants.GlobalConstants;
 import frc.robot.constants.SwerveDriveConstants.RealRobotConstants;
 import frc.robot.subsystems.hardware.gyroscope.GyroIO;
 import frc.robot.subsystems.hardware.module.ModuleIO;
@@ -145,6 +146,17 @@ public class SwerveDrive extends SubsystemBase {
     public void setAlignStatus(boolean isAligning, double targetRotationYaw) {
         this.isAligning = isAligning;
         this.targetRotationYaw = targetRotationYaw;
+    }
+
+    public Rotation2d getAngleToHub() {
+        Translation2d robotTranslation = getPose().getTranslation();
+        Translation2d hubPosition =
+                DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue).equals(DriverStation.Alliance.Blue)
+                        ? GlobalConstants.FieldConstants.BLUE_HUB_POSITION
+                        : GlobalConstants.FieldConstants.RED_HUB_POSITION;
+
+        return new Rotation2d(
+                Math.atan2(hubPosition.getY() - robotTranslation.getY(), hubPosition.getX() - robotTranslation.getX()));
     }
 
     @Override
