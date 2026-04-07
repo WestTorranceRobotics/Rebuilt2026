@@ -268,6 +268,10 @@ public class SwerveDrive extends SubsystemBase {
         swerveDrivePoseEstimator.resetPosition(gyro.getRotation(), getModulePositions(), pose);
     }
 
+    public void addVisionMeasurement(Pose2d visionRobotPoseMeters, double timestampSeconds) {
+        swerveDrivePoseEstimator.addVisionMeasurement(visionRobotPoseMeters, timestampSeconds);
+    }
+
     public SwerveModulePosition[] getModulePositions() {
         return new SwerveModulePosition[] {
             frontLeft.getPosition(), frontRight.getPosition(), backLeft.getPosition(), backRight.getPosition()

@@ -1,12 +1,15 @@
 package frc.robot.subsystems.hardware.vision;
 
+import static frc.robot.constants.VisionConstants.*;
+
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
-import frc.robot.constants.VisionConstants;
 import java.util.List;
 import java.util.Optional;
+import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
+import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 public class VisionIOReal implements VisionIO {
@@ -14,13 +17,19 @@ public class VisionIOReal implements VisionIO {
     List<PhotonTrackedTarget> trackedTargets;
     PhotonTrackedTarget bestTarget;
 
-    AprilTagFieldLayout aprilTagFieldLayout;
+    AprilTagFieldLayout aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltWelded);
+    PhotonPoseEstimator photonEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, ROBOT_TO_CAM);
+    Optional<EstimatedRobotPose> estimatedPose;
 
     int targetID;
 
     public VisionIOReal() {
-        camera = new PhotonCamera(VisionConstants.CAMERA_NAME);
+        camera = new PhotonCamera(CAMERA_NAME);
         aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltWelded);
+    }
+
+    public VisionIOReal(Object object) {
+        // TODO Auto-generated constructor stub
     }
 
     public void tick() {
@@ -31,6 +40,8 @@ public class VisionIOReal implements VisionIO {
             if (result.hasTargets()) {
                 trackedTargets = result.getTargets();
                 bestTarget = result.getBestTarget();
+
+                estimatedPose = photonEstimator.estimateCoprocMultiTagPose(result);
             }
         }
     }
@@ -46,7 +57,15 @@ public class VisionIOReal implements VisionIO {
         return null;
     }
 
-    public Optional<Pose2d> getTargetPose(int targetID) {
+    public Optional<EstimatedRobotPose> getEstimatedRobotPose() {
+        if (estimatedPose.isPresent()) {
+            return estimatedPose;
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    public Optional<Pose2d> getTargetPoseOfAprilTag(int targetID) {
         Pose2d pose = aprilTagFieldLayout.getTagPose(targetID).get().toPose2d();
 
         if (pose != null) return Optional.of(pose);

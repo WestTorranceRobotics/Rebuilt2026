@@ -2,6 +2,7 @@ package frc.robot.subsystems.hardware.vision;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import java.util.Optional;
+import org.photonvision.EstimatedRobotPose;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 public interface VisionIO {
@@ -11,7 +12,9 @@ public interface VisionIO {
 
     PhotonTrackedTarget getBestTarget();
 
-    Optional<Pose2d> getTargetPose(int targetID);
+    Optional<EstimatedRobotPose> getEstimatedRobotPose();
+
+    Optional<Pose2d> getTargetPoseOfAprilTag(int targetID);
 
     Optional<Double> getDistance(int targetID);
 
