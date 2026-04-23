@@ -9,6 +9,7 @@ import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -62,7 +63,7 @@ public class SwerveDrive extends SubsystemBase {
     private double targetRotationYaw;
 
     // Real pose in simulation (if not real)
-    private StructPublisher<Pose2d> realPosePublisher;
+    private StructPublisher<Pose3d> realPosePublisher;
 
     public SwerveDrive(GyroIO gyro, ModuleIO fl, ModuleIO fr, ModuleIO bl, ModuleIO br) {
         this.gyro = gyro;
@@ -77,7 +78,7 @@ public class SwerveDrive extends SubsystemBase {
 
         if (Robot.isSimulation()) {
             this.realPosePublisher = NetworkTableInstance.getDefault()
-                    .getStructTopic("Real Pose", Pose2d.struct)
+                    .getStructTopic("Real Pose", Pose3d.struct)
                     .publish();
         }
 
@@ -186,7 +187,7 @@ public class SwerveDrive extends SubsystemBase {
 
         // TODO move this into robot container
         if (realPosePublisher != null && RobotContainer.swerveDriveSimulation != null) {
-            realPosePublisher.set(RobotContainer.swerveDriveSimulation.getSimulatedDriveTrainPose());
+            realPosePublisher.set(RobotContainer.swerveDriveSimulation.getSimulatedDriveTrainPose3dGroundRelative());
         }
     }
 

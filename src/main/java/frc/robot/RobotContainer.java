@@ -12,7 +12,6 @@ import static frc.robot.utilities.CustomUnits.RotationsPerMinute;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -51,9 +50,8 @@ import frc.robot.subsystems.hardware.vision.VisionIOSim;
 import frc.robot.utilities.controller.Controller;
 import frc.robot.utilities.controller.DualShock4Controller;
 import frc.robot.utilities.controller.LogitechController;
-import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.COTS;
-import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
+import org.ironmaple.simulation.drivesims.SwerveDriveSimulation3D;
 import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
 
 /**
@@ -65,7 +63,6 @@ import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
  * the robot (including
  * subsystems, commands, and trigger mappings) should be declared here.
  */
-@Logged
 public class RobotContainer {
     private final SwerveDrive swerveDrive;
     private final ShooterIO shooterSubsystem;
@@ -75,7 +72,7 @@ public class RobotContainer {
     private final Controller controller;
     private final Controller overrideController;
 
-    public static SwerveDriveSimulation swerveDriveSimulation;
+    public static SwerveDriveSimulation3D swerveDriveSimulation;
 
     public static VisionIO visionIO;
 
@@ -135,7 +132,7 @@ public class RobotContainer {
             visionIO = new VisionIOReal();
         } else {
             // TODO add constant for drive base length
-            swerveDriveSimulation = new SwerveDriveSimulation(
+            swerveDriveSimulation = new SwerveDriveSimulation3D(
                     DriveTrainSimulationConfig.Default()
                             .withRobotMass(Pounds.of(75))
                             .withSwerveModule(COTS.ofSwerveX2(
@@ -180,7 +177,7 @@ public class RobotContainer {
                             SwerveDriveConfigurator.SwerveModuleCornerPosition.BACK_RIGHT,
                             swerveDriveConfigurator));
 
-            SimulatedArena.getInstance().addDriveTrainSimulation(swerveDriveSimulation);
+            swerveDriveSimulation.registerWithArena(Robot.arena, new Pose2d(2, 7, Rotation2d.kZero));
             shooterSubsystem = new ShooterIOSim();
             intakeSubsystem = new IntakeIOSim();
             hopperSubsystem = new HopperIOSim();

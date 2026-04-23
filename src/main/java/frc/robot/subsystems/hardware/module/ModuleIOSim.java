@@ -10,6 +10,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.units.measure.*;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import frc.robot.MathUtils;
 import frc.robot.RobotContainer;
 import frc.robot.constants.GlobalConstants;
 import frc.robot.subsystems.SwerveDrive.SwerveDriveConfigurator;
@@ -174,8 +175,12 @@ public class ModuleIOSim implements ModuleIO {
                 null);
         sendableBuilder.addDoubleProperty(
                 getModuleName() + "dacc",
-                () -> RobotContainer.swerveDriveSimulation.getForce().getMagnitude()
-                        / GlobalConstants.PhysicalRobotConstants.ROBOT_MASS.in(Kilogram),
+                () -> RobotContainer.swerveDriveSimulation.getPhysicsBody() == null
+                        ? 0
+                        : MathUtils.getMagnitude(RobotContainer.swerveDriveSimulation
+                                        .getPhysicsBody()
+                                        .getAngularVelocityRadPerSec())
+                                / GlobalConstants.PhysicalRobotConstants.ROBOT_MASS.in(Kilogram),
                 null);
     }
 
