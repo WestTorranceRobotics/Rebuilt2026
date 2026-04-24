@@ -94,7 +94,7 @@ public class ShootCommand extends Command {
     @Override
     public void end(boolean interrupted) {
         swerveDrive.setAlignStatus(false, 0);
-        swerveDrive.drive(new ChassisSpeeds(), true);
+        swerveDrive.drive(new ChassisSpeeds());
         shooter.stopShooter();
         hopper.stopHopper();
     }

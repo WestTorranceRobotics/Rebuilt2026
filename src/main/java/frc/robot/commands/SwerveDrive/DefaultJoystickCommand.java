@@ -4,6 +4,7 @@ import static frc.robot.constants.GlobalConstants.OperatorConstants.DEADBAND_THR
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.constants.SwerveDriveConstants;
 import frc.robot.subsystems.SwerveDrive.SwerveDrive;
 import java.util.function.DoubleSupplier;
 
@@ -48,11 +49,11 @@ public class DefaultJoystickCommand extends Command {
     @Override
     public void execute() {
         ChassisSpeeds chassisSpeeds = new ChassisSpeeds(
-                -curve(applyDeadband(ly.getAsDouble())) * 4,
-                -curve(applyDeadband(lx.getAsDouble())) * 4,
-                -curve(applyDeadband(rx.getAsDouble())) * 6);
+                -curve(applyDeadband(ly.getAsDouble())) * SwerveDriveConstants.MAX_TRANSLATION_SPEED,
+                -curve(applyDeadband(lx.getAsDouble())) * SwerveDriveConstants.MAX_TRANSLATION_SPEED,
+                -curve(applyDeadband(rx.getAsDouble())) * SwerveDriveConstants.MAX_ANGULAR_SPEED);
 
-        drive.drive(chassisSpeeds, true);
+        drive.drive(chassisSpeeds);
 
         drive.tickPid();
     }
@@ -64,6 +65,6 @@ public class DefaultJoystickCommand extends Command {
      */
     @Override
     public void end(boolean interrupted) {
-        drive.drive(new ChassisSpeeds(), true);
+        drive.drive(new ChassisSpeeds());
     }
 }

@@ -3,6 +3,11 @@ package frc.robot.constants;
 import frc.robot.subsystems.SwerveDrive.SwerveDriveConfigurator;
 
 public final class SwerveDriveConstants {
+    public static final double MAX_TRANSLATION_SPEED = 4;
+    public static final double MAX_ANGULAR_SPEED = 6;
+
+    public static final double PROPORTIONALITY_CONSTANT = 0.0123245;
+
     public static class RealRobotConstants {
         public static final int PIGEON2_ID = 9;
 
@@ -46,9 +51,6 @@ public final class SwerveDriveConstants {
         public static final double kPRotation = 13.26;
         public static final double kIRotation = 0;
         public static final double kDRotation = 0.59364;
-
-        public static final double MAX_ANGULAR_SPEED = Math.PI * Math.PI;
-        public static final double PROPORTIONALITY_CONSTANT = 0.0075;
 
         public static class RealModuleConstants {
             public static SwerveDriveConfigurator.SwerveDriveModuleConstants FLModuleConstants =
