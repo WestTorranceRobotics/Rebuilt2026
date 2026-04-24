@@ -122,9 +122,7 @@ public class SwerveDrive extends SubsystemBase {
 
     public void drive(ChassisSpeeds chassisSpeeds, boolean absolute) {
         // TODO make use swerve kinematics class
-        if (isAligning)
-            chassisSpeeds = createAlignChassisSpeeds(
-                    chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond, targetRotationYaw);
+        if (isAligning) chassisSpeeds = createAlignChassisSpeeds(chassisSpeeds.vx, chassisSpeeds.vy, targetRotationYaw);
 
         double heading = getHeading().getRadians() + headingOffset;
         calculateState(chassisSpeeds, heading, frontRight, absolute);
@@ -206,11 +204,10 @@ public class SwerveDrive extends SubsystemBase {
         Translation2d moduleVector;
 
         // Calculates rotation vector as described
-        Translation2d rotationVector = module.getUnitRotationVec().times(chassisSpeeds.omegaRadiansPerSecond * 1);
+        Translation2d rotationVector = module.getUnitRotationVec().times(chassisSpeeds.omega * 1);
 
         // VY is the desired left velocity, vx is the desired forward velocity
-        Translation2d translationVector =
-                new Translation2d(-chassisSpeeds.vyMetersPerSecond, chassisSpeeds.vxMetersPerSecond);
+        Translation2d translationVector = new Translation2d(-chassisSpeeds.vy, chassisSpeeds.vx);
 
         // Early clear state
         if (rotationVector.getX() == 0
@@ -253,7 +250,7 @@ public class SwerveDrive extends SubsystemBase {
 
     public ChassisSpeeds getChassisSpeed() {
         ChassisSpeeds chassisSpeeds = RobotContainer.swerveDriveKinematics.toChassisSpeeds(getModuleStates());
-        chassisSpeeds.omegaRadiansPerSecond = gyro.getAngularVelocity().in(RadiansPerSecond);
+        chassisSpeeds.omega = gyro.getAngularVelocity().in(RadiansPerSecond);
         return chassisSpeeds;
     }
 

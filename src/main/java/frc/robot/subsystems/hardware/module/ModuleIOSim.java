@@ -113,8 +113,7 @@ public class ModuleIOSim implements ModuleIO {
     @Override
     public SwerveModulePosition getPosition() {
         swerveModulePosition.angle = this.getSteerAngle();
-        swerveModulePosition.distanceMeters =
-                this.getDriveWheelPosition().in(Rotations) * simulatedCircumference.in(Meters);
+        swerveModulePosition.distance = this.getDriveWheelPosition().in(Rotations) * simulatedCircumference.in(Meters);
         return this.swerveModulePosition;
     }
 
@@ -131,8 +130,8 @@ public class ModuleIOSim implements ModuleIO {
     @Override
     public void setDesiredState(LinearVelocity speed, Rotation2d angle) {
         if (angle != null) this.desiredState.angle = angle;
-        this.desiredState.speedMetersPerSecond = speed.in(MetersPerSecond);
-        setDrivePID(desiredState.speedMetersPerSecond);
+        this.desiredState.speed = speed.in(MetersPerSecond);
+        setDrivePID(desiredState.speed);
 
         setSteerPID(desiredState.angle.getRadians());
     }
@@ -149,7 +148,7 @@ public class ModuleIOSim implements ModuleIO {
 
             setDriveVoltage(Volts.of(drivePID.calculate(
                             getDriveWheelVelocity().in(RotationsPerSecond) * simulatedCircumference.in(Meters))
-                    + driveFeedforward.calculate(desiredState.speedMetersPerSecond)));
+                    + driveFeedforward.calculate(desiredState.speed)));
         }
     }
 
@@ -166,8 +165,7 @@ public class ModuleIOSim implements ModuleIO {
     @Override
     public void telemetryHook(SendableBuilder sendableBuilder) {
         sendableBuilder.addDoubleProperty(getModuleName() + "-dError", drivePID::getError, null);
-        sendableBuilder.addDoubleProperty(
-                getModuleName() + "-dDesired_speed", () -> desiredState.speedMetersPerSecond, null);
+        sendableBuilder.addDoubleProperty(getModuleName() + "-dDesired_speed", () -> desiredState.speed, null);
         sendableBuilder.addDoubleProperty(
                 getModuleName() + "-dReal_speed",
                 () -> getDriveWheelVelocity().in(RotationsPerSecond) * simulatedCircumference.in(Meters),

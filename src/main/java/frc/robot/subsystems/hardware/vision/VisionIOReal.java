@@ -17,7 +17,7 @@ public class VisionIOReal implements VisionIO {
     List<PhotonTrackedTarget> trackedTargets;
     PhotonTrackedTarget bestTarget;
 
-    AprilTagFieldLayout aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltWelded);
+    AprilTagFieldLayout aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
     PhotonPoseEstimator photonEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, ROBOT_TO_CAM);
     Optional<EstimatedRobotPose> estimatedPose;
 
@@ -25,7 +25,7 @@ public class VisionIOReal implements VisionIO {
 
     public VisionIOReal() {
         camera = new PhotonCamera(CAMERA_NAME);
-        aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltWelded);
+        aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
     }
 
     public void tick() {

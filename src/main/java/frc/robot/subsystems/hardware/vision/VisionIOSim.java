@@ -28,7 +28,7 @@ public class VisionIOSim implements VisionIO {
     PhotonCamera camera;
     PhotonCameraSim cameraSim;
 
-    AprilTagFieldLayout aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltWelded);
+    AprilTagFieldLayout aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
     ;
     PhotonPoseEstimator photonEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, ROBOT_TO_CAM);
     Optional<EstimatedRobotPose> estimatedPose;
@@ -65,7 +65,7 @@ public class VisionIOSim implements VisionIO {
 
         try {
             visionSystemSim.addAprilTags(
-                    AprilTagFieldLayout.loadFromResource(AprilTagFields.k2026RebuiltWelded.m_resourceFile));
+                    AprilTagFieldLayout.loadFromResource(AprilTagFields.k2025ReefscapeWelded.m_resourceFile));
         } catch (IOException ioe) {
             System.out.println("Failed to load april tag field");
         }

@@ -3,8 +3,8 @@ package frc.robot.subsystems.Hopper;
 import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.constants.HopperConstants.*;
 
-import com.revrobotics.PersistMode;
-import com.revrobotics.ResetMode;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
@@ -16,7 +16,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.utilities.CustomUnits;
 
 public class HopperIOReal extends SubsystemBase implements HopperIO {
-    protected final SparkMax hopperMotor = new SparkMax(HOPPER_MOTOR_ID, MotorType.kBrushless);
+    // TODO change bus id
+    protected final SparkMax hopperMotor = new SparkMax(0, HOPPER_MOTOR_ID, MotorType.kBrushless);
 
     protected double actualRPM = 0;
 

@@ -4,8 +4,8 @@ import static edu.wpi.first.units.Units.*;
 import static frc.robot.constants.ShooterConstants.*;
 import static frc.robot.utilities.CustomUnits.RotationsPerMinute;
 
-import com.revrobotics.PersistMode;
-import com.revrobotics.ResetMode;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
@@ -22,10 +22,11 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 @Logged
 public class ShooterIOReal extends SubsystemBase implements ShooterIO {
-    protected final SparkMax feederMotor = new SparkMax(FEEDER_MOTOR_ID, MotorType.kBrushless);
+    // TODO change bus id
+    protected final SparkMax feederMotor = new SparkMax(0, FEEDER_MOTOR_ID, MotorType.kBrushless);
 
-    protected final SparkMax flywheelMotor = new SparkMax(LAUNCHER_MOTOR_1_ID, MotorType.kBrushless);
-    protected final SparkMax flywheelMotorInverted = new SparkMax(LAUNCHER_MOTOR_2_ID, MotorType.kBrushless);
+    protected final SparkMax flywheelMotor = new SparkMax(0, LAUNCHER_MOTOR_1_ID, MotorType.kBrushless);
+    protected final SparkMax flywheelMotorInverted = new SparkMax(0, LAUNCHER_MOTOR_2_ID, MotorType.kBrushless);
 
     protected final BangBangController bangbang = new BangBangController();
     protected final SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(0, 0.00242); // TODO: tune further

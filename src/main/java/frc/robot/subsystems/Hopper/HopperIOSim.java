@@ -1,5 +1,7 @@
 package frc.robot.subsystems.Hopper;
 
+import static edu.wpi.first.units.Units.RPM;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static frc.robot.constants.HopperConstants.*;
 
 import com.revrobotics.sim.SparkMaxSim;
@@ -18,6 +20,8 @@ public class HopperIOSim extends HopperIOReal implements HopperIO {
 
     private final SparkMaxSim hopperMotorSim;
 
+    private final double radsToRPMConversionConstant = RPM.convertFrom(1, RadiansPerSecond);
+
     private double actualRPM = 0;
 
     public HopperIOSim() {
@@ -30,12 +34,13 @@ public class HopperIOSim extends HopperIOReal implements HopperIO {
         flywheelSim.update(0.02);
 
         // Update motor
-        hopperMotorSim.iterate(flywheelSim.getAngularVelocityRPM(), RoboRioSim.getVInVoltage(), 0.02);
+        hopperMotorSim.iterate(
+                flywheelSim.getAngularVelocity() * radsToRPMConversionConstant, RoboRioSim.getVInVoltage(), 0.02);
 
-        this.actualRPM = flywheelSim.getAngularVelocityRPM();
+        this.actualRPM = flywheelSim.getAngularVelocity() * radsToRPMConversionConstant;
         SmartDashboard.putNumber("Hopper RPM", actualRPM);
 
         // TODO does this carry between sims? seems like it does
-        RoboRioSim.setVInVoltage(BatterySim.calculateDefaultBatteryLoadedVoltage(flywheelSim.getCurrentDrawAmps()));
+        RoboRioSim.setVInVoltage(BatterySim.calculateDefaultBatteryLoadedVoltage(flywheelSim.getCurrentDraw()));
     }
 }

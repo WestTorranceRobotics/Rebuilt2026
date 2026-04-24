@@ -1,5 +1,8 @@
 package frc.robot.subsystems.Shooter;
 
+import static edu.wpi.first.units.Units.RPM;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+
 import com.revrobotics.sim.SparkMaxSim;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
@@ -13,6 +16,7 @@ public class ShooterIOSim extends ShooterIOReal implements ShooterIO {
 
     private final SparkMaxSim launcherMotorLeaderSim;
     private final SparkMaxSim launcherMotorFollowerSim;
+    private final double radsToRPMConversionConstant = RPM.convertFrom(1, RadiansPerSecond);
 
     private final FlywheelSim flywheelSim = new FlywheelSim(
             LinearSystemId.createFlywheelSystem(DCMotor.getNEO(3), 0.00062156662, 1), DCMotor.getNEO(3));
@@ -36,17 +40,20 @@ public class ShooterIOSim extends ShooterIOReal implements ShooterIO {
         feederSim.update(0.02);
 
         // Update motors
-        feederMotorSim.iterate(feederSim.getAngularVelocityRPM(), RoboRioSim.getVInVoltage(), 0.02);
-        launcherMotorLeaderSim.iterate(flywheelSim.getAngularVelocityRPM(), RoboRioSim.getVInVoltage(), 0.02);
-        launcherMotorFollowerSim.iterate(flywheelSim.getAngularVelocityRPM(), RoboRioSim.getVInVoltage(), 0.02);
+        feederMotorSim.iterate(
+                feederSim.getAngularVelocity() * radsToRPMConversionConstant, RoboRioSim.getVInVoltage(), 0.02);
+        launcherMotorLeaderSim.iterate(
+                flywheelSim.getAngularVelocity() * radsToRPMConversionConstant, RoboRioSim.getVInVoltage(), 0.02);
+        launcherMotorFollowerSim.iterate(
+                flywheelSim.getAngularVelocity() * radsToRPMConversionConstant, RoboRioSim.getVInVoltage(), 0.02);
 
-        this.actualRPM = flywheelSim.getAngularVelocityRPM();
+        this.actualRPM = flywheelSim.getAngularVelocity() * radsToRPMConversionConstant;
         SmartDashboard.putNumber("Shooter Target RPM", targetRPM);
-        SmartDashboard.putNumber("Shooter RPM", flywheelSim.getAngularVelocityRPM());
-        SmartDashboard.putNumber("Feeder RPM", feederSim.getAngularVelocityRPM());
+        SmartDashboard.putNumber("Shooter RPM", flywheelSim.getAngularVelocity() * radsToRPMConversionConstant);
+        SmartDashboard.putNumber("Feeder RPM", feederSim.getAngularVelocity() * radsToRPMConversionConstant);
 
         // TODO does this carry between sims? seems like it does
         RoboRioSim.setVInVoltage(BatterySim.calculateDefaultBatteryLoadedVoltage(
-                flywheelSim.getCurrentDrawAmps() + feederSim.getCurrentDrawAmps()));
+                flywheelSim.getCurrentDraw() + feederSim.getCurrentDraw()));
     }
 }

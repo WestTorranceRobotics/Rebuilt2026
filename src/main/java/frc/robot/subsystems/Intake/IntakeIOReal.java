@@ -3,8 +3,8 @@ package frc.robot.subsystems.Intake;
 import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.constants.IntakeConstants.*;
 
-import com.revrobotics.PersistMode;
-import com.revrobotics.ResetMode;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
@@ -16,8 +16,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 @Logged
 public class IntakeIOReal extends SubsystemBase implements IntakeIO {
-    protected final SparkMax intakeMotor = new SparkMax(INTAKE_MOTOR_ID, MotorType.kBrushless);
-    protected final SparkMax pivotMotor = new SparkMax(PIVOT_MOTOR_ID, MotorType.kBrushless);
+    // TODO change bus id
+    protected final SparkMax intakeMotor = new SparkMax(0, INTAKE_MOTOR_ID, MotorType.kBrushless);
+    protected final SparkMax pivotMotor = new SparkMax(0, PIVOT_MOTOR_ID, MotorType.kBrushless);
 
     public IntakeIOReal() {
         SparkMaxConfig intakeConfig = new SparkMaxConfig();

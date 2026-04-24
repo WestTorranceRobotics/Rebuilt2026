@@ -1,5 +1,8 @@
 package frc.robot.subsystems.Intake;
 
+import static edu.wpi.first.units.Units.RPM;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+
 import com.revrobotics.sim.SparkMaxSim;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -32,6 +35,8 @@ public class IntakeIOSim extends IntakeIOReal implements IntakeIO {
             true,
             Math.PI / 2);
 
+    private final double radsToRPMConversionConstant = RPM.convertFrom(1, RadiansPerSecond);
+
     public IntakeIOSim() {
         intakeMotorSim = new SparkMaxSim(intakeMotor, DCMotor.getNEO(1));
         pivotMotorSim = new SparkMaxSim(pivotMotor, DCMotor.getNEO(1));
@@ -45,15 +50,15 @@ public class IntakeIOSim extends IntakeIOReal implements IntakeIO {
         pivotSim.update(0.02);
 
         // Update motors
-        intakeMotorSim.iterate(rollerSim.getAngularVelocityRPM(), RoboRioSim.getVInVoltage(), 0.02);
-        pivotMotorSim.iterate(pivotSim.getVelocityRadPerSec(), RoboRioSim.getVInVoltage(), 0.02);
+        intakeMotorSim.iterate(
+                rollerSim.getAngularVelocity() * radsToRPMConversionConstant, RoboRioSim.getVInVoltage(), 0.02);
+        pivotMotorSim.iterate(pivotSim.getVelocity(), RoboRioSim.getVInVoltage(), 0.02);
 
-        SmartDashboard.putNumber("Intake RPM", rollerSim.getAngularVelocityRPM());
-        SmartDashboard.putNumber(
-                "Pivot RPM", Units.radiansPerSecondToRotationsPerMinute(pivotSim.getVelocityRadPerSec()));
+        SmartDashboard.putNumber("Intake RPM", rollerSim.getAngularVelocity() * radsToRPMConversionConstant);
+        SmartDashboard.putNumber("Pivot RPM", Units.radiansPerSecondToRotationsPerMinute(pivotSim.getVelocity()));
 
         // TODO does this carry between sims? seems like it does
         RoboRioSim.setVInVoltage(BatterySim.calculateDefaultBatteryLoadedVoltage(
-                rollerSim.getCurrentDrawAmps() + pivotSim.getCurrentDrawAmps()));
+                rollerSim.getCurrentDraw() + pivotSim.getCurrentDraw()));
     }
 }

@@ -12,8 +12,8 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
-import com.revrobotics.PersistMode;
-import com.revrobotics.ResetMode;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
@@ -93,7 +93,7 @@ public class ModuleIOReal implements ModuleIO {
         // Azimuth motor config
         steerVoltageCoefficient = moduleConstants.azimuthReversed ? -1 : 1;
 
-        steerMotorController = new SparkMax(moduleConstants.azimuthMotorID, SparkMax.MotorType.kBrushless);
+        steerMotorController = new SparkMax(0, moduleConstants.azimuthMotorID, SparkMax.MotorType.kBrushless);
         SparkMaxConfig sparkMaxConfig = new SparkMaxConfig();
         // TODO figure out this open loop ramp rate
         sparkMaxConfig
@@ -183,10 +183,7 @@ public class ModuleIOReal implements ModuleIO {
     public SwerveModuleState getState() {
         currentState.angle = this.getSteerAngle();
 
-        currentState.speedMetersPerSecond = driveMotorController
-                        .getVelocity()
-                        .getValue()
-                        .in(RotationsPerSecond)
+        currentState.speed = driveMotorController.getVelocity().getValue().in(RotationsPerSecond)
                 * moduleConstants.driveGearRatio
                 * robotConstants.wheelCircumference.in(Meters);
 
@@ -196,7 +193,7 @@ public class ModuleIOReal implements ModuleIO {
     @Override
     public SwerveModulePosition getPosition() {
         swerveModulePosition.angle = this.getSteerAngle();
-        swerveModulePosition.distanceMeters = this.getDriveWheelPosition().in(Rotations)
+        swerveModulePosition.distance = this.getDriveWheelPosition().in(Rotations)
                 * robotConstants.wheelCircumference.in(Meters)
                 * moduleConstants.driveGearRatio;
         return this.swerveModulePosition;

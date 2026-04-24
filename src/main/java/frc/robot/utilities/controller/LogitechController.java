@@ -1,8 +1,10 @@
 package frc.robot.utilities.controller;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import java.util.Optional;
 
 public class LogitechController extends CommandGenericHID implements Controller {
     private GenericHID controller;
@@ -53,19 +55,35 @@ public class LogitechController extends CommandGenericHID implements Controller 
     }
 
     public Trigger dPadLeft() {
-        return new Trigger(() -> (controller.getPOV() == 270));
+        return new Trigger(() -> {
+            Optional<Rotation2d> pov = controller.getPOV().getAngle();
+
+            return pov.isPresent() ? pov.get().getDegrees() == 270.0 : false;
+        });
     }
 
     public Trigger dPadUp() {
-        return new Trigger(() -> (controller.getPOV() == 0));
+        return new Trigger(() -> {
+            Optional<Rotation2d> pov = controller.getPOV().getAngle();
+
+            return pov.isPresent() ? pov.get().getDegrees() == 0.0 : false;
+        });
     }
 
     public Trigger dPadRight() {
-        return new Trigger(() -> (controller.getPOV() == 90));
+        return new Trigger(() -> {
+            Optional<Rotation2d> pov = controller.getPOV().getAngle();
+
+            return pov.isPresent() ? pov.get().getDegrees() == 90.0 : false;
+        });
     }
 
     public Trigger dPadDown() {
-        return new Trigger(() -> (controller.getPOV() == 180));
+        return new Trigger(() -> {
+            Optional<Rotation2d> pov = controller.getPOV().getAngle();
+
+            return pov.isPresent() ? pov.get().getDegrees() == 180.0 : false;
+        });
     }
 
     public Trigger R1() {
