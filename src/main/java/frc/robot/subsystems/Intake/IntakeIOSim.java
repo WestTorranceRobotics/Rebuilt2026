@@ -12,14 +12,12 @@ import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 @Logged
-public class IntakeIOSim extends IntakeIOReal implements IntakeIO {
+public class IntakeIOSim extends IntakeIOReal {
     private final SparkMaxSim intakeMotorSim;
     private final SparkMaxSim pivotMotorSim;
 
-    // flywheel sim is being used because it's the closest to what we have
     private final FlywheelSim rollerSim = new FlywheelSim(
-            LinearSystemId.createFlywheelSystem(DCMotor.getNEO(1), 0.00062156662, 1),
-            DCMotor.getNEO(1)); // TODO update physical constants
+            LinearSystemId.createFlywheelSystem(DCMotor.getNEO(1), 0.00062156662, 1), DCMotor.getNEO(1));
 
     private final SingleJointedArmSim pivotSim = new SingleJointedArmSim(
             // TODO: Find moment of inertia ("JKgSquaredMeters")
@@ -52,7 +50,6 @@ public class IntakeIOSim extends IntakeIOReal implements IntakeIO {
         SmartDashboard.putNumber(
                 "Pivot RPM", Units.radiansPerSecondToRotationsPerMinute(pivotSim.getVelocityRadPerSec()));
 
-        // TODO does this carry between sims? seems like it does
         RoboRioSim.setVInVoltage(BatterySim.calculateDefaultBatteryLoadedVoltage(
                 rollerSim.getCurrentDrawAmps() + pivotSim.getCurrentDrawAmps()));
     }

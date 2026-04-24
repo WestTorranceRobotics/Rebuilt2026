@@ -1,7 +1,5 @@
 package frc.robot.subsystems.Hopper;
 
-import static frc.robot.constants.HopperConstants.*;
-
 import com.revrobotics.sim.SparkMaxSim;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
@@ -10,11 +8,9 @@ import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class HopperIOSim extends HopperIOReal implements HopperIO {
-    // flywheel sim is being used because it's the closest to what we have
+public class HopperIOSim extends HopperIOReal {
     private final FlywheelSim flywheelSim = new FlywheelSim(
-            LinearSystemId.createFlywheelSystem(DCMotor.getNEO(2), 0.00062156662, 1),
-            DCMotor.getNEO(2)); // TODO update physical constants
+            LinearSystemId.createFlywheelSystem(DCMotor.getNEO(2), 0.00062156662, 1), DCMotor.getNEO(2));
 
     private final SparkMaxSim hopperMotorSim;
 
@@ -35,7 +31,6 @@ public class HopperIOSim extends HopperIOReal implements HopperIO {
         this.actualRPM = flywheelSim.getAngularVelocityRPM();
         SmartDashboard.putNumber("Hopper RPM", actualRPM);
 
-        // TODO does this carry between sims? seems like it does
         RoboRioSim.setVInVoltage(BatterySim.calculateDefaultBatteryLoadedVoltage(flywheelSim.getCurrentDrawAmps()));
     }
 }

@@ -28,7 +28,7 @@ public class ShooterIOReal extends SubsystemBase implements ShooterIO {
     protected final SparkMax flywheelMotorInverted = new SparkMax(LAUNCHER_MOTOR_2_ID, MotorType.kBrushless);
 
     protected final BangBangController bangbang = new BangBangController();
-    protected final SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(0, 0.00242); // TODO: tune further
+    protected final SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(0, 0.00242);
 
     protected double targetRPM = 0;
     protected double actualRPM = 0;
