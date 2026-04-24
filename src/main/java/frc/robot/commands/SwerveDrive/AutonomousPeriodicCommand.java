@@ -20,7 +20,7 @@ public class AutonomousPeriodicCommand extends Command {
 
     @Override
     public void end(boolean interrupted) {
-        swerveDrive.drive(new ChassisSpeeds());
+        swerveDrive.drive(new ChassisSpeeds(), true);
         swerveDrive.tickPid();
     }
 }

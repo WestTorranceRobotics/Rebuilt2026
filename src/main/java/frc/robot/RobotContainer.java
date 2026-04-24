@@ -74,7 +74,7 @@ public class RobotContainer {
 
     public static VisionIO visionIO;
 
-    private final SendableChooser<Double> m_chooser = new SendableChooser<>(); // prepare to build LUT
+    private final SendableChooser<Double> shooterSpeedChooser = new SendableChooser<>();
     private SendableChooser<Command> autoChooser = new SendableChooser<>();
 
     /**
@@ -84,10 +84,10 @@ public class RobotContainer {
         SwerveDriveConfigurator swerveDriveConfigurator;
 
         for (double startingRPM = 2500; startingRPM < 4600; startingRPM += 50) {
-            m_chooser.addOption(String.format("%s RPM", startingRPM), startingRPM);
+            shooterSpeedChooser.addOption(String.format("%s RPM", startingRPM), startingRPM);
         }
-        m_chooser.setDefaultOption("Default (3000 RPM)", 3000.0);
-        SmartDashboard.putData("Run Shooter at X RPM:", m_chooser);
+        shooterSpeedChooser.setDefaultOption("Default (3000 RPM)", 3000.0);
+        SmartDashboard.putData("Run Shooter at X RPM:", shooterSpeedChooser);
 
         if (Robot.isReal()) {
             // Real drive train
@@ -195,7 +195,7 @@ public class RobotContainer {
                             // -swerveDrive.getChassisSpeed().omegaRadiansPerSecond);
                         },
                         () -> {
-                            swerveDrive.drive(new ChassisSpeeds());
+                            swerveDrive.drive(new ChassisSpeeds(), true);
                         })
                 .until(() -> {
                     var apriltagId = DriverStation.getAlliance()
@@ -215,8 +215,7 @@ public class RobotContainer {
                 })
                 .finallyDo(() -> {
                     swerveDrive.setAlignStatus(false, 0);
-                    swerveDrive.drive(new ChassisSpeeds());
-                    // PPHolonomicDriveController.clearFeedbackOverrides();
+                    swerveDrive.drive(new ChassisSpeeds(), true);
                 });
         NamedCommands.registerCommand("align", alignCommand);
 
@@ -224,7 +223,7 @@ public class RobotContainer {
                 "alignAndShoot",
                 Commands.parallel(
                         Commands.run(() -> {
-                            swerveDrive.drive(new ChassisSpeeds());
+                            swerveDrive.drive(new ChassisSpeeds(), true);
                         }),
                         new ShootCommand(shooterSubsystem, swerveDrive, visionIO, hopperSubsystem).withTimeout(6)));
 
@@ -343,6 +342,6 @@ public class RobotContainer {
      * Stops the robot's movement.
      */
     public void clearModuleStates() {
-        swerveDrive.drive(new ChassisSpeeds());
+        swerveDrive.drive(new ChassisSpeeds(), true);
     }
 }

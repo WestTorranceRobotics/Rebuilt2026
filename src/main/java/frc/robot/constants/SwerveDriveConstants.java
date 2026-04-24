@@ -8,6 +8,8 @@ public final class SwerveDriveConstants {
 
     public static final double PROPORTIONALITY_CONSTANT = 0.0123245;
 
+    public static final double SKEW_COMPENSATION_FACTOR = 0.04;
+
     public static class RealRobotConstants {
         public static final int PIGEON2_ID = 9;
 

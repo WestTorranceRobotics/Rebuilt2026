@@ -100,7 +100,7 @@ public class SwerveDrive extends SubsystemBase {
                 this::getPose,
                 this::setPose,
                 this::getChassisSpeed,
-                (ChassisSpeeds speeds) -> this.drive(speeds),
+                (ChassisSpeeds speeds) -> this.drive(speeds, true),
                 new PPHolonomicDriveController(
                         new PIDConstants(
                                 RealRobotConstants.kPTranslation,
@@ -128,11 +128,17 @@ public class SwerveDrive extends SubsystemBase {
         initTelemetry();
     }
 
-    public void drive(ChassisSpeeds chassisSpeeds) {
-        if (isAligning)
+    public void drive(ChassisSpeeds chassisSpeeds, boolean fieldRelative) {
+        if (isAligning) {
             chassisSpeeds = createAlignChassisSpeeds(
                     chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond, targetRotationYaw);
-
+        } else if (fieldRelative) {
+            chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
+                    chassisSpeeds,
+                    Rotation2d.fromRadians(this.getHeading().getRadians() + headingOffset)
+                            .plus(Rotation2d.fromRadians(chassisSpeeds.omegaRadiansPerSecond
+                                    * SwerveDriveConstants.SKEW_COMPENSATION_FACTOR)));
+        }
         calculateStates(chassisSpeeds);
     }
 
@@ -187,18 +193,16 @@ public class SwerveDrive extends SubsystemBase {
             backRight.getDesiredState()
         });
 
-        // TODO move this into robot container
         if (realPosePublisher != null && RobotContainer.swerveDriveSimulation != null) {
             realPosePublisher.set(RobotContainer.swerveDriveSimulation.getSimulatedDriveTrainPose3dGroundRelative());
         }
     }
 
-    // TODO: add skew compensation
     private void calculateStates(ChassisSpeeds chassisSpeeds) {
         ModuleIO[] modules = this.getModules();
-        SwerveModuleState[] moduleStates =
-                swerveDriveKinematics.toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(
-                        chassisSpeeds, Rotation2d.fromRadians(this.getHeading().getRadians() + headingOffset)));
+
+        chassisSpeeds = ChassisSpeeds.discretize(chassisSpeeds, 0.02);
+        SwerveModuleState[] moduleStates = swerveDriveKinematics.toSwerveModuleStates(chassisSpeeds);
 
         for (int i = 0; i < modules.length; i++) {
             moduleStates[i].optimize(modules[i].getSteerAngle());

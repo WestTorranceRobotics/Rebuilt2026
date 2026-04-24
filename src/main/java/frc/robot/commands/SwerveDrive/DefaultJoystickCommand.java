@@ -53,7 +53,7 @@ public class DefaultJoystickCommand extends Command {
                 -curve(applyDeadband(lx.getAsDouble())) * SwerveDriveConstants.MAX_TRANSLATION_SPEED,
                 -curve(applyDeadband(rx.getAsDouble())) * SwerveDriveConstants.MAX_ANGULAR_SPEED);
 
-        drive.drive(chassisSpeeds);
+        drive.drive(chassisSpeeds, true);
 
         drive.tickPid();
     }
@@ -65,6 +65,6 @@ public class DefaultJoystickCommand extends Command {
      */
     @Override
     public void end(boolean interrupted) {
-        drive.drive(new ChassisSpeeds());
+        drive.drive(new ChassisSpeeds(), true);
     }
 }
