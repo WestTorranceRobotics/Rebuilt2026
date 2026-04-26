@@ -69,6 +69,15 @@ public class VisionIOSim implements VisionIO {
     }
 
     @Override
+    public void updateInputs(VisionIOInputs inputs) {
+        tick();
+
+        inputs.trackedTargets = trackedTargets;
+        inputs.bestTarget = bestTarget;
+        inputs.estimatedPose = estimatedPose;
+    }
+
+    @Override
     public void tick() {
         visionSystemSim.update(RobotContainer.swerveDriveSimulation.getSimulatedDriveTrainPose());
 
@@ -85,14 +94,5 @@ public class VisionIOSim implements VisionIO {
                 if (estimatedPose.isEmpty()) estimatedPose = photonEstimator.estimateClosestToCameraHeightPose(result);
             }
         }
-    }
-
-    @Override
-    public void updateInputs(VisionIOInputs inputs) {
-        tick();
-
-        inputs.trackedTargets = trackedTargets;
-        inputs.bestTarget = bestTarget;
-        inputs.estimatedPose = estimatedPose;
     }
 }

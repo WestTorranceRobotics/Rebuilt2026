@@ -25,6 +25,10 @@ public class HopperIOSim implements HopperIO {
 
     @Override
     public void updateInputs() {
+        updateSim();
+    }
+
+    private void updateSim() {
         flywheelSim.setInput(hopperMotorSim.getAppliedOutput() * RoboRioSim.getVInVoltage());
         flywheelSim.update(0.02);
 

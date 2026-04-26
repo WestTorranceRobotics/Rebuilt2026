@@ -44,6 +44,10 @@ public class IntakeIOSim implements IntakeIO {
 
     @Override
     public void updateInputs() {
+        updateSim();
+    }
+
+    private void updateSim() {
         rollerSim.setInput(intakeMotorSim.getAppliedOutput() * RoboRioSim.getVInVoltage());
         rollerSim.update(0.02);
         pivotSim.setInput(pivotMotorSim.getAppliedOutput() * RoboRioSim.getVInVoltage());

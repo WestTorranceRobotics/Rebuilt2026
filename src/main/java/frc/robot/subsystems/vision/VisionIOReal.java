@@ -25,6 +25,15 @@ public class VisionIOReal implements VisionIO {
     }
 
     @Override
+    public void updateInputs(VisionIOInputs inputs) {
+        tick();
+
+        inputs.trackedTargets = trackedTargets;
+        inputs.bestTarget = bestTarget;
+        inputs.estimatedPose = estimatedPose;
+    }
+
+    @Override
     public void tick() {
         var results = camera.getAllUnreadResults();
 
@@ -38,14 +47,5 @@ public class VisionIOReal implements VisionIO {
                 if (estimatedPose.isEmpty()) estimatedPose = photonEstimator.estimateClosestToCameraHeightPose(result);
             }
         }
-    }
-
-    @Override
-    public void updateInputs(VisionIOInputs inputs) {
-        tick();
-
-        inputs.trackedTargets = trackedTargets;
-        inputs.bestTarget = bestTarget;
-        inputs.estimatedPose = estimatedPose;
     }
 }
