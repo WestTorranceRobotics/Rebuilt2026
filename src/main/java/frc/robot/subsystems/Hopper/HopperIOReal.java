@@ -1,6 +1,5 @@
-package frc.robot.subsystems.Hopper;
+package frc.robot.subsystems.hopper;
 
-import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.constants.HopperConstants.*;
 
 import com.revrobotics.PersistMode;
@@ -9,16 +8,10 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
-import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.utilities.CustomUnits;
+import edu.wpi.first.units.measure.Voltage;
 
-public class HopperIOReal extends SubsystemBase implements HopperIO {
-    protected final SparkMax hopperMotor = new SparkMax(HOPPER_MOTOR_ID, MotorType.kBrushless);
-
-    protected double actualRPM = 0;
+public class HopperIOReal implements HopperIO {
+    private final SparkMax hopperMotor = new SparkMax(HOPPER_MOTOR_ID, MotorType.kBrushless);
 
     public HopperIOReal() {
         SparkMaxConfig hopperConfig = new SparkMaxConfig();
@@ -28,25 +21,18 @@ public class HopperIOReal extends SubsystemBase implements HopperIO {
         hopperMotor.configure(hopperConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }
 
-    public AngularVelocity getRollerSpeed() {
-        return CustomUnits.RotationsPerMinute.of(actualRPM);
-    }
-
-    public Command runHopperCommand() {
-        return this.runEnd(this::runHopper, this::stopHopper);
-    }
-
-    public void runHopper() {
-        hopperMotor.setVoltage(Volts.of(HOPPER_VOLTAGE));
-    }
-
-    public void stopHopper() {
-        hopperMotor.set(0);
+    @Override
+    public double getRollerRPM() {
+        return hopperMotor.getEncoder().getVelocity();
     }
 
     @Override
-    public void periodic() {
-        this.actualRPM = hopperMotor.getEncoder().getVelocity();
-        SmartDashboard.putNumber("Hopper RPM", actualRPM);
+    public void setRollerVoltage(Voltage voltage) {
+        hopperMotor.setVoltage(voltage);
+    }
+
+    @Override
+    public void stopRoller() {
+        hopperMotor.stopMotor();
     }
 }

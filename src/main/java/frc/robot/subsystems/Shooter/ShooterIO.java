@@ -1,23 +1,22 @@
-package frc.robot.subsystems.Shooter;
+package frc.robot.subsystems.shooter;
 
 import edu.wpi.first.epilogue.Logged;
-import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Subsystem;
+import edu.wpi.first.units.measure.Voltage;
 
 @Logged
-public interface ShooterIO extends Subsystem {
-    public Command runShooterCommand(AngularVelocity velocity);
+public interface ShooterIO {
+    public double getFlywheelRPM();
 
-    public Command runFeederCommand();
+    public double getFeederRPM();
 
-    public void setFlywheelSpeed(AngularVelocity velocity);
+    public void setFlywheelVoltage(Voltage voltage);
 
-    public void runFeeder();
+    public void setFeederVoltage(Voltage voltage);
+
+    public void stopFlywheel();
 
     public void stopFeeder();
 
-    public boolean shooterIsUpToSpeed();
-
-    public void stopShooter();
+    default void updateInputs() {}
+    ;
 }

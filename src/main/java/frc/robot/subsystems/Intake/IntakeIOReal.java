@@ -1,6 +1,5 @@
-package frc.robot.subsystems.Intake;
+package frc.robot.subsystems.intake;
 
-import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.constants.IntakeConstants.*;
 
 import com.revrobotics.PersistMode;
@@ -11,13 +10,11 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.units.measure.Voltage;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 @Logged
-public class IntakeIOReal extends SubsystemBase implements IntakeIO {
-    protected final SparkMax intakeMotor = new SparkMax(INTAKE_MOTOR_ID, MotorType.kBrushless);
-    protected final SparkMax pivotMotor = new SparkMax(PIVOT_MOTOR_ID, MotorType.kBrushless);
+public class IntakeIOReal implements IntakeIO {
+    private final SparkMax intakeMotor = new SparkMax(INTAKE_MOTOR_ID, MotorType.kBrushless);
+    private final SparkMax pivotMotor = new SparkMax(PIVOT_MOTOR_ID, MotorType.kBrushless);
 
     public IntakeIOReal() {
         SparkMaxConfig intakeConfig = new SparkMaxConfig();
@@ -39,87 +36,37 @@ public class IntakeIOReal extends SubsystemBase implements IntakeIO {
         pivotMotor.getEncoder().setPosition(Math.PI / 2);
     }
 
+    @Override
     public double getIntakeRPM() {
         return intakeMotor.getEncoder().getVelocity();
     }
 
+    @Override
     public double getHoodRPM() {
         return pivotMotor.getEncoder().getVelocity();
     }
 
-    public Command intakeCommand() {
-        return this.startEnd(
-                () -> {
-                    this.intake();
-                },
-                this::stopIntake);
-    }
-
-    public Command outtakeCommand() {
-        return this.startEnd(
-                () -> {
-                    this.outtake();
-                },
-                this::stopIntake);
-    }
-
-    public Command stopIntakeCommand() {
-        return this.runOnce(() -> {
-            this.stopIntake();
-        });
-    }
-
-    public void outtake() {
-        intakeMotor.setVoltage(OUTTAKE_VOLTAGE);
-    }
-
-    public void intake() {
-        intakeMotor.setVoltage(INTAKE_VOLTAGE);
-    }
-
+    @Override
     public void setIntakeVoltage(Voltage voltage) {
         intakeMotor.setVoltage(voltage);
     }
 
-    public void stopIntake() {
-        intakeMotor.setVoltage(0);
-    }
-
-    public Command sendHoodDownCommand() {
-        return this.runHoodAtVoltageCommand(Volts.of(PIVOT_DOWN_VOLTAGE));
-    }
-
-    public Command sendHoodUpCommand() {
-        return this.runHoodAtVoltageCommand(Volts.of(PIVOT_UP_VOLTAGE));
-    }
-
-    /**
-     * Runs the pivot motor at a given voltage. Positive voltage sends the intake DOWN, negative sends it UP.
-     * @param voltage Voltage to be applied to the pivot motor
-     * @return Command that runs the pivot motor at the given voltage
-     */
-    public Command runHoodAtVoltageCommand(Voltage voltage) {
-        return this.runEnd(
-                () -> {
-                    this.runHoodAtVoltage(voltage);
-                },
-                this::stopHood);
-    }
-
-    public void runHoodAtVoltage(Voltage voltage) {
+    @Override
+    public void setHoodVoltage(Voltage voltage) {
         pivotMotor.setVoltage(voltage);
     }
 
-    public Command stopHoodCommand() {
-        return this.runOnce(() -> {
-            this.stopHood();
-        });
+    @Override
+    public void stopIntake() {
+        intakeMotor.stopMotor();
     }
 
+    @Override
     public void stopHood() {
-        pivotMotor.setVoltage(0);
+        pivotMotor.stopMotor();
     }
 
+    @Override
     public String getIntakeLocation() {
         var deadband = 0.2;
         if (pivotMotor.getEncoder().getPosition() <= (0 + deadband)) {

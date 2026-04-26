@@ -1,4 +1,4 @@
-package frc.robot.subsystems.hardware.module;
+package frc.robot.subsystems.swerve.module;
 
 import static edu.wpi.first.units.Units.*;
 
@@ -13,7 +13,7 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 import frc.robot.MathUtils;
 import frc.robot.RobotContainer;
 import frc.robot.constants.GlobalConstants;
-import frc.robot.subsystems.SwerveDrive.SwerveDriveConfigurator;
+import frc.robot.subsystems.swerve.SwerveConfigurator;
 import org.ironmaple.simulation.drivesims.SwerveModuleSimulation;
 import org.ironmaple.simulation.motorsims.SimulatedMotorController;
 
@@ -34,12 +34,12 @@ public class ModuleIOSim implements ModuleIO {
 
     private final Distance simulatedCircumference;
 
-    private final SwerveDriveConfigurator.SwerveDriveModuleConstants moduleConstants;
+    private final SwerveConfigurator.SwerveDriveModuleConstants moduleConstants;
 
     public ModuleIOSim(
             SwerveModuleSimulation swerveModuleSimulation,
-            SwerveDriveConfigurator.SwerveModuleCornerPosition cornerPosition,
-            SwerveDriveConfigurator swerveDriveConfigurator) {
+            SwerveConfigurator.SwerveModuleCornerPosition cornerPosition,
+            SwerveConfigurator swerveDriveConfigurator) {
         this.swerveModuleSimulation = swerveModuleSimulation;
 
         this.moduleConstants = swerveDriveConfigurator.getModuleConstants(cornerPosition);

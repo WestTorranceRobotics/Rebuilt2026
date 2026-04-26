@@ -1,13 +1,13 @@
-package frc.robot.commands.SwerveDrive;
+package frc.robot.commands.swerve;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.SwerveDrive.SwerveDrive;
+import frc.robot.subsystems.swerve.Swerve;
 
 public class AutonomousPeriodicCommand extends Command {
-    private final SwerveDrive swerveDrive;
+    private final Swerve swerveDrive;
 
-    public AutonomousPeriodicCommand(SwerveDrive swerveDrive) {
+    public AutonomousPeriodicCommand(Swerve swerveDrive) {
         this.swerveDrive = swerveDrive;
 
         addRequirements(swerveDrive);

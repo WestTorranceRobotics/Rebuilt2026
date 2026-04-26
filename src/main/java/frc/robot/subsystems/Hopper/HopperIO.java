@@ -1,15 +1,13 @@
-package frc.robot.subsystems.Hopper;
+package frc.robot.subsystems.hopper;
 
-import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Subsystem;
+import edu.wpi.first.units.measure.Voltage;
 
-public interface HopperIO extends Subsystem {
-    public AngularVelocity getRollerSpeed();
+public interface HopperIO {
+    public double getRollerRPM();
 
-    public Command runHopperCommand();
+    public void setRollerVoltage(Voltage voltage);
 
-    public void runHopper();
+    public void stopRoller();
 
-    public void stopHopper();
+    public default void updateInputs() {}
 }

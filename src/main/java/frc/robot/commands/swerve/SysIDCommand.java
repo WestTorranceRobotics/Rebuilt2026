@@ -1,4 +1,4 @@
-package frc.robot.commands.SwerveDrive;
+package frc.robot.commands.swerve;
 
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.Second;
@@ -12,12 +12,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.subsystems.SwerveDrive.SwerveDrive;
-import frc.robot.subsystems.hardware.module.ModuleIO;
+import frc.robot.subsystems.swerve.Swerve;
+import frc.robot.subsystems.swerve.module.ModuleIO;
 import frc.robot.utilities.controller.Controller;
 
 public class SysIDCommand extends Command {
-    private final SwerveDrive swerve;
+    private final Swerve swerve;
     private Routine routineType;
     private final ModuleIO[] modules;
     private SysIdRoutine routine;
@@ -27,7 +27,7 @@ public class SysIDCommand extends Command {
 
     private final DefaultJoystickCommand defaultJoystickCommand;
 
-    public SysIDCommand(SwerveDrive swerveDrive, Routine routineType, Controller controller) {
+    public SysIDCommand(Swerve swerveDrive, Routine routineType, Controller controller) {
         this.swerve = swerveDrive;
         this.routineType = routineType;
 

@@ -1,18 +1,18 @@
-package frc.robot.commands.SwerveDrive;
+package frc.robot.commands.swerve;
 
 import static frc.robot.constants.GlobalConstants.OperatorConstants.DEADBAND_THRESHOLD;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.SwerveDriveConstants;
-import frc.robot.subsystems.SwerveDrive.SwerveDrive;
+import frc.robot.subsystems.swerve.Swerve;
 import java.util.function.DoubleSupplier;
 
 public class DefaultJoystickCommand extends Command {
     private final DoubleSupplier ly;
     private final DoubleSupplier lx;
     private final DoubleSupplier rx;
-    private final SwerveDrive drive;
+    private final Swerve drive;
 
     /**
      * @param lx          Translation on the x-axis supplier
@@ -20,7 +20,7 @@ public class DefaultJoystickCommand extends Command {
      * @param rx          Desired rotation velocity supplier
      * @param swerveDrive Swerve drive train instance
      */
-    public DefaultJoystickCommand(DoubleSupplier lx, DoubleSupplier ly, DoubleSupplier rx, SwerveDrive swerveDrive) {
+    public DefaultJoystickCommand(DoubleSupplier lx, DoubleSupplier ly, DoubleSupplier rx, Swerve swerveDrive) {
         this.lx = lx;
         this.ly = ly;
         this.rx = rx;

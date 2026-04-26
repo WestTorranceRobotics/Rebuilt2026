@@ -1,4 +1,4 @@
-package frc.robot.subsystems.hardware.module;
+package frc.robot.subsystems.swerve.module;
 
 import static edu.wpi.first.units.Units.*;
 
@@ -28,11 +28,11 @@ import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.RobotController;
-import frc.robot.subsystems.SwerveDrive.SwerveDriveConfigurator;
+import frc.robot.subsystems.swerve.SwerveConfigurator;
 
 public class ModuleIOReal implements ModuleIO {
-    private final SwerveDriveConfigurator.SwerveDriveRobotConstants robotConstants;
-    private final SwerveDriveConfigurator.SwerveDriveModuleConstants moduleConstants;
+    private final SwerveConfigurator.SwerveDriveRobotConstants robotConstants;
+    private final SwerveConfigurator.SwerveDriveModuleConstants moduleConstants;
 
     private final String moduleName;
 
@@ -55,8 +55,7 @@ public class ModuleIOReal implements ModuleIO {
 
     // TODO Document this
     public ModuleIOReal(
-            SwerveDriveConfigurator.SwerveModuleCornerPosition cornerPosition,
-            SwerveDriveConfigurator swerveDriveConfigurator) {
+            SwerveConfigurator.SwerveModuleCornerPosition cornerPosition, SwerveConfigurator swerveDriveConfigurator) {
         this.robotConstants = swerveDriveConfigurator.swerveDriveRobotConstants;
         this.moduleConstants = swerveDriveConfigurator.getModuleConstants(cornerPosition);
 

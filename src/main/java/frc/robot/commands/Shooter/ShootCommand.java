@@ -1,4 +1,4 @@
-package frc.robot.commands.Shooter;
+package frc.robot.commands.shooter;
 
 import static frc.robot.constants.GlobalConstants.*;
 import static frc.robot.constants.ShooterConstants.*;
@@ -8,21 +8,21 @@ import static frc.robot.utilities.CustomUnits.RotationsPerMinute;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.Hopper.HopperIO;
-import frc.robot.subsystems.Shooter.ShooterIO;
-import frc.robot.subsystems.SwerveDrive.SwerveDrive;
-import frc.robot.subsystems.hardware.vision.VisionIO;
+import frc.robot.subsystems.hopper.Hopper;
+import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.swerve.Swerve;
+import frc.robot.subsystems.vision.Vision;
 
 public class ShootCommand extends Command {
-    private final ShooterIO shooter;
-    private final SwerveDrive swerveDrive;
-    private final VisionIO vision;
-    private final HopperIO hopper;
+    private final Shooter shooter;
+    private final Swerve swerveDrive;
+    private final Vision vision;
+    private final Hopper hopper;
 
     private double lastDistanceToHub = -1;
     private double lastShooterMapRPM = -1;
 
-    public ShootCommand(ShooterIO shooter, SwerveDrive swerveDrive, VisionIO vision, HopperIO hopper) {
+    public ShootCommand(Shooter shooter, Swerve swerveDrive, Vision vision, Hopper hopper) {
         this.shooter = shooter;
         this.swerveDrive = swerveDrive;
         this.vision = vision;

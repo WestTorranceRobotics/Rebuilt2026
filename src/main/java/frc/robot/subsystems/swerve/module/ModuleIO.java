@@ -1,4 +1,4 @@
-package frc.robot.subsystems.hardware.module;
+package frc.robot.subsystems.swerve.module;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -100,6 +100,8 @@ public interface ModuleIO {
      * translation at 1 rad / sec
      */
     Translation2d getUnitRotationVec();
+
+    default void updateInputs() {}
 
     default void telemetryHook(SendableBuilder sendableBuilder) {}
 

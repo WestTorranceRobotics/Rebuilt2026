@@ -1,21 +1,28 @@
-package frc.robot.subsystems.SwerveDrive;
+package frc.robot.subsystems.swerve;
 
-import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Mass;
 import edu.wpi.first.wpilibj.DriverStation;
+import frc.robot.constants.SwerveDriveConstants.RealRobotConstants;
+import frc.robot.constants.SwerveDriveConstants.RealRobotConstants.RealModuleConstants;
+import frc.robot.constants.SwerveDriveConstants.SimulatedControlSystemConstants.SimulatedModuleConstants;
+import frc.robot.subsystems.swerve.module.Module;
+import frc.robot.subsystems.swerve.module.ModuleIOReal;
+import frc.robot.subsystems.swerve.module.ModuleIOSim;
 import java.util.HashSet;
 import java.util.Set;
+import org.ironmaple.simulation.drivesims.SwerveDriveSimulation3D;
 
-public class SwerveDriveConfigurator {
+public class SwerveConfigurator {
     public final SwerveDriveRobotConstants swerveDriveRobotConstants;
 
     private final SwerveDriveModuleConstants[] moduleConstants;
 
-    public SwerveDriveConfigurator(
+    public SwerveConfigurator(
             SwerveDriveRobotConstants swerveDriveRobotConstants, SwerveDriveModuleConstants[] moduleConstants) {
         this.swerveDriveRobotConstants = swerveDriveRobotConstants;
 
@@ -53,6 +60,59 @@ public class SwerveDriveConfigurator {
         }
 
         throw new RuntimeException("Tried to get configuration of an unconfigured module");
+    }
+
+    public static SwerveConfigurator defaultRealConfigurator() {
+        return new SwerveConfigurator(
+                new SwerveDriveRobotConstants(
+                        Kilograms.of(35),
+                        Inches.of(30),
+                        Inches.of(24.5),
+                        Inches.of(2.5),
+                        Inches.of(2),
+                        RealRobotConstants.PIGEON2_ID),
+                new SwerveDriveModuleConstants[] {
+                    RealModuleConstants.FLModuleConstants,
+                    RealModuleConstants.FRModuleConstants,
+                    RealModuleConstants.BLModuleConstants,
+                    RealModuleConstants.BRModuleConstants
+                });
+    }
+
+    public static SwerveConfigurator defaultSimConfigurator() {
+        return new SwerveConfigurator(
+                new SwerveDriveRobotConstants(
+                        Pounds.of(75), Inches.of(30), Inches.of(24.5), Inches.of(2.5), Inches.of(2), 0),
+                new SwerveDriveModuleConstants[] {
+                    SimulatedModuleConstants.FLModuleConstants,
+                    SimulatedModuleConstants.FRModuleConstants,
+                    SimulatedModuleConstants.BLModuleConstants,
+                    SimulatedModuleConstants.BRModuleConstants
+                });
+    }
+
+    public static Module[] createRealModules() {
+        SwerveConfigurator defaultConfig = defaultRealConfigurator();
+        return new Module[] {
+            new Module(new ModuleIOReal(SwerveModuleCornerPosition.FRONT_LEFT, defaultConfig)),
+            new Module(new ModuleIOReal(SwerveModuleCornerPosition.FRONT_RIGHT, defaultConfig)),
+            new Module(new ModuleIOReal(SwerveModuleCornerPosition.BACK_LEFT, defaultConfig)),
+            new Module(new ModuleIOReal(SwerveModuleCornerPosition.BACK_RIGHT, defaultConfig))
+        };
+    }
+
+    public static Module[] createSimModules(SwerveDriveSimulation3D swerveDriveSimulation) {
+        SwerveConfigurator defaultConfig = defaultSimConfigurator();
+        return new Module[] {
+            new Module(new ModuleIOSim(
+                    swerveDriveSimulation.getModules()[0], SwerveModuleCornerPosition.FRONT_LEFT, defaultConfig)),
+            new Module(new ModuleIOSim(
+                    swerveDriveSimulation.getModules()[1], SwerveModuleCornerPosition.FRONT_RIGHT, defaultConfig)),
+            new Module(new ModuleIOSim(
+                    swerveDriveSimulation.getModules()[2], SwerveModuleCornerPosition.BACK_LEFT, defaultConfig)),
+            new Module(new ModuleIOSim(
+                    swerveDriveSimulation.getModules()[3], SwerveModuleCornerPosition.BACK_RIGHT, defaultConfig))
+        };
     }
 
     public static class SwerveDriveRobotConstants {

@@ -1,14 +1,19 @@
-package frc.robot.subsystems.hardware.gyroscope;
+package frc.robot.subsystems.swerve.gyroscope;
 
 import com.ctre.phoenix6.hardware.Pigeon2;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.measure.AngularVelocity;
+import frc.robot.constants.SwerveDriveConstants.RealRobotConstants;
 
-public class GyroIOPigeon2 implements GyroIO {
-    private Pigeon2 pigeon;
+public class GyroIOReal implements GyroIO {
+    private final Pigeon2 pigeon;
 
-    public GyroIOPigeon2(int id) {
-        pigeon = new Pigeon2(id);
+    public GyroIOReal() {
+        this(RealRobotConstants.PIGEON2_ID);
+    }
+
+    public GyroIOReal(int id) {
+        this.pigeon = new Pigeon2(id);
     }
 
     @Override

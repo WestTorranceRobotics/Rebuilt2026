@@ -1,4 +1,4 @@
-package frc.robot.subsystems.SwerveDrive;
+package frc.robot.subsystems.swerve;
 
 import static edu.wpi.first.units.Units.*;
 import static frc.robot.constants.GlobalConstants.isAllianceBlue;
@@ -11,7 +11,6 @@ import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -25,25 +24,24 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Robot;
-import frc.robot.RobotContainer;
 import frc.robot.constants.GlobalConstants;
 import frc.robot.constants.SwerveDriveConstants;
 import frc.robot.constants.SwerveDriveConstants.RealRobotConstants;
-import frc.robot.subsystems.hardware.gyroscope.GyroIO;
-import frc.robot.subsystems.hardware.module.ModuleIO;
+import frc.robot.subsystems.swerve.gyroscope.Gyro;
+import frc.robot.subsystems.swerve.gyroscope.GyroIO;
+import frc.robot.subsystems.swerve.module.Module;
 import java.io.IOException;
 import org.json.simple.parser.ParseException;
 
 @Logged
-public class SwerveDrive extends SubsystemBase {
-    private final GyroIO gyro;
+public class Swerve extends SubsystemBase {
+    private final Gyro gyro;
     private final SwerveDrivePoseEstimator swerveDrivePoseEstimator;
 
-    private final ModuleIO frontLeft;
-    private final ModuleIO frontRight;
-    private final ModuleIO backLeft;
-    private final ModuleIO backRight;
+    private final Module frontLeft;
+    private final Module frontRight;
+    private final Module backLeft;
+    private final Module backRight;
 
     public static final SwerveDriveKinematics swerveDriveKinematics = new SwerveDriveKinematics(
             new Translation2d(0.3175, 0.24765), // Front left
@@ -67,25 +65,19 @@ public class SwerveDrive extends SubsystemBase {
     private boolean isAligning;
     private double targetRotationYaw;
 
-    // Real pose in simulation (if not real)
-    private StructPublisher<Pose3d> realPosePublisher;
+    private final SwerveDriveIO io;
 
-    public SwerveDrive(GyroIO gyro, ModuleIO fl, ModuleIO fr, ModuleIO bl, ModuleIO br) {
-        this.gyro = gyro;
+    public Swerve(SwerveDriveIO io, GyroIO gyroIO, Module[] modules) {
+        this.io = io;
+        this.gyro = new Gyro(gyroIO);
 
-        this.frontLeft = fl;
-        this.frontRight = fr;
-        this.backLeft = bl;
-        this.backRight = br;
+        this.frontLeft = modules[0];
+        this.frontRight = modules[1];
+        this.backLeft = modules[2];
+        this.backRight = modules[3];
 
         this.swerveDrivePoseEstimator = new SwerveDrivePoseEstimator(
                 swerveDriveKinematics, this.gyro.getRotation(), getModulePositions(), Pose2d.kZero);
-
-        if (Robot.isSimulation()) {
-            this.realPosePublisher = NetworkTableInstance.getDefault()
-                    .getStructTopic("Real Pose", Pose3d.struct)
-                    .publish();
-        }
 
         RobotConfig ppConfig;
         try {
@@ -160,6 +152,12 @@ public class SwerveDrive extends SubsystemBase {
 
     @Override
     public void periodic() {
+        gyro.updateInputs();
+        for (Module module : getModules()) {
+            module.updateInputs();
+        }
+
+        io.updateInputs();
         swerveDrivePoseEstimator.update(gyro.getRotation(), getModulePositions());
 
         publishTelemetry();
@@ -182,14 +180,10 @@ public class SwerveDrive extends SubsystemBase {
             backLeft.getDesiredState(),
             backRight.getDesiredState()
         });
-
-        if (realPosePublisher != null && RobotContainer.swerveDriveSimulation != null) {
-            realPosePublisher.set(RobotContainer.swerveDriveSimulation.getSimulatedDriveTrainPose3dGroundRelative());
-        }
     }
 
     private void calculateStates(ChassisSpeeds chassisSpeeds) {
-        ModuleIO[] modules = this.getModules();
+        Module[] modules = this.getModules();
 
         chassisSpeeds = ChassisSpeeds.discretize(chassisSpeeds, 0.02);
         SwerveModuleState[] moduleStates = swerveDriveKinematics.toSwerveModuleStates(chassisSpeeds);
@@ -213,9 +207,7 @@ public class SwerveDrive extends SubsystemBase {
     }
 
     public void setPose(Pose2d pose) {
-        if (Robot.isSimulation()) {
-            RobotContainer.swerveDriveSimulation.setSimulationWorldPose(pose);
-        }
+        io.setSimulationWorldPose(pose);
         swerveDrivePoseEstimator.resetPosition(gyro.getRotation(), getModulePositions(), pose);
     }
 
@@ -260,8 +252,8 @@ public class SwerveDrive extends SubsystemBase {
         });
     }
 
-    public ModuleIO[] getModules() {
-        return new ModuleIO[] {frontLeft, frontRight, backLeft, backRight};
+    public Module[] getModules() {
+        return new Module[] {frontLeft, frontRight, backLeft, backRight};
     }
 
     public Command lockWheelsInX() {
