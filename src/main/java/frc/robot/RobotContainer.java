@@ -5,8 +5,7 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
-import static frc.robot.constants.GlobalConstants.OperatorConstants.DRIVER_CONTROLLER_PORT;
-import static frc.robot.constants.GlobalConstants.OperatorConstants.OVERRIDE_CONTROLLER_PORT;
+import static frc.robot.constants.GlobalConstants.*;
 import static frc.robot.constants.ShooterConstants.YAW_ACCEPTABLE_ERROR;
 import static frc.robot.utilities.CustomUnits.RotationsPerMinute;
 
@@ -121,7 +120,7 @@ public class RobotContainer {
             shooterSubsystem = new ShooterIOReal();
             intakeSubsystem = new IntakeIOReal();
             hopperSubsystem = new HopperIOReal();
-            visionIO = new VisionIOReal();
+            visionIO = new VisionIOReal(swerveDrive::addVisionMeasurement);
         } else {
             // TODO add constant for drive base length
             swerveDriveSimulation = new SwerveDriveSimulation3D(
@@ -173,11 +172,11 @@ public class RobotContainer {
             shooterSubsystem = new ShooterIOSim();
             intakeSubsystem = new IntakeIOSim();
             hopperSubsystem = new HopperIOSim();
-            visionIO = new VisionIOSim();
+            visionIO = new VisionIOSim(swerveDrive::addVisionMeasurement);
         }
 
-        controller = new DualShock4Controller(DRIVER_CONTROLLER_PORT);
-        overrideController = new LogitechController(OVERRIDE_CONTROLLER_PORT);
+        controller = new DualShock4Controller(OperatorConstants.DRIVER_CONTROLLER_PORT);
+        overrideController = new LogitechController(OperatorConstants.OVERRIDE_CONTROLLER_PORT);
 
         registerNamedCommands();
         autoChooser = AutoBuilder.buildAutoChooserWithOptionsModifier(
@@ -198,11 +197,7 @@ public class RobotContainer {
                             swerveDrive.drive(new ChassisSpeeds(), true);
                         })
                 .until(() -> {
-                    var apriltagId = DriverStation.getAlliance()
-                                    .orElse(DriverStation.Alliance.Blue)
-                                    .equals(DriverStation.Alliance.Blue)
-                            ? 25
-                            : 10;
+                    var apriltagId = isAllianceBlue() ? 25 : 10;
                     var yaw = visionIO.getTX(apriltagId);
                     if (yaw.isEmpty()) {
                         SmartDashboard.putNumber("Yaw from target", -1);
@@ -255,11 +250,7 @@ public class RobotContainer {
                     //             true,
                     //             visionIO.getTX(visionIO.getBestTarget().getFiducialId())
                     //                     .orElse(null));
-                    int hubAprilTagID = DriverStation.getAlliance()
-                                    .orElse(DriverStation.Alliance.Blue)
-                                    .equals(DriverStation.Alliance.Blue)
-                            ? 25
-                            : 10;
+                    int hubAprilTagID = isAllianceBlue() ? 25 : 10;
                     if (visionIO.getTX(hubAprilTagID).orElse(null) != null) {
                         swerveDrive.setAlignStatus(
                                 true, visionIO.getTX(hubAprilTagID).get());

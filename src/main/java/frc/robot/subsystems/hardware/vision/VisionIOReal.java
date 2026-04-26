@@ -4,7 +4,11 @@ import static frc.robot.constants.VisionConstants.*;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import java.util.List;
 import java.util.Optional;
 import org.photonvision.EstimatedRobotPose;
@@ -17,13 +21,16 @@ public class VisionIOReal implements VisionIO {
     List<PhotonTrackedTarget> trackedTargets;
     PhotonTrackedTarget bestTarget;
 
+    EstimateConsumer estConsumer;
+
     AprilTagFieldLayout aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltWelded);
     PhotonPoseEstimator photonEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, ROBOT_TO_CAM);
-    Optional<EstimatedRobotPose> estimatedPose;
+    Optional<EstimatedRobotPose> estimatedPose = Optional.empty();
 
     int targetID;
 
-    public VisionIOReal() {
+    public VisionIOReal(EstimateConsumer estConsumer) {
+        this.estConsumer = estConsumer;
         camera = new PhotonCamera(CAMERA_NAME);
         aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltWelded);
     }
@@ -38,6 +45,34 @@ public class VisionIOReal implements VisionIO {
                 bestTarget = result.getBestTarget();
 
                 estimatedPose = photonEstimator.estimateCoprocMultiTagPose(result);
+                if (estimatedPose.isEmpty()) estimatedPose = photonEstimator.estimateClosestToCameraHeightPose(result);
+
+                estimatedPose.ifPresent(est -> {
+                    // The heading is flipped to account for camera being on the "back"
+                    int tagCount = est.targetsUsed.size();
+                    double averageDistance = 0;
+                    double maxAmbiguity = est.targetsUsed.stream()
+                            .mapToDouble(target -> target.getPoseAmbiguity())
+                            .max()
+                            .orElse(1.0);
+                    for (PhotonTrackedTarget target : est.targetsUsed) {
+                        averageDistance +=
+                                target.getBestCameraToTarget().getTranslation().getNorm();
+                    }
+                    averageDistance /= tagCount;
+
+                    double xyStdDev = BASE_STD_DEV
+                            * (1.0 + (averageDistance * DISTANCE_WEIGHT))
+                            * (1.0 + (maxAmbiguity * AMBIGUITY_WEIGHT))
+                            / Math.sqrt(tagCount);
+
+                    estConsumer.accept(
+                            est.estimatedPose
+                                    .toPose2d()
+                                    .transformBy(new Transform2d(new Translation2d(), Rotation2d.k180deg)),
+                            est.timestampSeconds,
+                            VecBuilder.fill(xyStdDev, xyStdDev, Double.MAX_VALUE));
+                });
             }
         }
     }

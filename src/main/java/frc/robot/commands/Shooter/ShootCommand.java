@@ -1,11 +1,11 @@
 package frc.robot.commands.Shooter;
 
+import static frc.robot.constants.GlobalConstants.*;
 import static frc.robot.constants.ShooterConstants.*;
 import static frc.robot.constants.VisionConstants.*;
 import static frc.robot.utilities.CustomUnits.RotationsPerMinute;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Hopper.HopperIO;
@@ -43,10 +43,7 @@ public class ShootCommand extends Command {
             shooter.runFeeder();
         }
 
-        int hubAprilTagID =
-                DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue).equals(DriverStation.Alliance.Blue)
-                        ? 25
-                        : 10;
+        int hubAprilTagID = isAllianceBlue() ? 25 : 10;
 
         var targetHubYaw = vision.getTX(hubAprilTagID);
 

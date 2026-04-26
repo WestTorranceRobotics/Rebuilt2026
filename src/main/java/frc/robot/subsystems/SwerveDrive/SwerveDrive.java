@@ -1,12 +1,14 @@
 package frc.robot.subsystems.SwerveDrive;
 
 import static edu.wpi.first.units.Units.*;
+import static frc.robot.constants.GlobalConstants.isAllianceBlue;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -16,8 +18,9 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.networktables.*;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -30,7 +33,6 @@ import frc.robot.constants.SwerveDriveConstants.RealRobotConstants;
 import frc.robot.subsystems.hardware.gyroscope.GyroIO;
 import frc.robot.subsystems.hardware.module.ModuleIO;
 import java.io.IOException;
-import java.util.Optional;
 import org.json.simple.parser.ParseException;
 
 @Logged
@@ -60,10 +62,6 @@ public class SwerveDrive extends SubsystemBase {
             NetworkTableInstance.getDefault()
                     .getStructArrayTopic("Desired Module States", SwerveModuleState.struct)
                     .publish();
-
-    // This is used to calculate what the heading is relative to the driver station, changes based
-    // on alliance
-    private double headingOffset;
 
     // These are used to override driver rotation if aligning
     private boolean isAligning;
@@ -100,7 +98,7 @@ public class SwerveDrive extends SubsystemBase {
                 this::getPose,
                 this::setPose,
                 this::getChassisSpeed,
-                (ChassisSpeeds speeds) -> this.drive(speeds, true),
+                (ChassisSpeeds speeds) -> this.drive(speeds, false),
                 new PPHolonomicDriveController(
                         new PIDConstants(
                                 RealRobotConstants.kPTranslation,
@@ -112,17 +110,10 @@ public class SwerveDrive extends SubsystemBase {
                                 RealRobotConstants.kDRotation)),
                 ppConfig,
                 () -> {
-                    Optional<DriverStation.Alliance> allianceOptional = DriverStation.getAlliance();
-
-                    // Flip position to red if on red alliance
-                    if (allianceOptional.isPresent() && allianceOptional.get().equals(DriverStation.Alliance.Red)) {
-                        // Origin is set at blue alliance, if we're on red then we need to flip
-                        // the heading
-                        headingOffset = Math.PI;
-                        return true;
+                    if (isAllianceBlue()) {
+                        return false;
                     }
-                    headingOffset = 0;
-                    return false;
+                    return true;
                 });
 
         initTelemetry();
@@ -135,7 +126,7 @@ public class SwerveDrive extends SubsystemBase {
         } else if (fieldRelative) {
             chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
                     chassisSpeeds,
-                    Rotation2d.fromRadians(this.getHeading().getRadians() + headingOffset)
+                    Rotation2d.fromRadians(this.getHeading().getRadians() + (isAllianceBlue() ? 0 : Math.PI))
                             .plus(Rotation2d.fromRadians(chassisSpeeds.omegaRadiansPerSecond
                                     * SwerveDriveConstants.SKEW_COMPENSATION_FACTOR)));
         }
@@ -159,10 +150,9 @@ public class SwerveDrive extends SubsystemBase {
 
     public Rotation2d getAngleToHub() {
         Translation2d robotTranslation = getPose().getTranslation();
-        Translation2d hubPosition =
-                DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue).equals(DriverStation.Alliance.Blue)
-                        ? GlobalConstants.FieldConstants.BLUE_HUB_POSITION
-                        : GlobalConstants.FieldConstants.RED_HUB_POSITION;
+        Translation2d hubPosition = isAllianceBlue()
+                ? GlobalConstants.FieldConstants.BLUE_HUB_POSITION
+                : GlobalConstants.FieldConstants.RED_HUB_POSITION;
 
         return new Rotation2d(
                 Math.atan2(hubPosition.getY() - robotTranslation.getY(), hubPosition.getX() - robotTranslation.getX()));
@@ -231,6 +221,12 @@ public class SwerveDrive extends SubsystemBase {
 
     public void addVisionMeasurement(Pose2d visionRobotPoseMeters, double timestampSeconds) {
         swerveDrivePoseEstimator.addVisionMeasurement(visionRobotPoseMeters, timestampSeconds);
+    }
+
+    public void addVisionMeasurement(
+            Pose2d visionRobotPoseMeters, double timestampSeconds, Matrix<N3, N1> visionMeasurementStdDevs) {
+        swerveDrivePoseEstimator.addVisionMeasurement(
+                visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
     }
 
     public SwerveModulePosition[] getModulePositions() {

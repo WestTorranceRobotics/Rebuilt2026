@@ -5,10 +5,13 @@ import static frc.robot.constants.VisionConstants.*;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import frc.robot.RobotContainer;
 import java.io.IOException;
@@ -28,15 +31,17 @@ public class VisionIOSim implements VisionIO {
     PhotonCamera camera;
     PhotonCameraSim cameraSim;
 
+    EstimateConsumer estConsumer;
+
     AprilTagFieldLayout aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltWelded);
-    ;
     PhotonPoseEstimator photonEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, ROBOT_TO_CAM);
-    Optional<EstimatedRobotPose> estimatedPose;
+    Optional<EstimatedRobotPose> estimatedPose = Optional.empty();
 
     List<PhotonTrackedTarget> trackedTargets;
     PhotonTrackedTarget bestTarget;
 
-    public VisionIOSim() {
+    public VisionIOSim(EstimateConsumer estConsumer) {
+        this.estConsumer = estConsumer;
 
         SimCameraProperties cameraProps = new SimCameraProperties();
 
@@ -53,7 +58,7 @@ public class VisionIOSim implements VisionIO {
 
         Rotation3d cameraRotation =
                 new Rotation3d(0, Degrees.of(-15).in(Radians), Degrees.of(180).in(Radians));
-        Transform3d cameraPosition = new Transform3d(new Translation3d(0, 0.254, 0), cameraRotation);
+        Transform3d cameraPosition = new Transform3d(new Translation3d(-0.3, 0, 0), cameraRotation);
 
         visionSystemSim.addCamera(cameraSim, cameraPosition);
 
@@ -83,8 +88,35 @@ public class VisionIOSim implements VisionIO {
                 trackedTargets = result.getTargets();
                 bestTarget = result.getBestTarget();
 
-                estimatedPose = photonEstimator.estimateCoprocMultiTagPose(
-                        result); // TODO: This doesn't work the same way in sim
+                estimatedPose = photonEstimator.estimateCoprocMultiTagPose(result);
+                if (estimatedPose.isEmpty()) estimatedPose = photonEstimator.estimateClosestToCameraHeightPose(result);
+
+                estimatedPose.ifPresent(est -> {
+                    // The heading is flipped to account for camera being on the "back"
+                    int tagCount = est.targetsUsed.size();
+                    double averageDistance = 0;
+                    double maxAmbiguity = est.targetsUsed.stream()
+                            .mapToDouble(target -> target.getPoseAmbiguity())
+                            .max()
+                            .orElse(1.0);
+                    for (PhotonTrackedTarget target : est.targetsUsed) {
+                        averageDistance +=
+                                target.getBestCameraToTarget().getTranslation().getNorm();
+                    }
+                    averageDistance /= tagCount;
+
+                    double xyStdDev = BASE_STD_DEV
+                            * (1.0 + (averageDistance * DISTANCE_WEIGHT))
+                            * (1.0 + (maxAmbiguity * AMBIGUITY_WEIGHT))
+                            / Math.sqrt(tagCount);
+
+                    estConsumer.accept(
+                            est.estimatedPose
+                                    .toPose2d()
+                                    .transformBy(new Transform2d(new Translation2d(), Rotation2d.k180deg)),
+                            est.timestampSeconds,
+                            VecBuilder.fill(xyStdDev, xyStdDev, Double.MAX_VALUE));
+                });
             }
         }
     }

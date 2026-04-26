@@ -9,6 +9,7 @@ import static edu.wpi.first.units.Units.*;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Mass;
+import edu.wpi.first.wpilibj.DriverStation;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
@@ -23,6 +24,12 @@ import edu.wpi.first.units.measure.Mass;
  * constants are needed, to reduce verbosity.
  */
 public final class GlobalConstants {
+    public static boolean isAllianceBlue() {
+        return DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue).equals(DriverStation.Alliance.Blue)
+                ? true
+                : false;
+    }
+
     public static class OperatorConstants {
         public static final int DRIVER_CONTROLLER_PORT = 0;
         public static final int OVERRIDE_CONTROLLER_PORT = 1;
