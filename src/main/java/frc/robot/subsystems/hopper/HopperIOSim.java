@@ -47,9 +47,4 @@ public class HopperIOSim implements HopperIO {
     public void setRollerVoltage(Voltage voltage) {
         hopperMotor.setVoltage(voltage);
     }
-
-    @Override
-    public void stopRoller() {
-        hopperMotor.stopMotor();
-    }
 }

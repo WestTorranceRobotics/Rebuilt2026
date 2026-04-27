@@ -37,6 +37,6 @@ public class Hopper extends SubsystemBase {
     }
 
     public void stopHopper() {
-        io.stopRoller();
+        io.setRollerVoltage(Volts.of(0));
     }
 }

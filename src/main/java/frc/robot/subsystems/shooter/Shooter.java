@@ -68,12 +68,12 @@ public class Shooter extends SubsystemBase {
     public void stopShooter() {
         this.targetRPM = 0;
         bangbang.setSetpoint(0);
-        io.stopFlywheel();
+        io.setFlywheelVoltage(Volts.of(0));
         this.stopFeeder();
     }
 
     public void stopFeeder() {
-        io.stopFeeder();
+        io.setFeederVoltage(Volts.of(0));
     }
 
     public Command runFeederCommand() {
@@ -81,7 +81,7 @@ public class Shooter extends SubsystemBase {
                 () -> {
                     io.setFeederVoltage(Volts.of(FEEDER_VOLTAGE));
                 },
-                () -> io.stopFeeder());
+                () -> this.stopFeeder());
     }
 
     public void runFeeder() {
@@ -89,6 +89,6 @@ public class Shooter extends SubsystemBase {
     }
 
     public Command stopFeederCommand() {
-        return this.runOnce(() -> io.stopFeeder());
+        return this.runOnce(() -> this.stopFeeder());
     }
 }

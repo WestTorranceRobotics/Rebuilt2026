@@ -57,16 +57,6 @@ public class IntakeIOReal implements IntakeIO {
     }
 
     @Override
-    public void stopIntake() {
-        intakeMotor.stopMotor();
-    }
-
-    @Override
-    public void stopHood() {
-        pivotMotor.stopMotor();
-    }
-
-    @Override
     public String getIntakeLocation() {
         var deadband = 0.2;
         if (pivotMotor.getEncoder().getPosition() <= (0 + deadband)) {

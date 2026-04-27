@@ -57,7 +57,7 @@ public class Intake extends SubsystemBase {
     }
 
     public void stopIntake() {
-        io.stopIntake();
+        io.setIntakeVoltage(Volts.of(0));
     }
 
     public Command sendHoodDownCommand() {
@@ -69,10 +69,10 @@ public class Intake extends SubsystemBase {
     }
 
     public Command runHoodAtVoltageCommand(Voltage voltage) {
-        return this.runEnd(() -> io.setHoodVoltage(voltage), io::stopHood);
+        return this.runEnd(() -> io.setHoodVoltage(voltage), () -> io.setHoodVoltage(Volts.of(0)));
     }
 
     public Command stopHoodCommand() {
-        return this.runOnce(io::stopHood);
+        return this.runOnce(() -> io.setHoodVoltage(Volts.of(0)));
     }
 }

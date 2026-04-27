@@ -13,10 +13,6 @@ public interface ShooterIO {
 
     public void setFeederVoltage(Voltage voltage);
 
-    public void stopFlywheel();
-
-    public void stopFeeder();
-
     default void updateInputs() {}
     ;
 }

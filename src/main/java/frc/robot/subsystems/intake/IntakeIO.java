@@ -13,10 +13,6 @@ public interface IntakeIO {
 
     public void setHoodVoltage(Voltage voltage);
 
-    public void stopIntake();
-
-    public void stopHood();
-
     public String getIntakeLocation();
 
     public default void updateInputs() {}

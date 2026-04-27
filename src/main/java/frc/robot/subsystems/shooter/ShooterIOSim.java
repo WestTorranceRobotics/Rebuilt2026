@@ -74,15 +74,4 @@ public class ShooterIOSim implements ShooterIO {
     public void setFeederVoltage(Voltage voltage) {
         feederMotor.setVoltage(voltage);
     }
-
-    @Override
-    public void stopFlywheel() {
-        flywheelMotor.stopMotor();
-        flywheelMotorInverted.stopMotor();
-    }
-
-    @Override
-    public void stopFeeder() {
-        feederMotor.stopMotor();
-    }
 }

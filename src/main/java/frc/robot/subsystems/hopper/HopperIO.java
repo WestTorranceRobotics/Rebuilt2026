@@ -7,7 +7,5 @@ public interface HopperIO {
 
     public void setRollerVoltage(Voltage voltage);
 
-    public void stopRoller();
-
     public default void updateInputs() {}
 }
