@@ -12,13 +12,23 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.vision.VisionIO.EstimateConsumer;
 import frc.robot.subsystems.vision.VisionIO.VisionIOInputs;
+import java.util.List;
 import java.util.Optional;
+import org.photonvision.EstimatedRobotPose;
+import org.photonvision.PhotonPoseEstimator;
+import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 public class Vision extends SubsystemBase {
     private final VisionIO io;
     private final VisionIOInputs inputs = new VisionIOInputs();
     private final EstimateConsumer estConsumer;
+
+    List<PhotonTrackedTarget> trackedTargets;
+    PhotonTrackedTarget bestTarget;
+    PhotonPoseEstimator photonEstimator =
+            new PhotonPoseEstimator(AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltWelded), ROBOT_TO_CAM);
+    Optional<EstimatedRobotPose> estimatedPose = Optional.empty();
 
     public Vision(VisionIO io, EstimateConsumer estConsumer) {
         this.io = io;
@@ -28,12 +38,26 @@ public class Vision extends SubsystemBase {
     @Override
     public void periodic() {
         io.updateInputs(inputs);
+        updateVision();
+    }
+
+    private void updateVision() {
+        if (!inputs.results.isEmpty()) {
+            PhotonPipelineResult result = inputs.results.get(inputs.results.size() - 1);
+            if (result.hasTargets()) {
+                trackedTargets = result.getTargets();
+                bestTarget = result.getBestTarget();
+
+                estimatedPose = photonEstimator.estimateCoprocMultiTagPose(result);
+                if (estimatedPose.isEmpty()) estimatedPose = photonEstimator.estimateClosestToCameraHeightPose(result);
+            }
+        }
         fuseVisionEstimates();
     }
 
     private PhotonTrackedTarget getTrackedTarget(int targetID) {
-        if (inputs.trackedTargets != null && !inputs.trackedTargets.isEmpty()) {
-            for (PhotonTrackedTarget trackedTarget : inputs.trackedTargets) {
+        if (trackedTargets != null && !trackedTargets.isEmpty()) {
+            for (PhotonTrackedTarget trackedTarget : trackedTargets) {
                 if (trackedTarget.fiducialId == targetID) {
                     return trackedTarget;
                 }
@@ -61,7 +85,7 @@ public class Vision extends SubsystemBase {
     }
 
     public PhotonTrackedTarget getBestTarget() {
-        return inputs.bestTarget;
+        return bestTarget;
     }
 
     public Optional<Double> getTX(int targetID) {
@@ -77,7 +101,7 @@ public class Vision extends SubsystemBase {
     }
 
     public void fuseVisionEstimates() {
-        inputs.estimatedPose.ifPresent(est -> {
+        estimatedPose.ifPresent(est -> {
             int tagCount = est.targetsUsed.size();
             double averageDistance = 0;
             double maxAmbiguity = est.targetsUsed.stream()

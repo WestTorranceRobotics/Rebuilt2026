@@ -11,28 +11,16 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import frc.robot.RobotContainer;
 import java.io.IOException;
-import java.util.List;
-import java.util.Optional;
-import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
-import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonTargetSortMode;
 import org.photonvision.simulation.PhotonCameraSim;
 import org.photonvision.simulation.SimCameraProperties;
 import org.photonvision.simulation.VisionSystemSim;
-import org.photonvision.targeting.PhotonTrackedTarget;
 
 public class VisionIOSim implements VisionIO {
-    VisionSystemSim visionSystemSim = new VisionSystemSim("main");
-    PhotonCamera camera;
-    PhotonCameraSim cameraSim;
-
-    PhotonPoseEstimator photonEstimator =
-            new PhotonPoseEstimator(AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltWelded), ROBOT_TO_CAM);
-    Optional<EstimatedRobotPose> estimatedPose = Optional.empty();
-
-    List<PhotonTrackedTarget> trackedTargets;
-    PhotonTrackedTarget bestTarget;
+    private final VisionSystemSim visionSystemSim = new VisionSystemSim("main");
+    private final PhotonCamera camera;
+    private final PhotonCameraSim cameraSim;
 
     public VisionIOSim() {
         SimCameraProperties cameraProps = new SimCameraProperties();
@@ -70,29 +58,11 @@ public class VisionIOSim implements VisionIO {
 
     @Override
     public void updateInputs(VisionIOInputs inputs) {
-        tick();
-
-        inputs.trackedTargets = trackedTargets;
-        inputs.bestTarget = bestTarget;
-        inputs.estimatedPose = estimatedPose;
+        updateSim();
+        inputs.results = camera.getAllUnreadResults();
     }
 
-    @Override
-    public void tick() {
+    public void updateSim() {
         visionSystemSim.update(RobotContainer.swerveDriveSimulation.getSimulatedDriveTrainPose());
-
-        var results = camera.getAllUnreadResults();
-
-        if (!results.isEmpty()) {
-            var result = results.get(results.size() - 1);
-
-            if (result.hasTargets()) {
-                trackedTargets = result.getTargets();
-                bestTarget = result.getBestTarget();
-
-                estimatedPose = photonEstimator.estimateCoprocMultiTagPose(result);
-                if (estimatedPose.isEmpty()) estimatedPose = photonEstimator.estimateClosestToCameraHeightPose(result);
-            }
-        }
     }
 }
